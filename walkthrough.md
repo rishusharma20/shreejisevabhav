@@ -11,16 +11,16 @@ The build completes with **0 errors**, **0 warnings**, and complete validation a
 ## Enhanced Aesthetic Walkthrough
 
 ### 1. New Premium Brand Logo Integration
-- **Intricate Custom Vector SVG**: Procedurally drawn logo containing:
+- **Premium Medallion Logo**: Loaded the newly attached high-resolution logo image (`logo.png`) containing:
   - **Shri Radha Krishna Silhouette Motif**: Elegant profiles centered in a gold blessing posture.
   - **Radha Rani Mahal**: Domes, archways, and spires detailed with golden metallic gradients.
-  - **Shri Krishna's Murli & Mor Pankh**: Tiny high-end peacock feather and crossing golden flute ornaments integrated into the logo frame.
-  - **Divine Lotus Petals**: 5 blossoming gold petals forming the base of the logo.
-  - **Base Ghungroo Bells**: Delicate hanging golden chime beads at the base.
-- **Desktop Navbar Size**: Sized at `72px` in height. Paired with live typography `SHREEJI SEVA BHAV` and the subhead `Divine Clothing & Jewellery` for SEO friendliness and light weight.
-- **Mobile Navbar Size**: Sized at `48px` in height. Fits alongside the main brand name, search icon, cart icon, and hamburger menu without hiding the name on mobile screens!
+  - **Shri Krishna's Murli & Mor Pankh**: Peacock feather and golden flute ornaments.
+  - **Divine Lotus Petals**: Large pinkish-red lotus petals supporting the temple/mahal.
+- **CSS-Based Medallion Crop**: Implemented a responsive container with `overflow-hidden` and a `1:0.78` aspect ratio crop (`object-cover object-top`) to render only the gorgeous top medallion (Radha Krishna, Mahal, Lotus, Mor Pankh) as the emblem, completely hiding the bottom text inside the image.
+- **Desktop Navbar Size**: Sized at `72px` in width (with a cropped height of `56px`). Paired with live typography `SHREEJI SEVA BHAV` and the subhead `Divine Clothing & Jewellery` for SEO-friendliness, light weight, and crispness.
+- **Mobile Navbar Size**: Sized at `48px` in width (with a cropped height of `37px`). Fits alongside the main brand name, search icon, cart icon, and hamburger menu without hiding the name on mobile screens!
 - **Consistency**: Integrated the new logo consistently into the header navbar, the mobile sliding drawer, and the bottom copyright divider of the website footer.
-- **Header Glassmorphism**: Styled the sticky header with `bg-[#FFFBF4]/80 backdrop-blur-[20px] border-b border-[#D4A853]/25` and a delicate golden bottom gradient.
+- **Header Glassmorphism**: Styled the sticky header with `bg-[#FFFBF4]/80 backdrop-blur-[20px] border-b border-[#D4A853]/25 shadow-[0_2px_20px_rgba(212,168,83,0.06)]` and a delicate golden bottom gradient.
 
 ### 2. Rebuilt 100vh Hero Section & Centered Scroll Indicator
 - **Viewport Constraints**: Re-structured the entire hero layout height to fit perfectly within `100vh` (including the announcement bar, header navbar, content blocks, and the glass card banner) with zero overflows or scrollbar triggers.
