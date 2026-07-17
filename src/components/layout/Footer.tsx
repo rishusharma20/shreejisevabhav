@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Heart, Camera, Users, Play, MessageCircle, Send } from "lucide-react";
-import { LotusIcon, PeacockFeatherIcon } from "@/components/icons/DevotionalIcons";
+import { LotusIcon } from "@/components/icons/DevotionalIcons";
+import { ShreejiLogo } from "@/components/layout/Navbar";
 import { navLinks } from "@/lib/seed-data";
 
 export default function Footer() {
@@ -42,11 +43,16 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <PeacockFeatherIcon size={32} className="text-peacock-light" />
-              <span className="font-display text-xl font-bold text-cream">
-                Shreeji Seva Bhav
-              </span>
+            <div className="flex items-center gap-3.5 mb-4">
+              <ShreejiLogo size={48} />
+              <div>
+                <span className="font-display text-base font-bold tracking-widest block leading-none text-cream">
+                  SHREEJI SEVA BHAV
+                </span>
+                <span className="block text-[7px] tracking-[0.2em] uppercase mt-1 font-bold text-warm-gray-light">
+                  Divine Boutique
+                </span>
+              </div>
             </div>
             <p className="text-sm text-warm-gray-light leading-relaxed mb-5">
               Divine clothing & jewellery for your beloved Thakurji. Handcrafted
@@ -166,7 +172,9 @@ export default function Footer() {
         <div className="flex items-center gap-4 my-10">
           <span className="flex-1 h-px bg-gradient-to-r from-transparent to-warm-gray/30" />
           <LotusIcon size={24} className="text-gold-start/40" />
-          <PeacockFeatherIcon size={20} className="text-peacock/30" />
+          <div className="opacity-40">
+            <ShreejiLogo size={24} />
+          </div>
           <LotusIcon size={24} className="text-gold-start/40" />
           <span className="flex-1 h-px bg-gradient-to-l from-transparent to-warm-gray/30" />
         </div>

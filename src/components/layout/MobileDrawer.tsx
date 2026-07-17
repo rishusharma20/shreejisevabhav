@@ -3,8 +3,9 @@
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Heart, ShoppingBag, User, MessageCircle } from "lucide-react";
-import { LotusIcon, PeacockFeatherIcon } from "@/components/icons/DevotionalIcons";
+import { LotusIcon } from "@/components/icons/DevotionalIcons";
 import { navLinks } from "@/lib/seed-data";
+import { ShreejiLogo } from "./Navbar";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -66,15 +67,20 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
               <div className="absolute top-0 left-0 right-0 h-1 bg-gold-gradient" />
 
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <PeacockFeatherIcon size={28} className="text-peacock" />
-                  <span className="font-display text-lg font-bold text-charcoal">
-                    Shreeji Seva Bhav
-                  </span>
+                <div className="flex items-center gap-3">
+                  <ShreejiLogo size={42} />
+                  <div>
+                    <span className="font-display text-base font-bold tracking-widest block leading-none text-[#5C1A1A]">
+                      SHREEJI SEVA BHAV
+                    </span>
+                    <span className="block text-[7px] tracking-[0.2em] uppercase mt-0.5 font-bold text-[#8B6F4E]">
+                      Divine Boutique
+                    </span>
+                  </div>
                 </div>
                 <button
                   onClick={onClose}
-                  className="p-2 text-warm-gray hover:text-charcoal transition-colors rounded-full hover:bg-cream-dark cursor-pointer"
+                  className="p-2 text-warm-gray hover:text-[#5C1A1A] transition-colors rounded-full hover:bg-cream-dark cursor-pointer"
                   aria-label="Close menu"
                 >
                   <X size={20} />
