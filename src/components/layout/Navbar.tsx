@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Search, Heart, ShoppingBag, User, Menu, ChevronDown, MessageCircle } from "lucide-react";
+import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/hooks/useWishlist";
 import MobileDrawer from "./MobileDrawer";
@@ -17,108 +18,31 @@ const navLinks = [
   { label: "Contact Us", href: "/contact", hasDropdown: false },
 ];
 
-// ── NEW PREMIUM VECTOR LOGO: Shri Radha Krishna Silhouette, Radha Rani Mahal, Flute, Peacock Feather, Lotus & Ghungroo ──
-export const ShreejiLogo = ({ size = 68 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 120 120" fill="none" className="filter drop-shadow-[0_2px_8px_rgba(212,168,83,0.25)] select-none pointer-events-none">
-    <defs>
-      {/* High-end metallic gold gradients */}
-      <linearGradient id="logo-gold-metallic" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#FFF9E6" />
-        <stop offset="25%" stopColor="#FDEAA8" />
-        <stop offset="50%" stopColor="#D4A853" />
-        <stop offset="75%" stopColor="#AA8232" />
-        <stop offset="100%" stopColor="#705219" />
-      </linearGradient>
-      {/* Peacock gem colors */}
-      <radialGradient id="logo-peacock-gem" cx="50%" cy="35%" r="30%">
-        <stop offset="0%" stopColor="#00F5D4" />
-        <stop offset="50%" stopColor="#00BBF9" />
-        <stop offset="100%" stopColor="#03045E" />
-      </radialGradient>
-      {/* Ruby red highlights */}
-      <linearGradient id="logo-ruby-red" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="#FF4D4D" />
-        <stop offset="100%" stopColor="#990000" />
-      </linearGradient>
-    </defs>
-
-    {/* 1. Circular Temple Arch Boundary with Beaded Details */}
-    <circle cx="60" cy="60" r="54" stroke="url(#logo-gold-metallic)" strokeWidth="1.5" />
-    <circle cx="60" cy="60" r="51" stroke="url(#logo-gold-metallic)" strokeWidth="0.75" strokeDasharray="3 3" />
-
-    {/* 2. Radha Rani Mahal Silhouette (Temple Domes & Spire) */}
-    {/* Center Dome/Spire */}
-    <path d="M 60 16 C 58 22 55 24 55 28 L 65 28 C 65 24 62 22 60 16 Z" fill="url(#logo-gold-metallic)" />
-    <path d="M 50 36 C 50 28 70 28 70 36 L 50 36 Z" fill="url(#logo-gold-metallic)" opacity="0.85" />
-    {/* Left Side Dome */}
-    <path d="M 38 42 C 38 36 48 36 48 42 L 38 42 Z" fill="url(#logo-gold-metallic)" opacity="0.7" />
-    {/* Right Side Dome */}
-    <path d="M 72 42 C 72 36 82 36 82 42 L 72 42 Z" fill="url(#logo-gold-metallic)" opacity="0.7" />
-
-    {/* 3. Temple Pillars and Archways */}
-    <rect x="52" y="36" width="2" height="18" fill="url(#logo-gold-metallic)" />
-    <rect x="66" y="36" width="2" height="18" fill="url(#logo-gold-metallic)" />
-    <rect x="42" y="42" width="1.5" height="12" fill="url(#logo-gold-metallic)" opacity="0.7" />
-    <rect x="76" y="42" width="1.5" height="12" fill="url(#logo-gold-metallic)" opacity="0.7" />
-    {/* Arch Curves */}
-    <path d="M 52 38 C 55 35 65 35 66 38" stroke="url(#logo-gold-metallic)" strokeWidth="1" />
-    <path d="M 42 43 C 45 41 50 41 52 43" stroke="url(#logo-gold-metallic)" strokeWidth="0.8" opacity="0.7" />
-    <path d="M 68 43 C 70 41 75 41 76 43" stroke="url(#logo-gold-metallic)" strokeWidth="0.8" opacity="0.7" />
-
-    {/* 4. Shri Radha Krishna Silhouette Motif (Centered in the archway) */}
-    {/* Krishna's Crown and tilt */}
-    <path d="M 53 44 C 54 41 58 41 59 44 L 56 46 Z" fill="url(#logo-gold-metallic)" />
-    {/* Radha's Crown and veil curve */}
-    <path d="M 62 45 C 64 43 67 43 68 46 L 65 47 Z" fill="url(#logo-gold-metallic)" />
-    {/* Combined blessing posture/profiles */}
-    <path d="M 51 55 C 51 48 69 48 69 55 C 69 59 51 59 51 55 Z" fill="url(#logo-gold-metallic)" opacity="0.9" />
-
-    {/* 5. Shri Krishna's Mor Pankh (Peacock Feather - emerging from behind the temple spire) */}
-    <g transform="translate(68, 14) rotate(22) scale(0.35)">
-      {/* Stem */}
-      <path d="M 50 140 C 50 90 48 40 50 10" stroke="url(#logo-gold-metallic)" strokeWidth="4" />
-      {/* Eye outer */}
-      <ellipse cx="50" cy="40" rx="25" ry="30" fill="url(#logo-gold-metallic)" />
-      {/* Eye mid (Emerald/Sapphire) */}
-      <ellipse cx="50" cy="40" rx="16" ry="20" fill="url(#logo-peacock-gem)" />
-      {/* Eye inner */}
-      <ellipse cx="50" cy="40" rx="8" ry="10" fill="#03045E" />
-      {/* Shimmer */}
-      <circle cx="47" cy="36" r="2" fill="#FFF" />
-    </g>
-
-    {/* 6. Shri Krishna's Murli (Flute - crossing diagonally behind/below the profiles) */}
-    <g transform="translate(15, 68) rotate(-8) scale(0.45)">
-      <rect x="10" y="20" width="180" height="8" rx="4" fill="url(#logo-gold-metallic)" />
-      {/* Bindings */}
-      <rect x="25" y="19" width="3" height="10" fill="url(#logo-ruby-red)" />
-      <rect x="75" y="19" width="3" height="10" fill="url(#logo-ruby-red)" />
-      <rect x="125" y="19" width="3" height="10" fill="url(#logo-ruby-red)" />
-      {/* Hanging Silk Tassels */}
-      <path d="M 183 24 Q 192 36 188 46" stroke="url(#logo-gold-metallic)" strokeWidth="2.5" />
-      <circle cx="188" cy="46" r="4" fill="url(#logo-ruby-red)" />
-    </g>
-
-    {/* 7. Divine Lotus Petals (Blossoming at the base of the logo) */}
-    <g transform="translate(18, 72) scale(0.7)">
-      {/* Center main petal */}
-      <path d="M60 65 C48 50 45 15 60 5 C75 15 72 50 60 65 Z" fill="url(#logo-gold-metallic)" />
-      {/* Left side petals */}
-      <path d="M60 65 C35 55 30 25 45 15 C52 25 58 45 60 65 Z" fill="url(#logo-gold-metallic)" opacity="0.85" />
-      <path d="M60 65 C20 62 18 35 32 28 C40 35 48 50 60 65 Z" fill="url(#logo-gold-metallic)" opacity="0.65" />
-      {/* Right side petals */}
-      <path d="M60 65 C85 55 90 25 75 15 C68 25 62 45 60 65 Z" fill="url(#logo-gold-metallic)" opacity="0.85" />
-      <path d="M60 65 C100 62 102 35 88 28 C80 35 72 50 60 65 Z" fill="url(#logo-gold-metallic)" opacity="0.65" />
-    </g>
-
-    {/* 8. Small hanging bells (Ghungroos) at the base circle */}
-    <circle cx="60" cy="113" r="2.5" fill="url(#logo-gold-metallic)" />
-    <circle cx="45" cy="110" r="2" fill="url(#logo-gold-metallic)" opacity="0.8" />
-    <circle cx="75" cy="110" r="2" fill="url(#logo-gold-metallic)" opacity="0.8" />
-    <circle cx="32" cy="102" r="1.8" fill="url(#logo-gold-metallic)" opacity="0.6" />
-    <circle cx="88" cy="102" r="1.8" fill="url(#logo-gold-metallic)" opacity="0.6" />
-  </svg>
-);
+// ── PREMIUM LOGO COMPONENT: Renders the beautiful Radha Krishna medallion, cropping out the bottom text using CSS ──
+export const ShreejiLogo = ({ size = 68 }: { size?: number }) => {
+  // To display the top circular medallion and crop out the bottom text, we use a 1:0.78 aspect-ratio crop
+  const cropHeight = Math.round(size * 0.78);
+  return (
+    <div 
+      className="relative overflow-hidden select-none pointer-events-none rounded-full flex items-center justify-center"
+      style={{ width: `${size}px`, height: `${cropHeight}px` }}
+    >
+      <div 
+        className="absolute top-0 left-0 w-full h-full"
+        style={{ width: `${size}px`, height: `${size}px` }}
+      >
+        <Image
+          src="/images/logo.png"
+          alt="Shreeji Seva Bhav Premium Medallion Emblem"
+          width={size}
+          height={size}
+          priority
+          className="object-cover object-top filter contrast-[1.01] brightness-[1.01]"
+        />
+      </div>
+    </div>
+  );
+};;
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
