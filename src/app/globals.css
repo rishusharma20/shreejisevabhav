@@ -1,26 +1,248 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ═══════════════════════════════════════════════════════════════
+   SHREEJI SEVA BHAV — Divine Design System
+   Sacred palette · Gold motifs · Temple-inspired tokens
+   ═══════════════════════════════════════════════════════════════ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* ── Sacred Palette ── */
+  --color-cream: #FFF8EE;
+  --color-cream-dark: #F5ECDD;
+  --color-cream-deep: #EDE2D0;
+
+  --color-saffron: #FF9933;
+  --color-saffron-deep: #E8850A;
+  --color-saffron-light: #FFB366;
+  --color-saffron-muted: #FFD9A8;
+
+  --color-peacock: #1A8A7D;
+  --color-peacock-deep: #0F6B61;
+  --color-peacock-light: #2AAFA0;
+  --color-peacock-muted: #B8E0DA;
+
+  --color-gold-start: #D4A853;
+  --color-gold-mid: #E8C468;
+  --color-gold-end: #F0D78C;
+  --color-gold-light: #F7E9B8;
+
+  --color-charcoal: #2D2A26;
+  --color-warm-gray: #6B6560;
+  --color-warm-gray-light: #9B9590;
+  --color-warm-gray-lighter: #C5BFBA;
+
+  --color-white: #FFFFFF;
+  --color-black: #1A1815;
+
+  /* ── Typography ── */
+  --font-display: var(--font-playfair-display);
+  --font-body: var(--font-poppins);
+
+  /* ── Spacing Scale ── */
+  --spacing-18: 4.5rem;
+  --spacing-22: 5.5rem;
+  --spacing-26: 6.5rem;
+  --spacing-30: 7.5rem;
+  --spacing-34: 8.5rem;
+
+  /* ── Border Radius ── */
+  --radius-card: 1rem;
+  --radius-badge: 0.375rem;
+  --radius-pill: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-card: 0 2px 16px rgba(45, 42, 38, 0.06);
+  --shadow-card-hover: 0 8px 32px rgba(45, 42, 38, 0.12);
+  --shadow-gold: 0 4px 24px rgba(212, 168, 83, 0.2);
+  --shadow-nav: 0 2px 24px rgba(45, 42, 38, 0.08);
+
+  /* ── Animations ── */
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 30s linear infinite;
+  --animate-shimmer: shimmer 2s ease-in-out infinite;
+  --animate-fade-in-up: fade-in-up 0.6s ease-out forwards;
+  --animate-gentle-float: gentle-float 6s ease-in-out infinite;
+  --animate-glow-pulse: glow-pulse 3s ease-in-out infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ═══════════════════════════════════════════════════════════════
+   Keyframes
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Base Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-cream);
+  color: var(--color-charcoal);
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--color-saffron-muted);
+  color: var(--color-charcoal);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Utility Classes
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Gold gradient text */
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--color-gold-start), var(--color-gold-end));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gold gradient background */
+.bg-gold-gradient {
+  background: linear-gradient(135deg, var(--color-gold-start), var(--color-gold-mid), var(--color-gold-end));
+}
+
+/* Gold border gradient */
+.border-gold-gradient {
+  border: 1px solid transparent;
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  background-image:
+    linear-gradient(var(--color-cream), var(--color-cream)),
+    linear-gradient(135deg, var(--color-gold-start), var(--color-gold-end));
+}
+
+/* Saffron gradient button */
+.bg-saffron-gradient {
+  background: linear-gradient(135deg, var(--color-saffron), var(--color-saffron-deep));
+}
+
+/* Skeleton shimmer */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-cream-dark) 25%,
+    var(--color-cream) 50%,
+    var(--color-cream-dark) 75%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Lotus watermark background */
+.bg-lotus-watermark {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120' fill='none'%3E%3Cpath d='M60 20C60 20 45 40 45 55C45 65 52 70 60 70C68 70 75 65 75 55C75 40 60 20 60 20Z' stroke='%23D4A853' stroke-width='0.5' opacity='0.06'/%3E%3Cpath d='M60 20C60 20 35 45 35 60C35 72 46 78 60 78C74 78 85 72 85 60C85 45 60 20 60 20Z' stroke='%23D4A853' stroke-width='0.5' opacity='0.04'/%3E%3Cpath d='M60 70V100' stroke='%23D4A853' stroke-width='0.5' opacity='0.04'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 120px 120px;
+}
+
+/* Intricate gold damask/mandala texture */
+.bg-mandala-texture {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80' fill='none'%3E%3Cpath d='M40 0C45 10 50 15 50 25C50 33 45 36 40 36C35 36 30 33 30 25C30 15 35 10 40 0ZM40 80C45 70 50 65 50 55C50 47 45 44 40 44C35 44 30 47 30 55C30 65 35 70 40 80ZM0 40C10 45 15 50 25 50C33 50 36 45 36 40C36 35 33 30 25 30C15 30 10 35 0 40ZM80 40C70 45 65 50 55 50C47 50 44 45 44 40C44 35 47 30 55 30C65 30 70 35 80 40ZM40 28C33.37 28 28 33.37 28 40C28 46.63 33.37 52 40 52C46.63 52 52 46.63 52 40C52 33.37 46.63 28 40 28Z' stroke='%23D4A853' stroke-width='0.5' stroke-opacity='0.14'/%3E%3Cpath d='M10 10 C15 15 20 15 20 20 C20 25 15 25 10 20 M70 10 C65 15 60 15 60 20 C60 25 65 25 70 20 M10 70 C15 65 20 65 20 60 C20 55 15 55 10 60 M70 70 C65 65 60 65 60 60 C60 55 65 55 70 60' stroke='%23D4A853' stroke-width='0.4' stroke-opacity='0.10'/%3E%3Ccircle cx='40' cy='40' r='4' fill='%23D4A853' fill-opacity='0.12'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 80px 80px;
+}
+
+/* Mandala corner ornament */
+.mandala-corner {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+/* Smooth scroll snap for horizontal scrollers */
+.scroll-snap-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-snap-x > * {
+  scroll-snap-align: start;
+}
+
+/* Hide scrollbar for horizontal scroll sections */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Focus ring style — gold accent */
+*:focus-visible {
+  outline: 2px solid var(--color-saffron);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Content Visibility for below-fold performance
+   ═══════════════════════════════════════════════════════════════ */
+
+.content-below-fold {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
 }

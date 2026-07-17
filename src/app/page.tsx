@@ -1,65 +1,79 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import AnnouncementBar from "@/components/layout/AnnouncementBar";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import HeroSection from "@/components/sections/HeroSection";
+import DivineCollections from "@/components/sections/DivineCollections";
+import FeaturedProducts from "@/components/sections/FeaturedProducts";
+import WhyChooseUs from "@/components/sections/WhyChooseUs";
+import FestivalCollection from "@/components/sections/FestivalCollection";
+import BhaktiGallery from "@/components/sections/BhaktiGallery";
+import Testimonials from "@/components/sections/Testimonials";
+import DivineIntro from "@/components/ui/DivineIntro";
 
 export default function Home() {
+  const [showIntro, setShowIntro] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const hasSeen = sessionStorage.getItem("hasSeenDivineIntro");
+    if (hasSeen === "true") {
+      setShowIntro(false);
+    } else {
+      setShowIntro(true);
+    }
+  }, []);
+
+  if (showIntro === null) {
+    return <div className="fixed inset-0 bg-[#FFFBF4] z-50" />;
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      <AnimatePresence mode="wait">
+        {showIntro && (
+          <DivineIntro key="intro" onComplete={() => setShowIntro(false)} />
+        )}
+      </AnimatePresence>
+
+      <motion.div
+        initial={showIntro ? { opacity: 0 } : { opacity: 1 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.2, ease: "easeOut" }}
+        className="flex flex-col min-h-screen"
+      >
+        {/* Navbar and Announcement Bar fade from top */}
+        <motion.div
+          initial={showIntro ? { opacity: 0, y: -20 } : { opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.0, delay: showIntro ? 0.3 : 0, ease: "easeOut" }}
+          className="z-40"
+        >
+          <AnnouncementBar />
+          <Navbar />
+        </motion.div>
+
+        {/* Hero & sections appear with upward slide */}
+        <motion.main
+          id="main-content"
+          initial={showIntro ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, delay: showIntro ? 0.5 : 0, ease: "easeOut" }}
+          className="flex-grow"
+        >
+          <HeroSection />
+          <DivineCollections />
+          <FeaturedProducts />
+          <WhyChooseUs />
+          <FestivalCollection />
+          <BhaktiGallery />
+          <Testimonials />
+        </motion.main>
+
+        <Footer />
+      </motion.div>
+    </>
   );
 }
