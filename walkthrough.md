@@ -10,6 +10,28 @@ The build completes with **0 errors**, **0 warnings**, and complete validation a
 
 ---
 
+## 33. The Divine Celestial Calendar of Vrindavan (Intelligent Festival Management)
+
+In absolute devotion to **Rule No. 31 (No Festival Should Ever Feel Like An Event On A Calendar)**, the concept of scheduling "promotional campaigns" has been fully replaced by a system that curates *365 Days of Divine Celebrations*.
+
+### The Celestial Calendar Hero (`CalendarHero.tsx`)
+- Welcomes administrators to the sacred timeline of Vrindavan: *"Every Divine Festival beautifully illuminates another sacred chapter of the Divine Journey."*
+
+### The Living Festival Calendar (`LivingFestivalCalendar.tsx`)
+- Eradicates traditional date-pickers.
+- Beautifully tracks the current *Tithi* (e.g., Shravana Shukla Purnima), today's festival (Jhulan Yatra), and elegant countdowns for upcoming celebrations.
+
+### Festival Preparation AI (`FestivalPreparationAi.tsx`)
+- Rather than setting a campaign "Active", the AI intelligently suggests when preparations should begin. (e.g., *15 Days remain for Janmashtami. Preparations may now begin for Premium Poshaks.*)
+
+### The Divine Celebration Timeline (`DivineCelebrationTimeline.tsx`)
+- Automates the festival lifecycle: *Preparations Begin → Festival Collections Live → Divine Whispers Sent → Beautiful Celebration Begins*.
+
+### The Divine Celebration Map & Insights (`DivineCelebrationMap.tsx` & `AiFestivalInsights.tsx`)
+- Predicts regional celebration patterns (e.g., 5200 celebrations expected in Delhi) and analyzes overall demand with high confidence scores, ensuring Vrindavan is always prepared for its Devotees.
+
+---
+
 ## 32. The Divine Reserve of Vrindavan (Intelligent Inventory & Festival Reserve System)
 
 In strict adherence to **Rule No. 30 (No Divine Offering Should Ever Feel Like Stock On A Shelf)**, the entire concept of "Inventory Management" and fear-inducing "Low Stock Alerts" has been beautifully replaced.
