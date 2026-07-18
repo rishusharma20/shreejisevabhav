@@ -28,7 +28,14 @@ if (process.env.NODE_ENV === 'development') {
 
 // Routes Import
 const authRouter = require('./src/modules/auth/auth.routes');
+const userRouter = require('./src/modules/users/user.routes');
+const addressRouter = require('./src/modules/users/address.routes');
+const wishlistRouter = require('./src/modules/users/wishlist.routes');
+
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/address", addressRouter);
+app.use("/api/v1/wishlist", wishlistRouter);
 
 // Health Check API
 app.get("/api/v1/health", (req, res) => {

@@ -1,0 +1,225 @@
+{
+    "info": {
+        "_postman_id": "c1d2e3f4-5g6h-7i8j-9k0l-1m2n3o4p5q6r",
+        "name": "Shreeji Seva Bhav - Phase 2 User Management",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Upload Profile Image",
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        {
+                            "key": "profileImage",
+                            "type": "file",
+                            "src": []
+                        }
+                    ]
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/users/upload-profile-image",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "users", "upload-profile-image"]
+                }
+            }
+        },
+        {
+            "name": "2. Get Account Settings",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/users/account-settings",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "users", "account-settings"]
+                }
+            }
+        },
+        {
+            "name": "3. Add Address",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/address/add",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "address", "add"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"name\": \"Home\", \"phone\": \"9876543210\", \"houseNo\": \"101\", \"street\": \"Bhakti Marg\", \"city\": \"Vrindavan\", \"state\": \"Uttar Pradesh\", \"pincode\": \"281121\", \"isDefault\": true}"
+                }
+            }
+        },
+        {
+            "name": "4. Get Addresses",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/address",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "address"]
+                }
+            }
+        },
+        {
+            "name": "5. Update Address",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/address/update/REPLACE_WITH_ADDRESS_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "address", "update", "REPLACE_WITH_ADDRESS_ID"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"name\": \"Office\", \"phone\": \"9876543210\", \"houseNo\": \"202\", \"street\": \"Prem Marg\", \"city\": \"Mathura\", \"state\": \"Uttar Pradesh\", \"pincode\": \"281001\"}"
+                }
+            }
+        },
+        {
+            "name": "6. Set Default Address",
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/address/set-default/REPLACE_WITH_ADDRESS_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "address", "set-default", "REPLACE_WITH_ADDRESS_ID"]
+                }
+            }
+        },
+        {
+            "name": "7. Delete Address",
+            "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/address/delete/REPLACE_WITH_ADDRESS_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "address", "delete", "REPLACE_WITH_ADDRESS_ID"]
+                }
+            }
+        },
+        {
+            "name": "8. Add To Wishlist",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/wishlist/add",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "wishlist", "add"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"productId\": \"60f1b2b3c4d5e6f7g8h9i0j1\"}"
+                }
+            }
+        },
+        {
+            "name": "9. Get Wishlist",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/wishlist",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "wishlist"]
+                }
+            }
+        },
+        {
+            "name": "10. Remove From Wishlist",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/wishlist/remove",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "wishlist", "remove"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"productId\": \"60f1b2b3c4d5e6f7g8h9i0j1\"}"
+                }
+            }
+        },
+        {
+            "name": "11. Admin Get All Users",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/users/admin/all",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "users", "admin", "all"]
+                }
+            }
+        },
+        {
+            "name": "12. Admin Block User",
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/users/admin/block/REPLACE_WITH_USER_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "users", "admin", "block", "REPLACE_WITH_USER_ID"]
+                }
+            }
+        },
+        {
+            "name": "13. Delete Account",
+            "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/users/delete-account",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "users", "delete-account"]
+                }
+            }
+        }
+    ]
+}
