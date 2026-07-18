@@ -1,0 +1,109 @@
+{
+    "info": {
+        "_postman_id": "c3d4e5f6-g7h8-i9j0-k1l2-m3n4o5p6q7r8",
+        "name": "Shreeji Seva Bhav - Phase 12 Reviews",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Create Review (Fails if not purchased)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_JWT" }
+                ],
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        { "key": "productId", "value": "REPLACE_WITH_PRODUCT_ID", "type": "text" },
+                        { "key": "rating", "value": "5", "type": "text" },
+                        { "key": "title", "value": "Beautiful Poshak", "type": "text" },
+                        { "key": "description", "value": "The packaging felt truly special. Jai Shree Krishna!", "type": "text" },
+                        { "key": "media", "type": "file", "src": [] }
+                    ]
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/reviews/create",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "reviews", "create"]
+                }
+            }
+        },
+        {
+            "name": "2. Get Product Reviews",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/reviews/product/REPLACE_WITH_PRODUCT_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "reviews", "product", "REPLACE_WITH_PRODUCT_ID"]
+                }
+            }
+        },
+        {
+            "name": "3. Get Featured Reviews",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/reviews/featured",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "reviews", "featured"]
+                }
+            }
+        },
+        {
+            "name": "4. Mark Review Helpful",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_JWT" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/reviews/REPLACE_WITH_REVIEW_ID/helpful",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "reviews", "REPLACE_WITH_REVIEW_ID", "helpful"]
+                }
+            }
+        },
+        {
+            "name": "5. Admin Feature Review",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/reviews/admin/REPLACE_WITH_REVIEW_ID/feature",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "reviews", "admin", "REPLACE_WITH_REVIEW_ID", "feature"]
+                }
+            }
+        },
+        {
+            "name": "6. Admin Get Analytics",
+            "request": {
+                "method": "GET",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/reviews/admin/analytics",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "reviews", "admin", "analytics"]
+                }
+            }
+        }
+    ]
+}
