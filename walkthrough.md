@@ -10,6 +10,34 @@ The build completes with **0 errors**, **0 warnings**, and complete validation a
 
 ---
 
+## 31. The Divine Treasury of Vrindavan (Offering Management & Curation System)
+
+In strict adherence to **Rule No. 29 (No Divine Offering Should Ever Feel Mass Produced)**, the entire concept of a "Products Dashboard" and "Uploading Inventory" has been transformed into a spiritual curation process.
+
+### The Divine Treasury Hero (`TreasuryHero.tsx`)
+- Establishes the sacred tone: *"Where every Divine Offering is lovingly prepared with Bhakti, Prem, and Seva."*
+
+### Festival Curation System (`FestivalCurationSystem.tsx`)
+- An AI-driven component that intelligently recommends featuring specific collections (e.g., Janmashtami) based on upcoming dates and anticipated demand (+250%).
+
+### Live Collection Analytics (`LiveCollectionAnalytics.tsx`)
+- Translates e-commerce data into Devotional Engagement metrics, showing which offerings are blessing the most families.
+
+### The Divine Collection Temple (`DivineCollectionTemple.tsx`)
+- Replaces generic product categories with a beautifully curated selection of paths (Krishna Poshaks, Premium Mukuts, Radha Rani Collections).
+
+### The Divine Craftsmanship Center (`DivineCraftsmanshipCenter.tsx` & `/prepare/page.tsx`)
+- Eradicates the traditional "Add Product" form.
+- Replaced by a beautifully animated, 6-step Framer Motion spiritual journey: *Select Collection → Add Divine Details → Premium Images → Festival Details → AI Recommendations → Complete Offering*.
+
+### AI Divine Curator (`AiDivineCurator.tsx`)
+- During the preparation process, AI suggests complementary items (e.g., matching Mukuts and Jewellery) to create *Complete Divine Offerings* rather than "Related Products."
+
+### The Divine Collection Journey (`CollectionJourneyTimeline.tsx`)
+- Products are no longer "Draft" or "Published." They follow a sacred timeline: *Being Prepared → Ready for Review → Beautifully Accepted → Blessing The Divine Family*.
+
+---
+
 ## 30. The Divine Journey Command (Divine Offering Management System)
 
 In strict adherence to **Rule No. 28 (No Divine Offering Should Ever Feel Like A Product In Transit)**, traditional order management has been completely replaced with a system that manages *Divine Journeys*.
