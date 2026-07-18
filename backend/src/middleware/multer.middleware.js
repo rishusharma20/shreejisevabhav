@@ -42,7 +42,14 @@ const uploadCollection = multer({
     fileFilter: fileFilter
 });
 
+const uploadVariant = multer({
+    storage: createStorage("variants"),
+    limits: { fileSize: 1024 * 1024 * 5 }, // 5MB
+    fileFilter: fileFilter
+});
+
 module.exports = {
     uploadProfile,
-    uploadCollection
+    uploadCollection,
+    uploadVariant
 };

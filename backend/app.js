@@ -32,12 +32,16 @@ const userRouter = require('./src/modules/users/user.routes');
 const addressRouter = require('./src/modules/users/address.routes');
 const wishlistRouter = require('./src/modules/users/wishlist.routes');
 const collectionRouter = require('./src/modules/collections/collection.routes');
+const productRouter = require('./src/modules/products/product.routes');
+const variantRouter = require('./src/modules/products/variant.routes');
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/address", addressRouter);
 app.use("/api/v1/wishlist", wishlistRouter);
 app.use("/api/v1/collections", collectionRouter);
+app.use("/api/v1/products", productRouter);
+app.use("/api/v1/variants", variantRouter);
 
 // Health Check API
 app.get("/api/v1/health", (req, res) => {

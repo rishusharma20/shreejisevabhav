@@ -1,0 +1,203 @@
+{
+    "info": {
+        "_postman_id": "e1f2g3h4-5i6j-7k8l-9m0n-1o2p3q4r5s6t",
+        "name": "Shreeji Seva Bhav - Phase 4 Products",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Create Product (Admin)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"name\": \"Premium Krishna Poshak\",\n    \"shortDescription\": \"Beautifully handcrafted poshak for Thakurji.\",\n    \"description\": \"Made with pure silk and divine love...\",\n    \"collectionId\": \"REPLACE_WITH_COLLECTION_ID\",\n    \"category\": \"Poshak\",\n    \"isFeatured\": true\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/products/create",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "products", "create"]
+                }
+            }
+        },
+        {
+            "name": "2. Get All Active Products (Public)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/products",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "products"]
+                }
+            }
+        },
+        {
+            "name": "3. Get Single Product (Public)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/products/premium-krishna-poshak",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "products", "premium-krishna-poshak"]
+                }
+            }
+        },
+        {
+            "name": "4. Update Product (Admin)",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"shortDescription\": \"Updated beautifully handcrafted poshak.\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/products/update/REPLACE_WITH_PRODUCT_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "products", "update", "REPLACE_WITH_PRODUCT_ID"]
+                }
+            }
+        },
+        {
+            "name": "5. Create Variant (Admin)",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        { "key": "productId", "value": "REPLACE_WITH_PRODUCT_ID", "type": "text" },
+                        { "key": "size", "value": "SIZE-4", "type": "text" },
+                        { "key": "price", "value": "999", "type": "text" },
+                        { "key": "quantity", "value": "20", "type": "text" },
+                        { "key": "sku", "value": "PKP-S4", "type": "text" },
+                        { "key": "images", "type": "file", "src": [] },
+                        { "key": "images", "type": "file", "src": [] }
+                    ]
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/variants/create",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "variants", "create"]
+                }
+            }
+        },
+        {
+            "name": "6. Create Invalid Variant - Negative Price (Admin)",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        { "key": "productId", "value": "REPLACE_WITH_PRODUCT_ID", "type": "text" },
+                        { "key": "size", "value": "SIZE-5", "type": "text" },
+                        { "key": "price", "value": "-500", "type": "text" },
+                        { "key": "quantity", "value": "10", "type": "text" },
+                        { "key": "images", "type": "file", "src": [] }
+                    ]
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/variants/create",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "variants", "create"]
+                }
+            }
+        },
+        {
+            "name": "7. Update Variant Inventory (Admin)",
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        { "key": "quantity", "value": "0", "type": "text" }
+                    ]
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/variants/update/REPLACE_WITH_VARIANT_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "variants", "update", "REPLACE_WITH_VARIANT_ID"]
+                }
+            }
+        },
+        {
+            "name": "8. Get Variants by Product (Public)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/variants/product/REPLACE_WITH_PRODUCT_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "variants", "product", "REPLACE_WITH_PRODUCT_ID"]
+                }
+            }
+        },
+        {
+            "name": "9. Get Collection Products (Public)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/products/collection/REPLACE_WITH_COLLECTION_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "products", "collection", "REPLACE_WITH_COLLECTION_ID"]
+                }
+            }
+        },
+        {
+            "name": "10. Delete Variant (Admin)",
+            "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/variants/delete/REPLACE_WITH_VARIANT_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "variants", "delete", "REPLACE_WITH_VARIANT_ID"]
+                }
+            }
+        },
+        {
+            "name": "11. Delete Product (Admin)",
+            "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/products/delete/REPLACE_WITH_PRODUCT_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "products", "delete", "REPLACE_WITH_PRODUCT_ID"]
+                }
+            }
+        }
+    ]
+}
