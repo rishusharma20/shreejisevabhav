@@ -1,0 +1,99 @@
+{
+    "info": {
+        "_postman_id": "j1k2l3m4-5n6o-7p8q-9r0s-1t2u3v4w5x6y",
+        "name": "Shreeji Seva Bhav - Phase 9 Track My Seva",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Get My Journeys",
+            "request": {
+                "method": "GET",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_JWT" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/track-my-seva",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "track-my-seva"]
+                }
+            }
+        },
+        {
+            "name": "2. Get Specific Journey",
+            "request": {
+                "method": "GET",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_JWT" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/track-my-seva/REPLACE_WITH_JOURNEY_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "track-my-seva", "REPLACE_WITH_JOURNEY_ID"]
+                }
+            }
+        },
+        {
+            "name": "3. Get All Journeys (Admin)",
+            "request": {
+                "method": "GET",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/track-my-seva/admin/all",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "track-my-seva", "admin", "all"]
+                }
+            }
+        },
+        {
+            "name": "4. Update Journey Status (Admin)",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"status\": \"PREPARING\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/track-my-seva/admin/REPLACE_WITH_JOURNEY_ID/status",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "track-my-seva", "admin", "REPLACE_WITH_JOURNEY_ID", "status"]
+                }
+            }
+        },
+        {
+            "name": "5. Update Delivery Details (Admin)",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"trackingNumber\": \"AWB123456789\",\n    \"deliveryPartner\": \"BlueDart\",\n    \"estimatedDelivery\": \"2026-08-15T10:00:00Z\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/track-my-seva/admin/REPLACE_WITH_JOURNEY_ID/delivery",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "track-my-seva", "admin", "REPLACE_WITH_JOURNEY_ID", "delivery"]
+                }
+            }
+        }
+    ]
+}

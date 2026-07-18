@@ -1,6 +1,7 @@
 const Payment = require("../../models/Payment.model");
 const CheckoutSession = require("../../models/CheckoutSession.model");
 const { createRazorpayOrder, verifyRazorpaySignature } = require("./razorpay.service");
+const { initiateTracking } = require("../track/track.service");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
@@ -92,8 +93,8 @@ const verifyPayment = asyncHandler(async (req, res) => {
     // const order = await OrderService.createOrderFromPayment(payment);
     // await InventoryService.reduceInventory(payment.checkoutId);
     
-    // TODO (Phase 9):
-    // await TrackMySevaService.initiateTracking(order._id);
+    // Phase 9: Start the Divine Journey Tracking!
+    await initiateTracking(payment._id, userId);
     
     // ==========================================
 
