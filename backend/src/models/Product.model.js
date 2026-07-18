@@ -84,6 +84,14 @@ const productSchema = new mongoose.Schema(
     }
 );
 
+// Text Index for Search Engine
+productSchema.index({
+    name: "text",
+    description: "text",
+    category: "text",
+    tags: "text"
+});
+
 // Pre-save hook to generate slug if not provided or name modified
 productSchema.pre("save", function (next) {
     if (this.isModified("name") && !this.slug) {

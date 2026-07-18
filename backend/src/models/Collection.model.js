@@ -73,6 +73,14 @@ const collectionSchema = new mongoose.Schema(
     }
 );
 
+// Text Index for Search Engine
+collectionSchema.index({
+    name: "text",
+    description: "text",
+    festival: "text",
+    category: "text"
+});
+
 // Pre-save hook to generate slug if not provided or name modified
 collectionSchema.pre("save", function (next) {
     if (this.isModified("name") && !this.slug) {

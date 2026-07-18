@@ -1,0 +1,142 @@
+{
+    "info": {
+        "_postman_id": "f1g2h3i4-5j6k-7l8m-9n0o-1p2q3r4s5t6u",
+        "name": "Shreeji Seva Bhav - Phase 5 Discovery Engine",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Global Search (Products & Collections)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/search?q=Janmashtami",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "search"],
+                    "query": [
+                        { "key": "q", "value": "Janmashtami" }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "2. Search Products Only",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/search/products?q=Poshak",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "search", "products"],
+                    "query": [
+                        { "key": "q", "value": "Poshak" }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "3. Search Collections Only",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/search/collections?q=Premium",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "search", "collections"],
+                    "query": [
+                        { "key": "q", "value": "Premium" }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "4. Get Related Products",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/search/related-products?productId=REPLACE_WITH_PRODUCT_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "search", "related-products"],
+                    "query": [
+                        { "key": "productId", "value": "REPLACE_WITH_PRODUCT_ID" }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "5. Filter Products (Complex Aggregation)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/filter/products?minPrice=500&maxPrice=1500&size=SIZE-4,SIZE-5&category=Poshak",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "filter", "products"],
+                    "query": [
+                        { "key": "minPrice", "value": "500" },
+                        { "key": "maxPrice", "value": "1500" },
+                        { "key": "size", "value": "SIZE-4,SIZE-5" },
+                        { "key": "category", "value": "Poshak" }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "6. Filter Products (Zero Results Test)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/filter/products?minPrice=100000",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "filter", "products"],
+                    "query": [
+                        { "key": "minPrice", "value": "100000" }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "7. Invalid Search Request (Missing q)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/search",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "search"]
+                }
+            }
+        },
+        {
+            "name": "8. Get Admin Search Analytics",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/search/admin/analytics",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "search", "admin", "analytics"]
+                }
+            }
+        }
+    ]
+}
