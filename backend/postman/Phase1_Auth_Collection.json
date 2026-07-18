@@ -1,0 +1,137 @@
+{
+    "info": {
+        "_postman_id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+        "name": "Shreeji Seva Bhav - Phase 1 Auth",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Valid Register",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/auth/register",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "auth", "register"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"name\": \"Devotee Name\", \"email\": \"devotee@example.com\", \"password\": \"Divine@123!\", \"phone\": \"+919876543210\"}"
+                }
+            }
+        },
+        {
+            "name": "2. Invalid Register (Weak Password)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/auth/register",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "auth", "register"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"name\": \"Test\", \"email\": \"test@example.com\", \"password\": \"123456\"}"
+                }
+            }
+        },
+        {
+            "name": "3. Valid Login",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/auth/login",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "auth", "login"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"email\": \"devotee@example.com\", \"password\": \"Divine@123!\"}"
+                }
+            }
+        },
+        {
+            "name": "4. Get Profile",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/auth/profile",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "auth", "profile"]
+                }
+            }
+        },
+        {
+            "name": "5. Update Profile",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/auth/update-profile",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "auth", "update-profile"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"name\": \"Devotee Updated\"}"
+                }
+            }
+        },
+        {
+            "name": "6. Change Password",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/auth/change-password",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "auth", "change-password"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"oldPassword\": \"Divine@123!\", \"newPassword\": \"NewDivine@123!\"}"
+                }
+            }
+        },
+        {
+            "name": "7. Logout",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/auth/logout",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "auth", "logout"]
+                }
+            }
+        }
+    ]
+}

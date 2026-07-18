@@ -26,9 +26,9 @@ if (process.env.NODE_ENV === 'development') {
     app.use(morgan("dev"));
 }
 
-// Routes Import (To be added in future phases)
-// const authRouter = require('./src/modules/auth/auth.routes');
-// app.use("/api/v1/auth", authRouter);
+// Routes Import
+const authRouter = require('./src/modules/auth/auth.routes');
+app.use("/api/v1/auth", authRouter);
 
 // Health Check API
 app.get("/api/v1/health", (req, res) => {
