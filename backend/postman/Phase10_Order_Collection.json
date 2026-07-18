@@ -1,0 +1,126 @@
+{
+    "info": {
+        "_postman_id": "a1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6",
+        "name": "Shreeji Seva Bhav - Phase 10 Order Management",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Get My Orders",
+            "request": {
+                "method": "GET",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_JWT" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/orders",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "orders"]
+                }
+            }
+        },
+        {
+            "name": "2. Get Order Details",
+            "request": {
+                "method": "GET",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_JWT" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/orders/REPLACE_WITH_ORDER_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "orders", "REPLACE_WITH_ORDER_ID"]
+                }
+            }
+        },
+        {
+            "name": "3. Cancel Order",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_JWT" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/orders/REPLACE_WITH_ORDER_ID/cancel",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "orders", "REPLACE_WITH_ORDER_ID", "cancel"]
+                }
+            }
+        },
+        {
+            "name": "4. Download Invoice",
+            "request": {
+                "method": "GET",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_JWT" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/orders/REPLACE_WITH_ORDER_ID/invoice",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "orders", "REPLACE_WITH_ORDER_ID", "invoice"]
+                }
+            }
+        },
+        {
+            "name": "5. Get All Orders (Admin)",
+            "request": {
+                "method": "GET",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/orders/admin/all",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "orders", "admin", "all"]
+                }
+            }
+        },
+        {
+            "name": "6. Update Order Status (Admin)",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"status\": \"SHIPPED\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/orders/admin/REPLACE_WITH_ORDER_ID/status",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "orders", "admin", "REPLACE_WITH_ORDER_ID", "status"]
+                }
+            }
+        },
+        {
+            "name": "7. Get Admin Analytics",
+            "request": {
+                "method": "GET",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/orders/admin/analytics",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "orders", "admin", "analytics"]
+                }
+            }
+        }
+    ]
+}

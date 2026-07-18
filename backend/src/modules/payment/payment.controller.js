@@ -1,7 +1,9 @@
 const Payment = require("../../models/Payment.model");
 const CheckoutSession = require("../../models/CheckoutSession.model");
+const Order = require("../../models/Order.model");
 const { createRazorpayOrder, verifyRazorpaySignature } = require("./razorpay.service");
 const { initiateTracking } = require("../track/track.service");
+const { createOrderFromPayment, reduceInventory } = require("../orders/order.service");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
@@ -86,19 +88,23 @@ const verifyPayment = asyncHandler(async (req, res) => {
     await CheckoutSession.findByIdAndUpdate(payment.checkoutId, { status: "COMPLETED" });
 
     // ==========================================
-    // CRITICAL ARCHITECTURAL HOOKS FOR LATER
+    // CRITICAL ARCHITECTURAL HOOKS 
     // ==========================================
     
-    // TODO (Phase 10): 
-    // const order = await OrderService.createOrderFromPayment(payment);
-    // await InventoryService.reduceInventory(payment.checkoutId);
+    // Phase 10: Immutable Order Creation & Inventory Reduction
+    const order = await createOrderFromPayment(payment);
+    await reduceInventory(order._id);
     
     // Phase 9: Start the Divine Journey Tracking!
-    await initiateTracking(payment._id, userId);
+    const trackRecord = await initiateTracking(payment._id, userId, order._id);
+    
+    // Link TrackMySeva back to the Order
+    order.trackMySevaId = trackRecord._id;
+    await order.save();
     
     // ==========================================
 
-    return res.status(200).json(new ApiResponse(200, "Payment Verified successfully. Divine Journey continues.", { payment }));
+    return res.status(200).json(new ApiResponse(200, "Payment Verified successfully. Divine Journey continues.", { payment, orderId: order._id, trackId: trackRecord._id }));
 });
 
 // @desc    Mark Payment as Failed (User cancelled or card declined)
