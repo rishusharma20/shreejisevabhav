@@ -10,6 +10,31 @@ The build completes with **0 errors**, **0 warnings**, and complete validation a
 
 ---
 
+## 27. The Divine Path of Vrindavan (404 Experience System)
+
+In strict adherence to **Rule No. 25 (No Error Should Ever Feel Like An Error)**, the standard Next.js 404 page has been completely reimagined. Broken links and empty states are now transformed into beautiful moments of discovery.
+
+### Global 404 Override (`not-found.tsx`)
+- Completely overrides the default Next.js `not-found` page.
+- Immerses the devotee in floating diyas, golden glows, and gentle petals.
+
+### The Hidden Path Entrance (`DivinePathHero.tsx` & `HiddenPathGuidance.tsx`)
+- Replaces "404 Page Not Found" with: *"You have beautifully discovered a hidden path of Vrindavan."*
+- Followed by the comforting whisper: *"Perhaps the Divine Path you were seeking has gracefully led you towards another beautiful experience awaiting you."*
+
+### Intelligent Route Recovery (`DivineSearchSakhi404.tsx`)
+- A client-side "Sakhi" that intelligently reads the broken URL.
+- If a devotee types `/poshak` but the page is gone, the Sakhi gracefully recommends the "Premium Krishna Poshaks" collection.
+
+### Today's Divine Darshan (`TodaysDivineDarshan404.tsx`)
+- Replaces broken link graphics with a majestic Darshan of Thakurji.
+- Includes a localized daily blessing.
+
+### Continue Your Journey (`ContinueJourney404.tsx`)
+- Beautifully designed navigation cards ensuring the devotee is never more than one click away from returning to their path (Home, My Seva, Track, Festival Collections).
+
+---
+
 ## 26. The Eternal Temple of Vrindavan (Divine Footer System)
 
 In strict adherence to **Rule No. 24 (The Website Should Never Have An Ending—Only New Beginnings)**, the standard corporate footer has been completely eradicated. Instead, the final scroll of the website opens into a sacred "Temple Courtyard" that invites devotees to continue their journey.
