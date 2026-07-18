@@ -1,0 +1,16 @@
+{
+  "name": "Shreeji Seva Bhav",
+  "short_name": "Shreeji",
+  "description": "The Divine Pocket of Vrindavan. Continuing Your Journey of Bhakti, Prem, and Seva.",
+  "start_url": "/pocket-vrindavan",
+  "display": "standalone",
+  "background_color": "#FFFBF4",
+  "theme_color": "#FFFBF4",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}

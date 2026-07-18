@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Poppins } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
+import DivineQuickActions from "@/components/mobile/DivineQuickActions";
 import "./globals.css";
 
 const playfairDisplay = Playfair_Display({
@@ -21,6 +22,7 @@ export const metadata: Metadata = {
   title: "Shreeji Seva Bhav — Divine Clothing & Jewellery for Thakurji",
   description:
     "Premium handcrafted poshak, vastra & jewellery for Radha-Krishna. Exquisite Janmashtami, Radhashtami & daily seva collections. Handmade with love & bhakti. Pan-India delivery.",
+  manifest: "/manifest.json",
   keywords: [
     "Thakurji vastra",
     "Krishna poshak",
@@ -44,6 +46,18 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  appleWebApp: {
+    capable: true,
+    title: "Shreeji",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#FFFBF4",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
@@ -56,8 +70,31 @@ export default function RootLayout({
       lang="en"
       className={`${playfairDisplay.variable} ${poppins.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-cream text-charcoal font-body">
-        <CartProvider>{children}</CartProvider>
+      <body className="min-h-full flex flex-col bg-cream text-charcoal font-body pb-[70px] md:pb-0">
+        <CartProvider>
+          {children}
+          <DivineQuickActions />
+        </CartProvider>
+        
+        {/* Service Worker Registration */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').then(
+                    function(registration) {
+                      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    },
+                    function(err) {
+                      console.log('ServiceWorker registration failed: ', err);
+                    }
+                  );
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );
