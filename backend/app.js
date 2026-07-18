@@ -36,6 +36,8 @@ const productRouter = require('./src/modules/products/product.routes');
 const variantRouter = require('./src/modules/products/variant.routes');
 const searchRouter = require('./src/modules/search/search.routes');
 const filterRouter = require('./src/modules/search/filter.routes');
+const cartRouter = require('./src/modules/cart/cart.routes');
+const couponRouter = require('./src/modules/cart/coupon.routes');
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
@@ -46,6 +48,8 @@ app.use("/api/v1/products", productRouter);
 app.use("/api/v1/variants", variantRouter);
 app.use("/api/v1/search", searchRouter);
 app.use("/api/v1/filter", filterRouter);
+app.use("/api/v1/cart", cartRouter);
+app.use("/api/v1/coupons", couponRouter);
 
 // Health Check API
 app.get("/api/v1/health", (req, res) => {
