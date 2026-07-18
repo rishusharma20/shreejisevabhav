@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Poppins } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import DivineQuickActions from "@/components/mobile/DivineQuickActions";
+import EternalTempleFooter from "@/components/footer/EternalTempleFooter";
 import "./globals.css";
 
 const playfairDisplay = Playfair_Display({
@@ -73,6 +74,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-cream text-charcoal font-body pb-[70px] md:pb-0">
         <CartProvider>
           {children}
+          <EternalTempleFooter />
           <DivineQuickActions />
         </CartProvider>
         
