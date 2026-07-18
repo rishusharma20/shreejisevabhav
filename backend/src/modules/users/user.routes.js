@@ -9,12 +9,12 @@ const {
     deleteUserAdmin
 } = require("./user.controller");
 const { verifyJWT, isAdmin } = require("../../middleware/auth.middleware");
-const upload = require("../../middleware/multer.middleware");
+const { uploadProfile } = require("../../middleware/multer.middleware");
 
 const router = express.Router();
 
 // Protected routes (User)
-router.put("/upload-profile-image", verifyJWT, upload.single("profileImage"), uploadProfileImage);
+router.put("/upload-profile-image", verifyJWT, uploadProfile.single("profileImage"), uploadProfileImage);
 router.delete("/delete-account", verifyJWT, deleteAccount);
 router.get("/account-settings", verifyJWT, getAccountSettings);
 

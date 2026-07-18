@@ -1,0 +1,182 @@
+{
+    "info": {
+        "_postman_id": "d1e2f3g4-5h6i-7j8k-9l0m-1n2o3p4q5r6s",
+        "name": "Shreeji Seva Bhav - Phase 3 Collections",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Create Collection (Admin)",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        { "key": "name", "value": "Janmashtami Collection", "type": "text" },
+                        { "key": "description", "value": "Divine offerings for Janmashtami.", "type": "text" },
+                        { "key": "category", "value": "Festival", "type": "text" },
+                        { "key": "festival", "value": "Janmashtami", "type": "text" },
+                        { "key": "isFeatured", "value": "true", "type": "text" },
+                        { "key": "isTrending", "value": "true", "type": "text" },
+                        { "key": "bannerImage", "type": "file", "src": [] },
+                        { "key": "thumbnailImage", "type": "file", "src": [] }
+                    ]
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/collections/create",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "collections", "create"]
+                }
+            }
+        },
+        {
+            "name": "2. Get All Active Collections (Public)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/collections",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "collections"]
+                }
+            }
+        },
+        {
+            "name": "3. Get Single Collection By Slug",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/collections/janmashtami-collection",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "collections", "janmashtami-collection"]
+                }
+            }
+        },
+        {
+            "name": "4. Get Featured Collections",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/collections/type/featured",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "collections", "type", "featured"]
+                }
+            }
+        },
+        {
+            "name": "5. Get Trending Collections",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/collections/type/trending",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "collections", "type", "trending"]
+                }
+            }
+        },
+        {
+            "name": "6. Get Festival Collections",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/collections/type/festival",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "collections", "type", "festival"]
+                }
+            }
+        },
+        {
+            "name": "7. Update Collection (Admin)",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"description\": \"Updated Divine Offerings for Janmashtami.\",\n    \"displayOrder\": 1\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/collections/update/REPLACE_WITH_COLLECTION_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "collections", "update", "REPLACE_WITH_COLLECTION_ID"]
+                }
+            }
+        },
+        {
+            "name": "8. Disable Collection (Admin)",
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/collections/disable/REPLACE_WITH_COLLECTION_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "collections", "disable", "REPLACE_WITH_COLLECTION_ID"]
+                }
+            }
+        },
+        {
+            "name": "9. Enable Collection (Admin)",
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/collections/enable/REPLACE_WITH_COLLECTION_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "collections", "enable", "REPLACE_WITH_COLLECTION_ID"]
+                }
+            }
+        },
+        {
+            "name": "10. Get Analytics (Admin)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/collections/admin/analytics",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "collections", "admin", "analytics"]
+                }
+            }
+        },
+        {
+            "name": "11. Delete Collection (Admin)",
+            "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/collections/delete/REPLACE_WITH_COLLECTION_ID",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "collections", "delete", "REPLACE_WITH_COLLECTION_ID"]
+                }
+            }
+        }
+    ]
+}
