@@ -10,6 +10,30 @@ The build completes with **0 errors**, **0 warnings**, and complete validation a
 
 ---
 
+## 30. The Divine Journey Command (Divine Offering Management System)
+
+In strict adherence to **Rule No. 28 (No Divine Offering Should Ever Feel Like A Product In Transit)**, traditional order management has been completely replaced with a system that manages *Divine Journeys*.
+
+### Today's Divine Journeys (`DivineJourneysOverview.tsx`)
+- Replaces standard metric cards (Total Orders, Pending, Shipped).
+- Tracks offerings spiritually: *152 New Divine Offerings, 82 Divine Journeys Have Beautifully Begun, 120 Divine Offerings Have Arrived Lovingly.*
+
+### Divine Offering List (`DivineOfferingList.tsx`)
+- The traditional data table has been eradicated.
+- Replaced by premium cards tracking the exact state of the offering, the collection (e.g., *Janmashtami Special Collection*), and a button to lovingly *Continue Journey*.
+
+### The Spiritual Timeline (`DivineJourneyTimelineAdmin.tsx`)
+- Admins now update the journey along a spiritual path: *Accepted → Lovingly Being Prepared → Journey From Vrindavan Begun → Approaching Home → Lovingly Arrived*.
+- Features beautiful pulse animations and gradients.
+
+### Divine Offering Details (`OfferingDetailsPanel.tsx`)
+- Instead of "Customer Info" and "Order Specs", admins see *Devotee Details*, *Festival Context*, *Size Preferences*, and *Destination Home*. 
+
+### Custom Offerings (`CustomDivineOfferingCard.tsx`)
+- Specialized management for bespoke offerings (Design Approved → Fabric Approved → Preparing With Love).
+
+---
+
 ## 29. The Divine Command Temple of Vrindavan (Admin Dashboard)
 
 In strict adherence to **Rule No. 27 (The Admin Should Never Feel Like They Are Managing Orders)**, the entire administrative foundation has been laid without a single standard e-commerce term. The dashboard is a sacred space designed to lovingly sustain the digital Vrindavan.
