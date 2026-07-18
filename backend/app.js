@@ -42,6 +42,7 @@ const checkoutRouter = require('./src/modules/checkout/checkout.routes');
 const paymentRouter = require('./src/modules/payment/payment.routes');
 const trackRouter = require('./src/modules/track/track.routes');
 const orderRouter = require('./src/modules/orders/order.routes');
+const adminRouter = require('./src/modules/admin/admin.routes');
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
@@ -58,6 +59,7 @@ app.use("/api/v1/checkout", checkoutRouter);
 app.use("/api/v1/payments", paymentRouter);
 app.use("/api/v1/track-my-seva", trackRouter);
 app.use("/api/v1/orders", orderRouter);
+app.use("/api/v1/admin", adminRouter);
 
 // Health Check API
 app.get("/api/v1/health", (req, res) => {
