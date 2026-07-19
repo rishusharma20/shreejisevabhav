@@ -2,7 +2,8 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { TabType } from "./DashboardNav";
-import { PackageOpen, Heart, Crown, MapPin, User, Mail, Phone, ChevronRight } from "lucide-react";
+import { PackageOpen, Heart, Crown, MapPin, User, Mail, Phone, ChevronRight, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface DashboardContentProps {
   activeTab: TabType;
@@ -37,16 +38,52 @@ export default function DashboardContent({ activeTab }: DashboardContentProps) {
 
 // ── Tab 1: My Seva Journey (Orders) ──
 function SevaJourney() {
-  const orders = [
-    { id: "#SSB-1004", date: "Aug 12, 2026", status: "On Its Divine Journey", items: 2, total: "₹4,500" },
-    { id: "#SSB-0982", date: "Jul 24, 2026", status: "Your Divine Offering Has Arrived", items: 1, total: "₹2,100" },
-    { id: "#SSB-1020", date: "Aug 15, 2026", status: "Being Lovingly Prepared", items: 3, total: "₹7,200" },
-  ];
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/api/v1/orders", {
+          credentials: "include"
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setOrders(data.data?.orders || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
 
   const getStatusColor = (status: string) => {
-    if (status.includes("Arrived")) return "text-peacock";
-    if (status.includes("Journey")) return "text-saffron-deep";
+    if (status.includes("DELIVERED") || status.includes("COMPLETED")) return "text-peacock";
+    if (status.includes("SHIPPED") || status.includes("OUT_FOR_DELIVERY")) return "text-saffron-deep";
+    if (status.includes("VERIFICATION_PENDING")) return "text-[#E8850A]"; // Alert orange
+    if (status.includes("CANCELLED") || status.includes("FAILED")) return "text-[#5C1A1A]"; // Error red
     return "text-gold-start";
+  };
+  
+  const formatStatus = (status: string) => {
+    const statusMap: Record<string, string> = {
+      "PENDING": "Pending Payment",
+      "VERIFICATION_PENDING": "Verifying Payment UTR",
+      "ACCEPTED": "Seva Accepted",
+      "PROCESSING": "Being Lovingly Prepared",
+      "PACKAGING": "Divine Packaging",
+      "SHIPPED": "On Its Divine Journey",
+      "OUT_FOR_DELIVERY": "Arriving Today",
+      "DELIVERED": "Your Divine Offering Has Arrived",
+      "COMPLETED": "Seva Completed",
+      "CANCELLED": "Order Cancelled",
+      "RETURNED": "Returned",
+      "REFUNDED": "Refunded"
+    };
+    return statusMap[status] || status.replace(/_/g, ' ');
   };
 
   return (
@@ -57,35 +94,54 @@ function SevaJourney() {
       </div>
 
       <div className="space-y-4">
-        {orders.map((order, idx) => (
-          <motion.div
-            whileHover={{ scale: 1.01, boxShadow: "0 10px 25px rgba(212,168,83,0.15)" }}
-            key={idx}
-            className="group flex flex-col md:flex-row items-start md:items-center justify-between p-5 bg-white/50 backdrop-blur-xl rounded-2xl border border-gold-start/15 hover:border-gold-start/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all cursor-pointer"
-          >
-            <div className="flex items-center gap-4 mb-4 md:mb-0">
-              <div className="w-12 h-12 rounded-full bg-cream/80 backdrop-blur-md flex items-center justify-center border border-gold-start/20 group-hover:scale-110 group-hover:bg-cream transition-all duration-300 shadow-sm">
-                <PackageOpen className="w-5 h-5 text-saffron group-hover:text-gold-start transition-colors" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-charcoal">{order.id}</h4>
-                <p className="text-[11px] text-warm-gray font-medium mt-0.5">{order.date} • {order.items} Items</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between w-full md:w-auto md:gap-8">
-              <div className="text-left md:text-right">
-                <div className="text-sm font-bold text-charcoal">{order.total}</div>
-                <div className={`text-[9px] font-bold uppercase tracking-[0.15em] mt-0.5 ${getStatusColor(order.status)}`}>
-                  {order.status}
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-12 text-gold-start">
+            <Loader2 className="w-8 h-8 animate-spin" />
+            <p className="text-xs uppercase tracking-widest font-bold mt-4 text-warm-gray">Fetching Your Offerings...</p>
+          </div>
+        ) : orders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center bg-white/30 backdrop-blur-sm rounded-2xl border border-gold-start/20">
+            <PackageOpen className="w-12 h-12 text-gold-start/30 mb-4" />
+            <h3 className="font-display text-xl text-charcoal font-bold mb-2">No Offerings Yet</h3>
+            <p className="text-sm text-warm-gray max-w-md mx-auto">Your divine journey begins with your first offering. Explore our curated collections to start your Seva.</p>
+          </div>
+        ) : (
+          orders.map((order: any, idx: number) => {
+            const date = new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const itemCount = order.products?.length || 0;
+            const displayStatus = formatStatus(order.orderStatus);
+
+            return (
+              <motion.div
+                whileHover={{ scale: 1.01, boxShadow: "0 10px 25px rgba(212,168,83,0.15)" }}
+                key={order._id || idx}
+                className="group flex flex-col md:flex-row items-start md:items-center justify-between p-5 bg-white/50 backdrop-blur-xl rounded-2xl border border-gold-start/15 hover:border-gold-start/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all cursor-pointer"
+              >
+                <div className="flex items-center gap-4 mb-4 md:mb-0">
+                  <div className="w-12 h-12 rounded-full bg-cream/80 backdrop-blur-md flex items-center justify-center border border-gold-start/20 group-hover:scale-110 group-hover:bg-cream transition-all duration-300 shadow-sm">
+                    <PackageOpen className="w-5 h-5 text-saffron group-hover:text-gold-start transition-colors" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-charcoal">{order.orderNumber}</h4>
+                    <p className="text-[11px] text-warm-gray font-medium mt-0.5">{date} • {itemCount} Items</p>
+                  </div>
                 </div>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-white/50 flex items-center justify-center group-hover:bg-gold-start/10 transition-colors">
-                <ChevronRight className="w-4 h-4 text-warm-gray/60 group-hover:text-gold-start transition-colors" />
-              </div>
-            </div>
-          </motion.div>
-        ))}
+                
+                <div className="flex items-center justify-between w-full md:w-auto md:gap-8">
+                  <div className="text-left md:text-right">
+                    <div className="text-sm font-bold text-charcoal">₹{order.totalAmount?.toLocaleString()}</div>
+                    <div className={`text-[9px] font-bold uppercase tracking-[0.15em] mt-0.5 ${getStatusColor(order.orderStatus)}`}>
+                      {displayStatus}
+                    </div>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-white/50 flex items-center justify-center group-hover:bg-gold-start/10 transition-colors">
+                    <ChevronRight className="w-4 h-4 text-warm-gray/60 group-hover:text-gold-start transition-colors" />
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })
+        )}
       </div>
     </div>
   );
