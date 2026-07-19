@@ -3,7 +3,7 @@ const Order = require("../../models/Order.model");
 const Address = require("../../models/Address.model");
 const Payment = require("../../models/Payment.model");
 const ApiResponse = require("../../utils/ApiResponse");
-const { asyncHandler } = require("../../utils/asyncHandler");
+const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const mongoose = require("mongoose");
 

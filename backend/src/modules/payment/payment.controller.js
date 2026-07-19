@@ -1,7 +1,7 @@
 const Payment = require("../../models/Payment.model");
 const Order = require("../../models/Order.model");
 const ApiResponse = require("../../utils/ApiResponse");
-const { asyncHandler } = require("../../utils/asyncHandler");
+const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 
 const submitPayment = asyncHandler(async (req, res) => {
