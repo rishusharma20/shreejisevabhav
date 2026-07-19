@@ -33,7 +33,7 @@ export default function AuthForm() {
       const endpoint = isLogin ? "/api/v1/auth/login" : "/api/v1/auth/register";
       const payload = isLogin ? { email, password } : { name, email, password };
       
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${endpoint}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

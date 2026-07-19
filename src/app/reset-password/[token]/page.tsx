@@ -31,7 +31,7 @@ export default function ResetPasswordPage() {
     setError("");
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/reset-password/${token}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/api/v1/auth/reset-password/${token}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
