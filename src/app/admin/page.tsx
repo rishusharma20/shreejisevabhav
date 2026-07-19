@@ -17,7 +17,7 @@ export default function AdminDashboardPage() {
           credentials: "include",
         });
         if (res.status === 401 || res.status === 403) {
-          router.push("/admin/login");
+          router.push("/login");
           return;
         }
         if (res.ok) {

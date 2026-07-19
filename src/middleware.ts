@@ -62,5 +62,12 @@ export function middleware(request: NextRequest) {
 
 // Run middleware on admin, my-seva, and checkout routes
 export const config = {
-  matcher: ["/admin/:path*", "/my-seva/:path*", "/checkout/:path*"],
+  matcher: [
+    "/admin", 
+    "/admin/:path*", 
+    "/my-seva", 
+    "/my-seva/:path*", 
+    "/checkout", 
+    "/checkout/:path*"
+  ],
 };
