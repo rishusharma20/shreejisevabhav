@@ -15,6 +15,9 @@ export default function AuthForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [redirectPath, setRedirectPath] = useState("/my-seva");
+  const [isLogin, setIsLogin] = useState(true);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const toggleAuthMode = () => {
     setIsLogin(!isLogin);
@@ -39,6 +42,11 @@ export default function AuthForm() {
       const data = await res.json();
 
       if (!res.ok) {
+        // If it's a validation error with an errors object, extract the first error message
+        if (data.errors && Object.keys(data.errors).length > 0) {
+          const firstErrorKey = Object.keys(data.errors)[0];
+          throw new Error(data.errors[firstErrorKey]);
+        }
         throw new Error(data.message || "Authentication failed");
       }
 
