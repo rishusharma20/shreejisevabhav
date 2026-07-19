@@ -1,21 +1,77 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { setAuthCookie } from "@/app/actions/auth";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
 export default function AuthForm() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [redirectPath, setRedirectPath] = useState("/my-seva");
 
-  const toggleAuthMode = () => setIsLogin(!isLogin);
+  const toggleAuthMode = () => {
+    setIsLogin(!isLogin);
+    setError("");
+  };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate successful auth and trigger success animation
-    setIsSuccess(true);
+    setLoading(true);
+    setError("");
+
+    try {
+      const endpoint = isLogin ? "/api/v1/auth/login" : "/api/v1/auth/register";
+      const payload = isLogin ? { email, password } : { name, email, password };
+      
+      const res = await fetch(`http://localhost:8000${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Authentication failed");
+      }
+
+      // Success
+      await setAuthCookie(data.data.accessToken);
+
+      // Simple Base64 decode to check role
+      try {
+        const parts = data.data.accessToken.split(".");
+        if (parts.length === 3) {
+          const payloadBase64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+          const jsonPayload = decodeURIComponent(
+            atob(payloadBase64)
+              .split("")
+              .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+              .join("")
+          );
+          const decoded = JSON.parse(jsonPayload);
+          
+          if (decoded.role === "ADMIN") {
+            setRedirectPath("/admin");
+          }
+        }
+      } catch (err) {
+        console.error("Failed to decode token on client");
+      }
+
+      setIsSuccess(true);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputClasses =
@@ -65,6 +121,12 @@ export default function AuthForm() {
                 </p>
               </div>
 
+              {error && (
+                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-500 text-xs text-center font-bold">
+                  {error}
+                </div>
+              )}
+
               <form className="space-y-5" onSubmit={handleSubmit}>
                 <AnimatePresence mode="wait">
                   {!isLogin && (
@@ -77,14 +139,28 @@ export default function AuthForm() {
                       className="relative overflow-hidden group"
                     >
                       <User className={`${iconClasses} group-focus-within:text-gold-start transition-colors`} />
-                      <input type="text" placeholder="Full Name" className={inputClasses} required />
+                      <input 
+                        type="text" 
+                        placeholder="Full Name" 
+                        className={inputClasses} 
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required 
+                      />
                     </motion.div>
                   )}
                 </AnimatePresence>
 
                 <div className="relative group">
                   <Mail className={`${iconClasses} group-focus-within:text-gold-start transition-colors`} />
-                  <input type="email" placeholder="Email Address" className={inputClasses} required />
+                  <input 
+                    type="email" 
+                    placeholder="Email Address" 
+                    className={inputClasses} 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required 
+                  />
                 </div>
 
                 <div className="relative group">
@@ -93,6 +169,8 @@ export default function AuthForm() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
                     className={inputClasses}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                   <button
@@ -122,9 +200,10 @@ export default function AuthForm() {
                   whileHover={{ scale: 1.02, boxShadow: "0 8px 25px rgba(212,168,83,0.3)" }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  className="w-full py-4 bg-gradient-to-r from-[#D4A853] via-[#E8850A] to-[#D4A853] bg-[length:200%_auto] text-white rounded-xl font-bold uppercase tracking-[0.15em] text-xs shadow-[0_4px_15px_rgba(212,168,83,0.2)] hover:bg-[position:right_center] transition-all duration-500 flex items-center justify-center gap-2 mt-4"
+                  disabled={loading}
+                  className="w-full py-4 bg-gradient-to-r from-[#D4A853] via-[#E8850A] to-[#D4A853] bg-[length:200%_auto] text-white rounded-xl font-bold uppercase tracking-[0.15em] text-xs shadow-[0_4px_15px_rgba(212,168,83,0.2)] hover:bg-[position:right_center] transition-all duration-500 flex items-center justify-center gap-2 mt-4 disabled:opacity-70"
                 >
-                  {isLogin ? "Login" : "Sign Up"}
+                  {loading ? "Please wait..." : isLogin ? "Login" : "Sign Up"}
                   <ArrowRight className="w-4 h-4" />
                 </motion.button>
               </form>
@@ -246,7 +325,7 @@ export default function AuthForm() {
               transition={{ delay: 1.5, duration: 1 }}
               className="relative z-10 mt-8"
             >
-              <Link href="/my-seva">
+              <Link href={redirectPath}>
                 <button className="px-6 py-3 bg-white/70 backdrop-blur-md border border-gold-start/30 rounded-full text-[10px] font-bold uppercase tracking-widest text-[#5C1A1A] hover:bg-white hover:shadow-lg transition-all">
                   Continue to Temple
                 </button>
