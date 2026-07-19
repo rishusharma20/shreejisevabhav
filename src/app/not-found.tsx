@@ -23,17 +23,17 @@ export default function NotFoundPage() {
             key={`petal-404-${i}`}
             className="absolute rounded-[50%_0_50%_0] bg-gold-start/20 blur-[1px]"
             style={{ 
-              width: Math.random() * 12 + 8, 
-              height: Math.random() * 12 + 8,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`
+              width: ((i * 13) % 12) + 8, 
+              height: ((i * 17) % 12) + 8,
+              left: `${(i * 23) % 100}%`,
+              top: `${(i * 29) % 100}%`
             }}
             animate={{ 
               y: [0, -150], 
               opacity: [0, 0.6, 0], 
               rotate: [0, 360] 
             }}
-            transition={{ duration: 15 + Math.random() * 10, repeat: Infinity, delay: Math.random() * 5 }}
+            transition={{ duration: 15 + ((i * 7) % 10), repeat: Infinity, delay: (i * 3) % 5 }}
           />
         ))}
       </div>
