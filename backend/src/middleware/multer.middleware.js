@@ -48,8 +48,15 @@ const uploadVariant = multer({
     fileFilter: fileFilter
 });
 
+const upload = multer({
+    storage: createStorage("general"),
+    limits: { fileSize: 1024 * 1024 * 5 }, // 5MB
+    fileFilter: fileFilter
+});
+
 module.exports = {
     uploadProfile,
     uploadCollection,
-    uploadVariant
+    uploadVariant,
+    upload
 };

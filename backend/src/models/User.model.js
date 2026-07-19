@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
     {
@@ -49,6 +50,12 @@ const userSchema = new mongoose.Schema(
         lastLogin: {
             type: Date,
             default: null
+        },
+        forgotPasswordToken: {
+            type: String
+        },
+        forgotPasswordExpiry: {
+            type: Date
         }
     },
     {
@@ -57,16 +64,11 @@ const userSchema = new mongoose.Schema(
 );
 
 // Pre-save hook to hash password before saving
-userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) return;
     
-    try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-    } catch (error) {
-        next(error);
-    }
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Instance method to check password validity
@@ -87,6 +89,20 @@ userSchema.methods.generateAccessToken = function () {
             expiresIn: process.env.ACCESS_TOKEN_EXPIRY
         }
     );
+};
+
+// Generate and hash password reset token
+userSchema.methods.generatePasswordResetToken = function () {
+    // Generate a secure random token
+    const resetToken = crypto.randomBytes(20).toString("hex");
+
+    // Hash token and save to database field
+    this.forgotPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+    // Set expiry for 15 minutes
+    this.forgotPasswordExpiry = Date.now() + 15 * 60 * 1000;
+
+    return resetToken;
 };
 
 const User = mongoose.model("User", userSchema);
