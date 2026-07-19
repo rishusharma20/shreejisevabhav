@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ShoppingCart, Eye } from "lucide-react";
 import type { Product } from "@/lib/types";
@@ -36,8 +37,8 @@ export default function ProductCard({
       transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
       className="group relative bg-white rounded-card overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-500 border border-transparent hover:border-gold-start/30"
     >
-      {/* Image container */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-cream-dark">
+      {/* Image container wrapped in Link */}
+      <Link href={`/product/${product.slug}`} className="block relative aspect-[3/4] overflow-hidden bg-cream-dark">
         <Image
           src={product.image}
           alt={product.name}
@@ -71,15 +72,12 @@ export default function ProductCard({
 
         {/* Quick view button */}
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-          <button
-            className="flex items-center gap-1.5 px-4 py-2 bg-white/95 backdrop-blur-sm rounded-pill text-xs font-medium text-charcoal hover:bg-white shadow-md cursor-pointer"
-            aria-label={`Quick view ${product.name}`}
-          >
+          <span className="flex items-center gap-1.5 px-4 py-2 bg-white/95 backdrop-blur-sm rounded-pill text-xs font-medium text-charcoal hover:bg-white shadow-md cursor-pointer">
             <Eye size={14} />
             Quick View
-          </button>
+          </span>
         </div>
-      </div>
+      </Link>
 
       {/* Content */}
       <div className="p-4 space-y-2.5">
@@ -89,9 +87,11 @@ export default function ProductCard({
         </p>
 
         {/* Name */}
-        <h3 className="font-display text-base font-semibold text-charcoal leading-snug line-clamp-2 min-h-[2.5rem]">
-          {product.name}
-        </h3>
+        <Link href={`/product/${product.slug}`}>
+          <h3 className="font-display text-base font-semibold text-charcoal leading-snug line-clamp-2 min-h-[2.5rem] hover:text-gold-start transition-colors cursor-pointer">
+            {product.name}
+          </h3>
+        </Link>
 
         {/* Rating */}
         <RatingStars rating={product.rating} reviewCount={product.reviewCount} />
