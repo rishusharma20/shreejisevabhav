@@ -1,7 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Package, Heart, Crown, Settings, MapPin } from "lucide-react";
+import { Package, Heart, Crown, Settings, MapPin, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { removeAuthCookie } from "@/app/actions/auth";
 
 export type TabType = "personal-details" | "my-addresses" | "my-orders";
 
@@ -11,6 +13,21 @@ interface DashboardNavProps {
 }
 
 export default function DashboardNav({ activeTab, setActiveTab }: DashboardNavProps) {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/logout`, {
+        method: "POST",
+      });
+    } catch (error) {
+      console.error("Logout error", error);
+    } finally {
+      await removeAuthCookie();
+      router.push("/login");
+    }
+  };
+
   const tabs = [
     { id: "my-orders", label: "My Seva (Orders)", icon: Package },
     { id: "personal-details", label: "Personal Details", icon: Settings },
@@ -55,6 +72,17 @@ export default function DashboardNav({ activeTab, setActiveTab }: DashboardNavPr
           </motion.button>
         );
       })}
+      
+      {/* Logout Button */}
+      <motion.button
+        onClick={handleLogout}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className="relative flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 group mt-4 border border-red-200/50 hover:bg-red-50 hover:border-red-300 text-red-600/80 hover:text-red-700"
+      >
+        <LogOut className="w-5 h-5 transition-colors duration-300 text-red-500/70 group-hover:text-red-600" />
+        <span className="text-sm tracking-wide font-bold">Logout</span>
+      </motion.button>
     </nav>
   );
 }

@@ -46,10 +46,21 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Protect User Dashboard and Checkout
+  if (
+    request.nextUrl.pathname.startsWith("/my-seva") ||
+    request.nextUrl.pathname.startsWith("/checkout")
+  ) {
+    const token = request.cookies.get("accessToken")?.value;
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
-// Only run middleware on /admin routes to save performance
+// Run middleware on admin, my-seva, and checkout routes
 export const config = {
-  matcher: "/admin/:path*",
+  matcher: ["/admin/:path*", "/my-seva/:path*", "/checkout/:path*"],
 };
