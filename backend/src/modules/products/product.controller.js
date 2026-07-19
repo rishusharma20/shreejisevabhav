@@ -44,6 +44,37 @@ const createProduct = asyncHandler(async (req, res) => {
     return res.status(201).json(new ApiResponse(201, "Product created successfully", { product }));
 });
 
+// @desc    Create a product variant
+// @route   POST /api/v1/products/:id/variants
+// @access  Private/Admin
+const createVariant = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { size, price, quantity, discount, sku, weight } = req.body;
+
+    const product = await Product.findById(id);
+    if (!product) {
+        throw new ApiError(404, "Product not found");
+    }
+
+    let images = [];
+    if (req.files && req.files.length > 0) {
+        images = req.files.map((file) => `/uploads/variants/${file.filename}`);
+    }
+
+    const variant = await ProductVariant.create({
+        productId: product._id,
+        size,
+        price,
+        quantity,
+        discount,
+        sku,
+        weight,
+        images
+    });
+
+    return res.status(201).json(new ApiResponse(201, "Variant created successfully", { variant }));
+});
+
 // @desc    Get all active products
 // @route   GET /api/v1/products
 // @access  Public
@@ -179,6 +210,7 @@ const getProductsByCollection = asyncHandler(async (req, res) => {
 
 module.exports = {
     createProduct,
+    createVariant,
     getAllProducts,
     getProduct,
     updateProduct,
