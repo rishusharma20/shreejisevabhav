@@ -37,13 +37,14 @@ const variantRouter = require('./src/modules/products/variant.routes');
 const searchRouter = require('./src/modules/search/search.routes');
 const filterRouter = require('./src/modules/search/filter.routes');
 const cartRouter = require('./src/modules/cart/cart.routes');
-const couponRouter = require('./src/modules/cart/coupon.routes');
+const couponRouter = require('./src/modules/cart/coupon.routes'); // Old cart coupon routes if any, might be redundant now, but leaving as is for backward compatibility or removing it if it conflicts. Wait, in phase 6 there was a coupon router for cart. The user is now building a dedicated Phase 13. I will mount this one on `/api/v1/blessings`.
 const checkoutRouter = require('./src/modules/checkout/checkout.routes');
 const paymentRouter = require('./src/modules/payment/payment.routes');
 const trackRouter = require('./src/modules/track/track.routes');
 const orderRouter = require('./src/modules/orders/order.routes');
 const adminRouter = require('./src/modules/admin/admin.routes');
 const reviewRouter = require('./src/modules/reviews/review.routes');
+const blessingRouter = require('./src/modules/coupons/coupon.routes');
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
@@ -55,13 +56,14 @@ app.use("/api/v1/variants", variantRouter);
 app.use("/api/v1/search", searchRouter);
 app.use("/api/v1/filter", filterRouter);
 app.use("/api/v1/cart", cartRouter);
-app.use("/api/v1/coupons", couponRouter);
+app.use("/api/v1/coupons", couponRouter); // Kept for backwards compat if used in checkout
 app.use("/api/v1/checkout", checkoutRouter);
 app.use("/api/v1/payments", paymentRouter);
 app.use("/api/v1/track-my-seva", trackRouter);
 app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/blessings", blessingRouter);
 
 // Health Check API
 app.get("/api/v1/health", (req, res) => {

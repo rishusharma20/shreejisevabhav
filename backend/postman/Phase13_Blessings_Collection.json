@@ -1,0 +1,101 @@
+{
+    "info": {
+        "_postman_id": "d4e5f6g7-h8i9-j0k1-l2m3-n4o5p6q7r8s9",
+        "name": "Shreeji Seva Bhav - Phase 13 Blessings (Offers/Coupons)",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Admin Create Automatic Offer",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"title\": \"Janmashtami Special\",\n    \"description\": \"Save 15% during Janmashtami\",\n    \"offerType\": \"PERCENTAGE\",\n    \"targetType\": \"GLOBAL\",\n    \"discountValue\": 15,\n    \"expiryDate\": \"2024-12-31T23:59:59.000Z\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/blessings/admin/offers",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "blessings", "admin", "offers"]
+                }
+            }
+        },
+        {
+            "name": "2. Admin Create Explicit Coupon",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"code\": \"WELCOME200\",\n    \"title\": \"Welcome Bonus\",\n    \"description\": \"₹200 off your cart\",\n    \"discountType\": \"FIXED\",\n    \"discountValue\": 200,\n    \"minimumAmount\": 1000,\n    \"expiryDate\": \"2024-12-31T23:59:59.000Z\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/blessings/admin/coupons",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "blessings", "admin", "coupons"]
+                }
+            }
+        },
+        {
+            "name": "3. Get Available Offers (Public)",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/blessings/offers",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "blessings", "offers"]
+                }
+            }
+        },
+        {
+            "name": "4. Calculate Best Savings (Priority Engine)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_JWT" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"cartTotal\": 2000,\n    \"couponCode\": \"WELCOME200\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/blessings/calculate",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "blessings", "calculate"]
+                }
+            }
+        },
+        {
+            "name": "5. Admin Get Blessing Analytics",
+            "request": {
+                "method": "GET",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/blessings/admin/analytics",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "blessings", "admin", "analytics"]
+                }
+            }
+        }
+    ]
+}
