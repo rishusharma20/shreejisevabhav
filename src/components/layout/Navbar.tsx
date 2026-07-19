@@ -14,8 +14,6 @@ const navLinks = [
   { label: "Radha Dresses", href: "/divine-wardrobe", hasDropdown: true },
   { label: "Krishna Vastra", href: "/krishna-vastra", hasDropdown: true },
   { label: "Jewellery Sets", href: "/jewellery", hasDropdown: true },
-  { label: "About Us", href: "/about", hasDropdown: false },
-  { label: "Contact Us", href: "/contact", hasDropdown: false },
 ];
 
 export default function Navbar() {

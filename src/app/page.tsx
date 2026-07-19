@@ -8,7 +8,6 @@ import HeroSection from "@/components/sections/HeroSection";
 import DivineCollections from "@/components/sections/DivineCollections";
 import FeaturedProducts from "@/components/sections/FeaturedProducts";
 import WhyChooseUs from "@/components/sections/WhyChooseUs";
-import FestivalCollection from "@/components/sections/FestivalCollection";
 import BhaktiGallery from "@/components/sections/BhaktiGallery";
 import Testimonials from "@/components/sections/Testimonials";
 import DivineIntro from "@/components/ui/DivineIntro";
@@ -66,7 +65,6 @@ export default function Home() {
           <DivineCollections />
           <FeaturedProducts />
           <WhyChooseUs />
-          <FestivalCollection />
           <BhaktiGallery />
           <Testimonials />
         </motion.main>

@@ -19,12 +19,9 @@ export default function Footer() {
   };
 
   const shopLinks = [
-    { label: "Radha Dresses", href: "/radha-dresses" },
+    { label: "Radha Dresses", href: "/divine-wardrobe" },
     { label: "Krishna Vastra", href: "/krishna-vastra" },
     { label: "Jewellery Sets", href: "/jewellery" },
-    { label: "Festival Collections", href: "/festivals" },
-    { label: "New Arrivals", href: "/new-arrivals" },
-    { label: "Best Sellers", href: "/best-sellers" },
   ];
 
   return (
@@ -53,24 +50,7 @@ export default function Footer() {
               with love, devotion, and the finest materials — from Vrindavan to your mandir.
             </p>
             {/* Social icons */}
-            <div className="flex gap-3">
-              {[
-                { icon: Camera, label: "Instagram", href: "#" },
-                { icon: Users, label: "Facebook", href: "#" },
-                { icon: Play, label: "YouTube", href: "#" },
-              ].map(({ icon: Icon, label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 flex items-center justify-center rounded-full bg-warm-gray/20 text-warm-gray-light hover:bg-saffron hover:text-white transition-all duration-300"
-                  aria-label={label}
-                >
-                  <Icon size={16} />
-                </a>
-              ))}
-            </div>
+            {/* Social icons removed for V1 (Zero Dead Click Policy) */}
           </div>
 
           {/* Quick Links */}

@@ -234,7 +234,7 @@ export default function HeroSection() {
               >
                 {/* Button 1: Explore */}
                 <a
-                  href="/collections"
+                  href="/krishna-vastra"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-[12px] md:text-[13px] font-semibold text-white rounded-pill transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] cursor-pointer shadow-md hover:shadow-lg"
                   style={{
                     background: "linear-gradient(135deg, #5C1A1A, #7B2D2D)",
@@ -252,7 +252,7 @@ export default function HeroSection() {
 
                 {/* Button 2: Shop Krishna Vastra */}
                 <a
-                  href="/collections?category=krishna-vastra"
+                  href="/krishna-vastra"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-[12px] md:text-[13px] font-semibold rounded-pill border transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] cursor-pointer hover:shadow-md"
                   style={{
                     color: "#5C1A1A",
