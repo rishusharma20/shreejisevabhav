@@ -22,7 +22,21 @@ const createProductValidation = [
     body("category")
         .trim()
         .notEmpty()
-        .withMessage("Category is required")
+        .withMessage("Category is required"),
+    body("price")
+        .notEmpty()
+        .withMessage("Price is required")
+        .isFloat({ min: 0 })
+        .withMessage("Price cannot be negative"),
+    body("quantity")
+        .notEmpty()
+        .withMessage("Quantity is required")
+        .isInt({ min: 0 })
+        .withMessage("Quantity cannot be negative"),
+    body("size")
+        .trim()
+        .notEmpty()
+        .withMessage("Size is required")
 ];
 
 const updateProductValidation = [

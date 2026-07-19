@@ -23,8 +23,13 @@ export default function AdminProductsPage() {
     shortDescription: "",
     description: "",
     collectionId: "",
+    category: "Poshak",
+    price: "",
+    quantity: "",
+    size: "Standard",
     isActive: true,
   });
+  const [images, setImages] = useState<File[]>([]);
   const [actionLoading, setActionLoading] = useState(false);
 
   const fetchData = async () => {
@@ -66,8 +71,13 @@ export default function AdminProductsPage() {
         shortDescription: product.shortDescription || "",
         description: product.description || "",
         collectionId: product.collectionId?._id || "",
+        category: product.category || "Poshak",
+        price: product.price || "",
+        quantity: product.quantity || "",
+        size: product.size || "Standard",
         isActive: product.isActive,
       });
+      setImages([]);
     } else {
       setEditingProduct(null);
       setForm({
@@ -76,8 +86,13 @@ export default function AdminProductsPage() {
         shortDescription: "",
         description: "",
         collectionId: collections[0]?._id || "",
+        category: "Poshak",
+        price: "",
+        quantity: "",
+        size: "Standard",
         isActive: true,
       });
+      setImages([]);
     }
     setIsModalOpen(true);
   };
@@ -93,12 +108,17 @@ export default function AdminProductsPage() {
     const method = editingProduct ? "PUT" : "POST";
 
     try {
+      const formData = new FormData();
+      Object.entries(form).forEach(([key, value]) => {
+        formData.append(key, value.toString());
+      });
+      images.forEach(img => {
+        formData.append("images", img);
+      });
+
       const res = await fetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(form),
+        body: formData,
         credentials: "include",
       });
       
@@ -177,9 +197,18 @@ export default function AdminProductsPage() {
             <tbody className="divide-y divide-gold-start/10">
               {products.map(prod => (
                 <tr key={prod._id} className="hover:bg-gold-start/5 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="font-bold text-[#5C1A1A]">{prod.name}</div>
-                    <div className="text-[11px] uppercase tracking-wider text-[#8B6F4E] mt-1">{prod.slug}</div>
+                  <td className="px-6 py-4 flex items-center gap-3">
+                    {prod.images && prod.images.length > 0 ? (
+                      <img src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${prod.images[0]}`} alt={prod.name} className="w-10 h-10 object-cover rounded-lg border border-gold-start/20" />
+                    ) : (
+                      <div className="w-10 h-10 bg-gold-start/10 rounded-lg border border-gold-start/20 flex items-center justify-center">
+                        <Package className="w-5 h-5 text-saffron/50" />
+                      </div>
+                    )}
+                    <div>
+                      <div className="font-bold text-[#5C1A1A]">{prod.name}</div>
+                      <div className="text-[11px] uppercase tracking-wider text-[#8B6F4E] mt-1">{prod.slug}</div>
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-xs font-bold uppercase tracking-wider text-charcoal/70">{prod.collectionId?.name || "None"}</div>
@@ -270,6 +299,75 @@ export default function AdminProductsPage() {
                     <option key={c._id} value={c._id}>{c.name}</option>
                   ))}
                 </select>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8B6F4E] mb-1.5">Category</label>
+                  <select 
+                    required
+                    value={form.category}
+                    onChange={e => setForm({...form, category: e.target.value})}
+                    className="w-full border border-gold-start/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start/50 bg-white/50"
+                  >
+                    <option value="Poshak">Poshak</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Idols">Idols</option>
+                    <option value="Offerings">Offerings</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8B6F4E] mb-1.5">Size / Variant Name</label>
+                  <input 
+                    required
+                    type="text" 
+                    value={form.size}
+                    onChange={e => setForm({...form, size: e.target.value})}
+                    placeholder="e.g. 4 Inch, Standard"
+                    className="w-full border border-gold-start/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start/50 bg-white/50"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8B6F4E] mb-1.5">Price (₹)</label>
+                  <input 
+                    required
+                    type="number" 
+                    min="0"
+                    value={form.price}
+                    onChange={e => setForm({...form, price: e.target.value})}
+                    className="w-full border border-gold-start/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start/50 bg-white/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8B6F4E] mb-1.5">Quantity in Stock</label>
+                  <input 
+                    required
+                    type="number" 
+                    min="0"
+                    value={form.quantity}
+                    onChange={e => setForm({...form, quantity: e.target.value})}
+                    className="w-full border border-gold-start/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start/50 bg-white/50"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8B6F4E] mb-1.5">Product Images</label>
+                <input 
+                  type="file" 
+                  multiple
+                  accept="image/*"
+                  onChange={e => {
+                    if (e.target.files) {
+                      setImages(Array.from(e.target.files));
+                    }
+                  }}
+                  className="w-full border border-gold-start/30 rounded-xl px-4 py-2 text-sm bg-white/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-wider file:bg-gold-start/10 file:text-saffron-deep hover:file:bg-gold-start/20 transition-all cursor-pointer"
+                />
+                <p className="text-[10px] text-charcoal/50 mt-1 uppercase tracking-wider">You can select multiple images</p>
               </div>
 
               <div>

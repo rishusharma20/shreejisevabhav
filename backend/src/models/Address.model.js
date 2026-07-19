@@ -58,14 +58,13 @@ const addressSchema = new mongoose.Schema(
 );
 
 // Pre-save hook: If this address is set to default, make all other addresses of this user non-default
-addressSchema.pre("save", async function (next) {
+addressSchema.pre("save", async function () {
     if (this.isDefault) {
         await mongoose.model("Address").updateMany(
             { userId: this.userId, _id: { $ne: this._id } },
             { $set: { isDefault: false } }
         );
     }
-    next();
 });
 
 const Address = mongoose.model("Address", addressSchema);

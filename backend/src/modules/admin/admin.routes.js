@@ -19,7 +19,7 @@ const { createProductValidation, updateProductValidation } = require("../product
 
 const { createCollection, updateCollection, deleteCollection } = require("../collections/collection.controller");
 const { createCollectionValidation, updateCollectionValidation } = require("../collections/collection.validation");
-const { uploadCollection } = require("../../middleware/multer.middleware");
+const { uploadCollection, uploadVariant } = require("../../middleware/multer.middleware");
 
 const { updateOrderStatus } = require("../orders/order.controller");
 const { updateOrderStatusValidation } = require("../orders/order.validation");
@@ -55,7 +55,7 @@ router.put("/payments/approve/:id", approvePayment);
 router.put("/payments/reject/:id", rejectPayment);
 
 // Product Management APIs
-router.post("/products", createProductValidation, validate, createProduct);
+router.post("/products", uploadVariant.array("images", 5), createProductValidation, validate, createProduct);
 router.put("/products/:id", updateProductValidation, validate, updateProduct);
 router.delete("/products/:id", deleteProduct);
 

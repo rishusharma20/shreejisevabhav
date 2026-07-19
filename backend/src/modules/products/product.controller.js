@@ -12,7 +12,8 @@ const createProduct = asyncHandler(async (req, res) => {
     const {
         name, slug, shortDescription, description, collectionId,
         festivalId, category, isFeatured, isTrending, isActive,
-        displayOrder, tags
+        displayOrder, tags,
+        price, quantity, size
     } = req.body;
 
     const collection = await Collection.findById(collectionId);
@@ -41,7 +42,20 @@ const createProduct = asyncHandler(async (req, res) => {
         createdBy: req.user._id
     });
 
-    return res.status(201).json(new ApiResponse(201, "Product created successfully", { product }));
+    let images = [];
+    if (req.files && req.files.length > 0) {
+        images = req.files.map((file) => `/uploads/variants/${file.filename}`);
+    }
+
+    const variant = await ProductVariant.create({
+        productId: product._id,
+        size,
+        price,
+        quantity,
+        images
+    });
+
+    return res.status(201).json(new ApiResponse(201, "Product created successfully", { product, variant }));
 });
 
 // @desc    Create a product variant
