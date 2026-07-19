@@ -61,6 +61,7 @@ const orderSchema = new mongoose.Schema(
             type: String,
             enum: [
                 "PENDING",
+                "VERIFICATION_PENDING",
                 "ACCEPTED",
                 "PROCESSING",
                 "PACKAGING",
@@ -72,7 +73,7 @@ const orderSchema = new mongoose.Schema(
                 "RETURNED",
                 "REFUNDED"
             ],
-            default: "ACCEPTED"
+            default: "VERIFICATION_PENDING"
         },
         orderNumber: {
             type: String,

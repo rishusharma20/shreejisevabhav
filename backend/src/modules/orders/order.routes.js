@@ -1,5 +1,6 @@
 const express = require("express");
 const {
+    createManualOrder,
     getMyOrders,
     getOrderById,
     cancelOrder,
@@ -17,6 +18,7 @@ const router = express.Router();
 router.use(verifyJWT);
 
 // User Routes
+router.post("/create-manual", createManualOrder);
 router.get("/", getMyOrders);
 router.get("/:id", getOrderById);
 router.post("/:id/cancel", cancelOrder);

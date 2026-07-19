@@ -21,6 +21,11 @@ export default function OfferWithLovePage() {
   });
   
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Phase 3: Manual UPI Payment State
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [utrNumber, setUtrNumber] = useState("");
+  const [isSubmittingUTR, setIsSubmittingUTR] = useState(false);
 
   const handleCheckout = async () => {
     try {
@@ -70,21 +75,54 @@ export default function OfferWithLovePage() {
         body: JSON.stringify({ addressId })
       });
 
-      // 4. Set Payment Method
+      // 4. Set Payment Method (Manual UPI)
       await fetch("http://localhost:8000/api/v1/checkout/payment-method", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ paymentMethod: "RAZORPAY" })
+        body: JSON.stringify({ paymentMethod: "ONLINE" })
       });
 
-      alert("Divine Checkout Session Prepared Successfully! Proceeding to Payment (Phase 3)...");
+      // Instead of alert, show QR modal
+      setShowQRModal(true);
 
     } catch (err) {
       console.error(err);
       alert("Something went wrong during checkout.");
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleSubmitUTR = async () => {
+    if (!utrNumber || utrNumber.length < 6) {
+      alert("Please enter a valid UTR number.");
+      return;
+    }
+
+    try {
+      setIsSubmittingUTR(true);
+      const res = await fetch("http://localhost:8000/api/v1/orders/create-manual", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ utrNumber })
+      });
+      
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setShowQRModal(false);
+        // Dispatch to clear cart context not strictly needed since backend clears it and next load will be empty
+        // But forcing a reload or redirecting is good
+        router.push("/my-seva"); // Redirect to dashboard to track seva
+      } else {
+        alert(data.message || "Failed to submit UTR. Please try again.");
+      }
+    } catch (err) {
+      console.error("UTR submission error:", err);
+      alert("An error occurred while submitting UTR.");
+    } finally {
+      setIsSubmittingUTR(false);
     }
   };
 
@@ -177,6 +215,64 @@ export default function OfferWithLovePage() {
         <CheckoutRecommendations />
 
       </div>
+
+      {/* ── QR CODE MODAL (Phase 3) ── */}
+      {showQRModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
+          >
+            <div className="text-center mb-6">
+              <h2 className="font-display text-2xl font-bold text-[#5C1A1A] mb-2">Divine Offering Payment</h2>
+              <p className="text-sm text-warm-gray">Please scan the QR code below using any UPI app to complete your payment.</p>
+            </div>
+            
+            <div className="flex justify-center mb-6">
+              <img 
+                src="/images/payment-qr.png" 
+                alt="UPI QR Code" 
+                className="w-64 h-64 object-contain border-2 border-gold-start/20 p-2 rounded-2xl shadow-sm"
+              />
+            </div>
+            
+            <div className="space-y-4">
+              <div className="text-center">
+                <span className="text-[10px] uppercase tracking-widest font-bold text-warm-gray">UPI ID</span>
+                <p className="font-bold text-charcoal">sharmaakriti232000-1@okhdfcbank</p>
+              </div>
+
+              <div className="relative group mt-4">
+                <input 
+                  type="text" 
+                  value={utrNumber}
+                  onChange={(e) => setUtrNumber(e.target.value)}
+                  placeholder="Enter 12-digit UTR Number" 
+                  className="w-full bg-white border border-gold-start/30 rounded-xl py-3.5 px-4 text-center text-sm font-bold tracking-widest text-charcoal focus:outline-none focus:border-gold-start focus:ring-1 focus:ring-gold-start/50 transition-all placeholder:text-warm-gray/60 placeholder:font-normal"
+                />
+              </div>
+
+              <motion.button 
+                onClick={handleSubmitUTR}
+                disabled={isSubmittingUTR || utrNumber.length < 6}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-[#D4A853] via-[#E8850A] to-[#D4A853] bg-[length:200%_auto] text-white flex items-center justify-center font-bold text-sm tracking-widest uppercase hover:bg-[position:right_center] transition-all disabled:opacity-50"
+              >
+                {isSubmittingUTR ? "Verifying..." : "Submit Payment"}
+              </motion.button>
+              
+              <button 
+                onClick={() => setShowQRModal(false)}
+                className="w-full py-3 text-[10px] font-bold text-warm-gray uppercase tracking-widest hover:text-[#5C1A1A] transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </main>
   );
 }

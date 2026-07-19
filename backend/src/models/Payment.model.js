@@ -18,8 +18,11 @@ const paymentSchema = new mongoose.Schema(
         },
         razorpayOrderId: {
             type: String, // order_xxxxx
-            required: true,
-            unique: true
+            default: null
+        },
+        utrNumber: {
+            type: String,
+            default: null
         },
         paymentMethod: {
             type: String,
@@ -32,7 +35,7 @@ const paymentSchema = new mongoose.Schema(
         totalAmount: { type: Number, required: true }, // Amount to be paid
         paymentStatus: {
             type: String,
-            enum: ["PENDING", "PROCESSING", "SUCCESS", "FAILED", "REFUNDED", "CANCELLED"],
+            enum: ["PENDING", "VERIFICATION_PENDING", "PROCESSING", "SUCCESS", "FAILED", "REFUNDED", "CANCELLED"],
             default: "PENDING"
         },
         transactionId: {
