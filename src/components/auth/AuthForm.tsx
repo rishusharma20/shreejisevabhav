@@ -192,7 +192,23 @@ export default function AuthForm() {
                   </button>
                 </div>
 
-                {/* Forgot Password removed for V1 */ }
+                <AnimatePresence mode="wait">
+                  {isLogin && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="text-right mt-1"
+                    >
+                      <Link
+                        href="/forgot-password"
+                        className="text-[10px] uppercase tracking-wider text-warm-gray hover:text-gold-start transition-colors font-bold"
+                      >
+                        Forgot Password?
+                      </Link>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Submit Button */}
                 <motion.button

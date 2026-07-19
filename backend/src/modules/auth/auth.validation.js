@@ -1,4 +1,4 @@
-const { body } = require("express-validator");
+const { body, param } = require("express-validator");
 
 const registerValidation = [
     body("name")
@@ -88,7 +88,7 @@ const forgotPasswordValidation = [
 ];
 
 const resetPasswordValidation = [
-    body("token")
+    param("token")
         .trim()
         .notEmpty()
         .withMessage("Token is required"),

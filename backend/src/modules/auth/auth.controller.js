@@ -4,6 +4,7 @@ const Cart = require("../../models/Cart.model");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
+const sendEmail = require("../../utils/sendEmail");
 
 // Configuration for secure cookies
 const cookieOptions = {
@@ -143,25 +144,32 @@ const forgotPassword = asyncHandler(async (req, res) => {
     const resetToken = user.generatePasswordResetToken();
     await user.save({ validateBeforeSave: false });
 
-    // Mock send email via notification service
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
-    const message = `You are receiving this email because you (or someone else) has requested the reset of a password. \n\n Please make a PUT request to: \n\n ${resetUrl}`;
+    const message = `You are receiving this email because you (or someone else) has requested the reset of a password. \n\n Please click on the following link, or paste this into your browser to complete the process:\n\n ${resetUrl}\n\nIf you did not request this, please ignore this email and your password will remain unchanged.\n`;
     
-    // Log token to console for easy testing during MVP
-    console.log("============= RESET TOKEN =============");
-    console.log(resetToken);
-    console.log("=======================================");
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: "Shreeji Seva Bhav - Password Reset",
+            message
+        });
 
-    return res.status(200).json(new ApiResponse(200, "Reset token generated and logged to console for testing"));
+        return res.status(200).json(new ApiResponse(200, "Password reset link sent to email"));
+    } catch (error) {
+        user.forgotPasswordToken = undefined;
+        user.forgotPasswordExpiry = undefined;
+        await user.save({ validateBeforeSave: false });
+
+        throw new ApiError(500, "Email could not be sent. Please try again later.", { error: error.message });
+    }
 });
 
 // @desc    Reset Password
-// @route   POST /api/v1/auth/reset-password
+// @route   PUT /api/v1/auth/reset-password/:token
 // @access  Public
 const resetPassword = asyncHandler(async (req, res) => {
-    // Note: Some systems use POST /reset-password/:token or PUT. We'll use POST /reset-password with token in body or params.
-    // Based on user request, it's POST /api/v1/auth/reset-password. Let's expect token and newPassword in body.
-    const { token, newPassword } = req.body;
+    const { token } = req.params;
+    const { newPassword } = req.body;
 
     if (!token || !newPassword) {
         throw new ApiError(400, "Token and newPassword are required");

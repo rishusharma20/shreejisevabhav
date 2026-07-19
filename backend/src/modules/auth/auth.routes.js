@@ -27,7 +27,7 @@ const router = express.Router();
 router.post("/register", registerValidation, validate, registerUser);
 router.post("/login", loginValidation, validate, loginUser);
 router.post("/forgot-password", forgotPasswordValidation, validate, forgotPassword);
-router.post("/reset-password", resetPasswordValidation, validate, resetPassword);
+router.put("/reset-password/:token", resetPasswordValidation, validate, resetPassword);
 
 // Protected routes (Requires Authentication)
 router.post("/logout", verifyJWT, logoutUser);

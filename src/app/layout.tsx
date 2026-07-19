@@ -3,7 +3,6 @@ import { Playfair_Display, Poppins } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 
 import EternalTempleFooter from "@/components/footer/EternalTempleFooter";
-import DivineSoundController from "@/components/layout/DivineSoundController";
 import DivinePageAtmosphere from "@/components/layout/DivinePageAtmosphere";
 import "./globals.css";
 
@@ -78,8 +77,6 @@ export default function RootLayout({
           <DivinePageAtmosphere />
           {children}
           <EternalTempleFooter />
-
-          <DivineSoundController />
         </CartProvider>
         
         {/* Service Worker Registration */}
