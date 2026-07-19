@@ -23,6 +23,7 @@ export default function FeaturedProducts() {
           // Map backend products to the frontend Product type interface
           const mappedProducts = data.data.products.map((p: any) => ({
             id: p._id,
+            variantId: p.variantId,
             name: p.name,
             category: p.category,
             price: p.price,

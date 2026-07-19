@@ -4,9 +4,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Gift, MapPin, User, Phone, Mail, Box, Sparkles, MessageSquare } from "lucide-react";
 import { useState } from "react";
 
-export default function CheckoutForm() {
+export default function CheckoutForm({ addressData, setAddressData }: any) {
   const [isGift, setIsGift] = useState(false);
   const [selectedPackaging, setSelectedPackaging] = useState("standard");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setAddressData({ ...addressData, [e.target.name]: e.target.value });
+  };
 
   return (
     <div className="flex flex-col gap-10">
@@ -22,6 +26,9 @@ export default function CheckoutForm() {
             <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-gray group-focus-within:text-gold-start transition-colors" />
             <input 
               type="text" 
+              name="name"
+              value={addressData.name}
+              onChange={handleChange}
               placeholder="Name" 
               className="w-full bg-white/60 border border-gold-start/20 rounded-xl py-3.5 pl-11 pr-4 text-sm text-charcoal focus:outline-none focus:border-gold-start focus:ring-1 focus:ring-gold-start/50 transition-all placeholder:text-warm-gray/60"
             />
@@ -31,6 +38,9 @@ export default function CheckoutForm() {
             <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-gray group-focus-within:text-gold-start transition-colors" />
             <input 
               type="tel" 
+              name="mobile"
+              value={addressData.mobile}
+              onChange={handleChange}
               placeholder="Mobile Number" 
               className="w-full bg-white/60 border border-gold-start/20 rounded-xl py-3.5 pl-11 pr-4 text-sm text-charcoal focus:outline-none focus:border-gold-start focus:ring-1 focus:ring-gold-start/50 transition-all placeholder:text-warm-gray/60"
             />
@@ -40,6 +50,9 @@ export default function CheckoutForm() {
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-gray group-focus-within:text-gold-start transition-colors" />
             <input 
               type="email" 
+              name="email"
+              value={addressData.email}
+              onChange={handleChange}
               placeholder="Email Address" 
               className="w-full bg-white/60 border border-gold-start/20 rounded-xl py-3.5 pl-11 pr-4 text-sm text-charcoal focus:outline-none focus:border-gold-start focus:ring-1 focus:ring-gold-start/50 transition-all placeholder:text-warm-gray/60"
             />
@@ -48,6 +61,9 @@ export default function CheckoutForm() {
           <div className="relative group md:col-span-2">
             <MapPin className="absolute left-4 top-4 w-4 h-4 text-warm-gray group-focus-within:text-gold-start transition-colors" />
             <textarea 
+              name="addressLine1"
+              value={addressData.addressLine1}
+              onChange={handleChange}
               placeholder="Delivery Address" 
               rows={3}
               className="w-full bg-white/60 border border-gold-start/20 rounded-xl py-3.5 pl-11 pr-4 text-sm text-charcoal focus:outline-none focus:border-gold-start focus:ring-1 focus:ring-gold-start/50 transition-all placeholder:text-warm-gray/60 resize-none"
@@ -57,6 +73,9 @@ export default function CheckoutForm() {
           <div className="relative group">
             <input 
               type="text" 
+              name="pincode"
+              value={addressData.pincode}
+              onChange={handleChange}
               placeholder="Pincode" 
               className="w-full bg-white/60 border border-gold-start/20 rounded-xl py-3.5 px-4 text-sm text-charcoal focus:outline-none focus:border-gold-start focus:ring-1 focus:ring-gold-start/50 transition-all placeholder:text-warm-gray/60"
             />

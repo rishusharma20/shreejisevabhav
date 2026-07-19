@@ -7,8 +7,87 @@ import CheckoutWelcome from "@/components/checkout/CheckoutWelcome";
 import CheckoutForm from "@/components/checkout/CheckoutForm";
 import DivineSummary from "@/components/checkout/DivineSummary";
 import CheckoutRecommendations from "@/components/checkout/CheckoutRecommendations";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function OfferWithLovePage() {
+  const router = useRouter();
+  const [addressData, setAddressData] = useState({
+    name: "",
+    mobile: "",
+    email: "",
+    addressLine1: "",
+    pincode: "",
+  });
+  
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleCheckout = async () => {
+    try {
+      setIsProcessing(true);
+      // 1. Create Address
+      const addressRes = await fetch("http://localhost:8000/api/v1/address/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          fullName: addressData.name,
+          mobileNumber: addressData.mobile,
+          addressLine1: addressData.addressLine1,
+          pincode: addressData.pincode,
+          city: "Vrindavan", // Default for demo
+          state: "Uttar Pradesh",
+          country: "India",
+          addressType: "HOME"
+        })
+      });
+      
+      if (addressRes.status === 401) {
+        router.push("/login");
+        return;
+      }
+      
+      const addressDataResponse = await addressRes.json();
+      const addressId = addressDataResponse?.data?.address?._id;
+
+      if (!addressId) {
+         throw new Error("Failed to create address");
+      }
+
+      // 2. Create Checkout Session
+      const sessionRes = await fetch("http://localhost:8000/api/v1/checkout/create", {
+        method: "POST",
+        credentials: "include"
+      });
+      
+      const sessionData = await sessionRes.json();
+      
+      // 3. Attach Address to Session
+      await fetch("http://localhost:8000/api/v1/checkout/address", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ addressId })
+      });
+
+      // 4. Set Payment Method
+      await fetch("http://localhost:8000/api/v1/checkout/payment-method", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ paymentMethod: "RAZORPAY" })
+      });
+
+      alert("Divine Checkout Session Prepared Successfully! Proceeding to Payment (Phase 3)...");
+
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong during checkout.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <main className="min-h-screen w-full bg-[#FFFBF4] relative overflow-hidden pb-24 pt-32">
       
@@ -78,7 +157,7 @@ export default function OfferWithLovePage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <CheckoutForm />
+              <CheckoutForm addressData={addressData} setAddressData={setAddressData} />
             </motion.div>
           </div>
           
@@ -89,7 +168,7 @@ export default function OfferWithLovePage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <DivineSummary />
+              <DivineSummary handleCheckout={handleCheckout} isProcessing={isProcessing} />
             </motion.div>
           </div>
         </div>

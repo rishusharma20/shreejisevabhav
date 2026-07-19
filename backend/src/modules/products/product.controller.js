@@ -62,6 +62,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
         const defaultVariant = productVariants[0] || {};
         return {
             ...product,
+            variantId: defaultVariant._id,
             price: defaultVariant.price || 0,
             originalPrice: (defaultVariant.price || 0) + (defaultVariant.discount || 0),
             images: defaultVariant.images || ["/images/products/placeholder.jpg"]
@@ -149,6 +150,7 @@ const getFeaturedProducts = asyncHandler(async (req, res) => {
         const defaultVariant = productVariants[0] || {};
         return {
             ...product,
+            variantId: defaultVariant._id,
             price: defaultVariant.price || 0,
             originalPrice: (defaultVariant.price || 0) + (defaultVariant.discount || 0),
             images: defaultVariant.images || ["/images/products/placeholder.jpg"]

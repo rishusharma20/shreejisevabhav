@@ -5,12 +5,13 @@
 
 export interface Product {
   id: string;
+  variantId?: string; // Phase 2: Added to link frontend product to backend variants
   name: string;
   slug: string;
   price: number;
   originalPrice?: number;
   image: string;
-  category: "radha-dresses" | "krishna-vastra" | "jewellery";
+  category: "radha-dresses" | "krishna-vastra" | "jewellery" | string;
   rating: number;
   reviewCount: number;
   badge?: "new" | "bestseller" | "festival";

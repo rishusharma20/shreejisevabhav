@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import type { CartState, CartAction, CartItem, Product } from "@/lib/types";
 
 const CART_STORAGE_KEY = "shreeji-seva-bhav-cart";
@@ -75,17 +76,45 @@ const CartContext = createContext<CartContextValue | null>(null);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
-  // Load cart from localStorage on mount
+  const router = useRouter();
+
+  // Load cart from Backend on mount
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(CART_STORAGE_KEY);
-      if (stored) {
-        const items: CartItem[] = JSON.parse(stored);
-        dispatch({ type: "LOAD_CART", items });
+    async function loadBackendCart() {
+      try {
+        const res = await fetch("http://localhost:8000/api/v1/cart", {
+          credentials: "include"
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.data.cart && data.data.cart.products) {
+            // Map backend cart structure to frontend CartItem[]
+            const backendItems = data.data.cart.products.map((item: any) => ({
+              product: {
+                id: item.productId._id,
+                variantId: item.variantId._id,
+                name: item.productId.name,
+                category: item.productId.category,
+                price: item.variantId.price,
+                image: item.variantId.images[0] || "/images/products/placeholder.jpg",
+                slug: item.productId.slug
+              } as Product,
+              quantity: item.quantity
+            }));
+            dispatch({ type: "LOAD_CART", items: backendItems });
+          }
+        } else if (res.status === 401) {
+          // If unauthenticated, we can fallback to localStorage or just leave empty
+          const stored = localStorage.getItem(CART_STORAGE_KEY);
+          if (stored) {
+            dispatch({ type: "LOAD_CART", items: JSON.parse(stored) });
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load cart", err);
       }
-    } catch {
-      // Silently fail on invalid JSON
     }
+    loadBackendCart();
   }, []);
 
   // Persist cart to localStorage on changes
@@ -98,22 +127,91 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [state.items]);
 
   const addToCart = useCallback(
-    (product: Product) => dispatch({ type: "ADD_TO_CART", product }),
-    []
+    async (product: Product) => {
+      try {
+        const res = await fetch("http://localhost:8000/api/v1/cart/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            productId: product.id,
+            variantId: product.variantId || product.id,
+            quantity: 1
+          })
+        });
+        
+        if (res.status === 401) {
+          router.push("/login");
+          return;
+        }
+        
+        if (res.ok) {
+          dispatch({ type: "ADD_TO_CART", product });
+        }
+      } catch (err) {
+        console.error("Add to cart failed", err);
+      }
+    },
+    [router]
   );
 
   const removeFromCart = useCallback(
-    (productId: string) => dispatch({ type: "REMOVE_FROM_CART", productId }),
-    []
+    async (productId: string) => {
+      // We need variantId to remove from backend. Frontend currently passes productId.
+      // For V1, we'll try to find the variantId in the current state.
+      const item = state.items.find(i => i.product.id === productId);
+      if (!item) return;
+
+      try {
+        const res = await fetch(`http://localhost:8000/api/v1/cart/remove/${item.product.variantId || productId}`, {
+          method: "DELETE",
+          credentials: "include"
+        });
+        if (res.ok) {
+          dispatch({ type: "REMOVE_FROM_CART", productId });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [state.items]
   );
 
   const updateQuantity = useCallback(
-    (productId: string, quantity: number) =>
-      dispatch({ type: "UPDATE_QUANTITY", productId, quantity }),
-    []
+    async (productId: string, quantity: number) => {
+      const item = state.items.find(i => i.product.id === productId);
+      if (!item) return;
+
+      try {
+        const res = await fetch(`http://localhost:8000/api/v1/cart/update/${item.product.variantId || productId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ quantity })
+        });
+        if (res.ok) {
+          dispatch({ type: "UPDATE_QUANTITY", productId, quantity });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [state.items]
   );
 
-  const clearCart = useCallback(() => dispatch({ type: "CLEAR_CART" }), []);
+  const clearCart = useCallback(async () => {
+    try {
+      const res = await fetch("http://localhost:8000/api/v1/cart/clear", {
+        method: "DELETE",
+        credentials: "include"
+      });
+      if (res.ok) {
+        dispatch({ type: "CLEAR_CART" });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
 
   return (
     <CartContext.Provider

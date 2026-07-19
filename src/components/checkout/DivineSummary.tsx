@@ -5,17 +5,14 @@ import { Heart, Sparkles, Tag, ShieldCheck, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useCart } from "@/context/CartContext";
 
-const MOCK_SUMMARY_ITEMS = [
-  { id: 1, title: "Midnight Blue Zardozi Vastra", category: "Premium Krishna Poshak", price: 4100 },
-  { id: 2, title: "Pure Gold Plated Peacock Mukut", category: "Premium Mukut", price: 8500 }
-];
-
-export default function DivineSummary() {
+export default function DivineSummary({ handleCheckout, isProcessing }: any) {
+  const { items, totalAmount } = useCart();
   const [blessingCode, setBlessingCode] = useState("");
   const [isApplied, setIsApplied] = useState(false);
 
-  const subtotal = 12600;
+  const subtotal = totalAmount;
   const discount = isApplied ? 108 : 0;
   const total = subtotal - discount;
 
@@ -58,18 +55,19 @@ export default function DivineSummary() {
         </h3>
         
         <div className="space-y-4">
-          {MOCK_SUMMARY_ITEMS.map((item) => (
-            <div key={item.id} className="flex justify-between items-start gap-4 group">
+          {items.map((item) => (
+            <div key={item.product.id} className="flex justify-between items-start gap-4 group">
               <div>
                 <div className="text-[8px] uppercase tracking-widest font-bold text-saffron-deep mb-0.5">
-                  {item.category}
+                  {item.product.category}
                 </div>
                 <div className="text-sm text-charcoal font-medium group-hover:text-gold-start transition-colors">
-                  {item.title}
+                  {item.product.name}
+                  {item.quantity > 1 && <span className="text-xs text-warm-gray ml-2">x{item.quantity}</span>}
                 </div>
               </div>
               <div className="text-sm font-bold text-charcoal shrink-0">
-                ₹{item.price.toLocaleString()}
+                ₹{(item.product.price * item.quantity).toLocaleString()}
               </div>
             </div>
           ))}
@@ -137,12 +135,16 @@ export default function DivineSummary() {
       {/* ── ACTION: OFFER WITH LOVE ── */}
       <div>
         <motion.button 
+          onClick={handleCheckout}
+          disabled={isProcessing || items.length === 0}
           whileHover={{ scale: 1.02, boxShadow: "0 15px 35px rgba(212,168,83,0.3)" }}
           whileTap={{ scale: 0.98 }}
-          className="w-full py-4.5 px-6 rounded-2xl bg-gradient-to-r from-[#D4A853] via-[#E8850A] to-[#D4A853] bg-[length:200%_auto] text-white flex items-center justify-center gap-3 shadow-[0_8px_20px_rgba(212,168,83,0.25)] hover:bg-[position:right_center] transition-all duration-500 mb-4"
+          className="w-full py-4.5 px-6 rounded-2xl bg-gradient-to-r from-[#D4A853] via-[#E8850A] to-[#D4A853] bg-[length:200%_auto] text-white flex items-center justify-center gap-3 shadow-[0_8px_20px_rgba(212,168,83,0.25)] hover:bg-[position:right_center] transition-all duration-500 mb-4 disabled:opacity-50"
         >
           <Heart className="w-5 h-5 fill-current" />
-          <span className="text-[12px] uppercase tracking-[0.2em] font-bold">Offer With Love</span>
+          <span className="text-[12px] uppercase tracking-[0.2em] font-bold">
+            {isProcessing ? "Preparing Offering..." : "Offer With Love"}
+          </span>
         </motion.button>
 
         <div className="flex items-center justify-center gap-2 opacity-60">
