@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/sections/HeroSection";
 import DivineCollections from "@/components/sections/DivineCollections";
 import FeaturedProducts from "@/components/sections/FeaturedProducts";
@@ -71,8 +70,6 @@ export default function Home() {
           <BhaktiGallery />
           <Testimonials />
         </motion.main>
-
-        <Footer />
       </motion.div>
     </>
   );
