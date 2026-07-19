@@ -48,13 +48,27 @@ const createProduct = asyncHandler(async (req, res) => {
 // @route   GET /api/v1/products
 // @access  Public
 const getAllProducts = asyncHandler(async (req, res) => {
-    // We can also populate variants in a real-world scenario or keep them separate.
-    // For performance, we fetch products and optionally let frontend fetch variants by productId.
     const products = await Product.find({ isActive: true })
         .populate("collectionId", "name slug")
-        .sort({ displayOrder: 1, createdAt: -1 });
+        .sort({ displayOrder: 1, createdAt: -1 })
+        .lean();
 
-    return res.status(200).json(new ApiResponse(200, "Products retrieved successfully", { products }));
+    // Attach the first available variant to each product for thumbnail/price
+    const productIds = products.map(p => p._id);
+    const variants = await ProductVariant.find({ productId: { $in: productIds } }).lean();
+    
+    const productsWithVariants = products.map(product => {
+        const productVariants = variants.filter(v => v.productId.toString() === product._id.toString());
+        const defaultVariant = productVariants[0] || {};
+        return {
+            ...product,
+            price: defaultVariant.price || 0,
+            originalPrice: (defaultVariant.price || 0) + (defaultVariant.discount || 0),
+            images: defaultVariant.images || ["/images/products/placeholder.jpg"]
+        };
+    });
+
+    return res.status(200).json(new ApiResponse(200, "Products retrieved successfully", { products: productsWithVariants }));
 });
 
 // @desc    Get product by id or slug
@@ -125,8 +139,23 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // @route   GET /api/v1/products/type/featured
 // @access  Public
 const getFeaturedProducts = asyncHandler(async (req, res) => {
-    const products = await Product.find({ isActive: true, isFeatured: true }).sort({ displayOrder: 1 });
-    return res.status(200).json(new ApiResponse(200, "Featured products", { products }));
+    const products = await Product.find({ isActive: true, isFeatured: true }).sort({ displayOrder: 1 }).lean();
+    
+    const productIds = products.map(p => p._id);
+    const variants = await ProductVariant.find({ productId: { $in: productIds } }).lean();
+    
+    const productsWithVariants = products.map(product => {
+        const productVariants = variants.filter(v => v.productId.toString() === product._id.toString());
+        const defaultVariant = productVariants[0] || {};
+        return {
+            ...product,
+            price: defaultVariant.price || 0,
+            originalPrice: (defaultVariant.price || 0) + (defaultVariant.discount || 0),
+            images: defaultVariant.images || ["/images/products/placeholder.jpg"]
+        };
+    });
+
+    return res.status(200).json(new ApiResponse(200, "Featured products", { products: productsWithVariants }));
 });
 
 // @desc    Get trending products

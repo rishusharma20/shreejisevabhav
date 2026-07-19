@@ -6,7 +6,6 @@ import ProductCard from "@/components/ui/ProductCard";
 import ProductCardSkeleton from "@/components/ui/ProductCardSkeleton";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/hooks/useWishlist";
-import { products } from "@/lib/seed-data";
 import type { Product } from "@/lib/types";
 
 export default function FeaturedProducts() {
@@ -15,13 +14,33 @@ export default function FeaturedProducts() {
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
-  // Simulate loading state for skeleton demo
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setFeaturedProducts(products);
-      setIsLoading(false);
-    }, 1200);
-    return () => clearTimeout(timer);
+    async function fetchFeaturedProducts() {
+      try {
+        const res = await fetch("http://localhost:8000/api/v1/products/type/featured");
+        const data = await res.json();
+        if (data.success && data.data.products) {
+          // Map backend products to the frontend Product type interface
+          const mappedProducts = data.data.products.map((p: any) => ({
+            id: p._id,
+            name: p.name,
+            category: p.category,
+            price: p.price,
+            originalPrice: p.originalPrice,
+            image: p.images[0],
+            hoverImage: p.images[1] || p.images[0],
+            isNew: p.isTrending || false, // Mapping trending to 'new' badge
+            slug: p.slug
+          }));
+          setFeaturedProducts(mappedProducts);
+        }
+      } catch (err) {
+        console.error("Failed to fetch featured products", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchFeaturedProducts();
   }, []);
 
   return (

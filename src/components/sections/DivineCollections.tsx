@@ -1,11 +1,39 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
-import { categories } from "@/lib/seed-data";
+
+interface Collection {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  thumbnailImage: string;
+}
 
 export default function DivineCollections() {
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchCollections() {
+      try {
+        const res = await fetch("http://localhost:8000/api/v1/collections");
+        const data = await res.json();
+        if (data.success && data.data.collections) {
+          setCollections(data.data.collections);
+        }
+      } catch (err) {
+        console.error("Failed to fetch collections", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchCollections();
+  }, []);
+
   return (
     <section className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" aria-label="Divine Collections">
       <SectionHeading
@@ -13,10 +41,15 @@ export default function DivineCollections() {
         subtitle="Explore our curated categories — each piece crafted to adorn your Thakurji with love and reverence."
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-        {categories.map((category, index) => (
-          <motion.a
-            key={category.id}
+      {loading ? (
+        <div className="flex justify-center items-center py-20">
+          <Loader2 className="w-10 h-10 text-gold-start animate-spin" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+          {collections.map((category, index) => (
+            <motion.a
+              key={category._id}
             href={`/${category.slug}`}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -24,9 +57,12 @@ export default function DivineCollections() {
             transition={{ duration: 0.6, delay: index * 0.15, ease: "easeOut" }}
             className="group relative rounded-card overflow-hidden aspect-[3/4] cursor-pointer"
           >
-            {/* Background with gradient */}
+            {/* Background with gradient and image */}
             <div className="absolute inset-0 bg-gradient-to-br from-charcoal via-[#3D2415] to-charcoal">
-              <div className="absolute inset-0 bg-lotus-watermark opacity-20" />
+              <div 
+                className="absolute inset-0 opacity-40 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
+                style={{ backgroundImage: `url(${category.thumbnailImage})` }}
+              />
             </div>
 
             {/* Hover overlay */}
@@ -41,7 +77,7 @@ export default function DivineCollections() {
               <motion.span
                 className="self-start mb-auto mt-4 px-3 py-1.5 bg-white/10 backdrop-blur-sm text-cream text-xs font-medium rounded-pill border border-white/10"
               >
-                {category.productCount} Products
+                Sacred Collection
               </motion.span>
 
               {/* Category info */}
@@ -59,8 +95,9 @@ export default function DivineCollections() {
               </div>
             </div>
           </motion.a>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
