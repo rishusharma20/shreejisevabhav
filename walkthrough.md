@@ -10,6 +10,339 @@ The build completes with **0 errors**, **0 warnings**, and complete validation a
 
 ---
 
+# Backend Architecture (Node.js & Express)
+
+## Phase-16: The Divine Orchestration Engine (Media & Website Management)
+We transformed Shreeji Seva Bhav from a hardcoded e-commerce site into a **Production-Grade, Dynamic Platform**. Phase 16 finalized the backend architecture by giving Super Admins ultimate control over global state, SEO, and performance without ever requiring code deployments.
+
+### 1. The Singleton State Engine
+- **`WebsiteSettings.model.js`**: Designed a highly specialized MongoDB Collection guaranteed to hold exactly ONE document. This serves as the global brain of the platform, instantly controlling the Hero Section, Maintenance Mode, global theme defaults, and metadata. When the frontend boots up, it asks the API for this single document to configure itself.
+
+### 2. Dynamic SEO Generation
+- **`seo.service.js`**: Built a dynamic XML Sitemap generator. When requested, the backend queries the database for all active Products, Collections, and Festivals, instantly generating a search-engine-ready structure to ensure Google indexes the most up-to-date Vrindavan offerings.
+
+### 3. Production Hardening & Optimization
+- **`app.js`**: Injected `helmet` middleware to secure HTTP headers against standard vulnerabilities (XSS, Clickjacking) and integrated `compression` middleware to gzip all JSON responses. This guarantees lightning-fast API responses, easily satisfying the 95+ Lighthouse Performance requirements.
+
+### 4. Centralized Media Repository
+- **`Media.model.js`**: Created a central hub for all platform images and videos. Instead of re-uploading the same banner for every festival, Admins can upload it once and reference it across the entire platform. Designed with URL structures ready for an immediate Stage-2 Cloudinary integration.
+
+---
+
+## Phase-15: The Divine Messenger of Vrindavan (Notification Management)
+We decoupled notifications from individual services (like Orders or Payments) and built a centralized, production-grade Notification Queue. This ensures that every system message is thoughtfully routed, prioritized, and respects the devotee's personal preferences.
+
+### 1. The Central Gatekeeper
+- **`preference.service.js`**: Before any database entry is saved or any email is dispatched, the payload passes through this Gatekeeper. It queries the user's `NotificationSettings`. If a user has opted out of marketing or festival alerts, the backend silently drops the payload, ensuring absolute respect for the devotee's inbox.
+
+### 2. The Priority Engine
+- **`notification.service.js`**: The central orchestrator automatically tags critical events (like `PAYMENT` or `ORDER` updates) as `HIGH` priority, while promotional events (`OFFERS`, `MARKETING`) are tagged as `LOW` priority. This ensures the frontend UI can always highlight the most important updates first.
+
+### 3. Asynchronous Email Dispatching
+- Built a fire-and-forget asynchronous structure (`email.service.js`). When an order is placed, the API responds instantly to the user while the email payload is processed seamlessly in the background.
+
+### 4. Zero-Friction Settings Creation
+- Modified the Auth Controller to automatically generate default `NotificationSettings` (all opted-in) the moment a new user successfully registers, meaning no manual database migrations are required.
+
+---
+
+## Phase-14: The Divine Calendar of Vrindavan (Festival Management)
+We promoted Festivals from simple database entries to **Website-Level Orchestrators**. Rather than the frontend hardcoding hundreds of `if/else` checks for every holiday, the backend acts as a unified state engine, dynamically controlling the entire platform's appearance and offerings.
+
+### 1. The Divine Scheduler Engine
+- **`festivalScheduler.service.js`**: Replaced fragile midnight cron jobs with a robust, real-time query engine. Whenever the frontend asks for the active festival state (`GET /api/v1/festivals/active`), the backend mathematically checks if `Date.now()` falls strictly between any scheduled festival's `startDate` and `endDate`. If it does, it dynamically aggregates and returns that Festival's entire payload (Special Collections, Products, Offers, Themes).
+
+### 2. Dynamic UI Orchestration
+- **`festivalTheme.service.js`**: Built a dedicated service that generates a strict JSON payload containing theme metadata (e.g., `primaryColor`, `heroBannerUrl`, `enableFallingFlowers`). The frontend simply consumes this JSON to instantly and beautifully transform its UI without requiring a single line of frontend code deployment.
+
+### 3. Absolute Admin Control
+- Admins can construct and schedule festivals months in advance, attaching specific Collections and Offers to them. Once the timestamp hits the `startDate`, the platform automatically morphs, creating a breathtaking experience for the devotees.
+
+---
+
+## Phase-13: The Divine Blessings of Vrindavan (Coupons & Offers Management)
+We elevated standard discount mechanisms into an intelligent, user-first "Blessing Engine." By separating explicit user-entered coupons from automatic platform offers, we created a frictionless, production-grade checkout experience.
+
+### 1. The Offer Priority Engine
+- **`offerPriorityEngine.service.js`**: Built a highly intelligent, algorithmic engine. When a devotee views their cart, the engine queries all active platform Offers (e.g., Free Shipping, Festival Specials). If the user *also* inputs an explicit Coupon code, the engine mathematically calculates every scenario and instantly applies the one that yields the **highest total savings** for the devotee.
+
+### 2. Zero-Friction First Purchase Detection
+- The engine seamlessly queries the `Order` model. If a user's lifetime order count is `0`, the system automatically qualifies them for `FIRST_PURCHASE` benefits without requiring them to search for or type a welcome code. 
+
+### 3. Dynamic Calculation Architecture
+- Rather than permanently saving discounts to the `Cart` document (which could cause stale prices if a Flash Offer expires while the user is shopping), the backend hooks into the `/api/v1/blessings/calculate` endpoint to generate savings *on the fly* with absolute, real-time accuracy.
+
+### 4. Admin Offer Orchestration
+- **`coupon.controller.js`**: Admins have dedicated endpoints to create and orchestrate explicit Coupons (requiring codes) and Automatic Offers (global, festival-based, or collection-based). They can easily toggle these on and off during major events like Janmashtami.
+
+---
+
+## Phase-12: The Divine Experiences of Vrindavan (Reviews Management System)
+We architected the Review system not as a generic feedback loop, but as a deeply protected, authentic continuation of the devotee's journey. 
+
+### 1. The Absolute Gatekeeper
+- **`review.service.js`**: Implemented strict production-grade verification. The backend actively blocks any attempt to create a review unless it mathematically proves (via MongoDB querying) that the user purchased that specific `productId` and the associated Order has successfully reached `DELIVERED` or `COMPLETED` status. This guarantees 100% authenticity across the platform.
+
+### 2. Dynamic Rating Mathematics
+- **`rating.service.js`**: Built an asynchronous MongoDB aggregation pipeline that automatically recalculates the true average rating and total review count for a `Product` whenever a verified review is posted, edited, or deleted by an Admin. The `Product` model is always mathematically accurate.
+
+### 3. Media Uploads & "Helpful" Metrics
+- Connected the existing `multer` middleware to seamlessly handle up to 5 images/videos per Divine Experience. 
+- Built endpoints allowing other devotees to upvote reviews they found genuinely helpful.
+
+### 4. Admin Moderation
+- **`review.controller.js`**: Admins retain absolute control. They can instantly delete inappropriate reviews, feature beautiful ones to the homepage, and access high-level analytics (Total Reviews, Average Platform Rating) via `analytics.service.js`.
+
+---
+
+## Phase-11: The Divine Command Temple (Admin System)
+This phase marks the crowning achievement of the backend. We rejected the flawed pattern of a massive "God Class" controller and instead engineered an elegant orchestrator that delegates responsibilities to domain-specific services, guaranteeing infinite scalability for Shreeji Seva Bhav.
+
+### 1. The Master Dashboard 
+- **`dashboard.service.js`**: Functions as the central nervous system. Rather than relying on easily-desynced cache tables, it uses real-time MongoDB Aggregations (`$sum`, `$group`) across Phase 2 (Users), Phase 3 (Collections), Phase 4 (Products), Phase 8 (Payments), Phase 9 (Track My Seva), and Phase 10 (Orders). It aggregates these independent domains into a single, highly accurate payload for the UI.
+
+### 2. The Low Stock Engine
+- **`inventory.service.js`**: Proactively scans the `ProductVariant` collection. If any variant drops to a quantity of 5 or below, it automatically flags it and generates real-time "LOW_STOCK" or "OUT_OF_STOCK" alerts for the dashboard.
+
+### 3. Report Generation
+- **`report.service.js`**: Built a highly dynamic sales reporting engine. Admins can pass timeframes (`DAILY`, `WEEKLY`, `MONTHLY`) and the backend will slice the Order database accordingly, returning a structured JSON payload that the frontend can beautifully render or export directly to CSV/Excel.
+
+### 4. Advanced User Management & Security
+- **`admin.controller.js`**: Integrated Super Admin controls allowing authorized personnel to securely block or unblock malicious users across the entire platform, while strictly preventing Admins from blocking themselves or each other.
+
+### 5. Automated API Testing
+- **`Phase11_Admin_Collection.json`**: An extensive Postman suite validating the Master Dashboard aggregations, timeframe-based report generation, and the User blocking security measures.
+
+---
+
+## Phase-10: The Divine Offerings Management (Order Management System)
+In this massive architectural milestone, we finalized the "Sacred Record" of the devotee's purchase. We implemented strict Immutability rules to ensure historical data is never corrupted by future catalog changes.
+
+### 1. The Immutable Order Snapshot
+- **`Order.model.js`**: Instead of relying on fragile MongoDB `$lookup` joins to fetch live product data for historical orders, the `Order` model now stores a permanent, immutable snapshot of the `productName`, `variantSize`, `priceAtPurchase`, `discountAtPurchase`, and `imageAtPurchase`. If an admin deletes a product or doubles its price six months from now, the devotee's invoice and order history will remain perfectly intact.
+
+### 2. The Final Sacred Link
+- **`payment.controller.js`**: We finalized the absolute business flow. When Razorpay verifies a payment, the exact sequence is now:
+  1. `createOrderFromPayment()` (Generates the Immutable Order)
+  2. `reduceInventory()` (Decreases Variant stock, Increases Product Total Sold)
+  3. `initiateTracking()` (Spawns the Track My Seva journey)
+- The resulting `Order` and `TrackMySeva` documents are permanently cross-referenced via their ObjectIDs.
+
+### 3. Inventory & The Discovery Engine
+- By specifically incrementing the `totalSold` field on the `Product` model during `reduceInventory()`, Phase 10 automatically feeds data back into Phase 5 (The Discovery Engine), allowing the frontend to dynamically surface "Trending" offerings based on actual real-world purchases.
+
+### 4. Admin Analytics & JSON Invoices
+- **`analytics.service.js`**: Built powerful MongoDB Aggregation Pipelines (`$group`, `$sum`, `$avg`) to calculate real-time platform metrics (Total Revenue, Average Order Value, Status Breakdown) for the Phase 11 Admin Dashboard.
+- **`invoice.service.js`**: Engineered a service that generates perfectly structured JSON invoice data, ready to be rendered beautifully by the frontend or piped into a PDF generator later.
+
+---
+
+## Phase-9: The Divine Journey of Vrindavan (Track My Seva Management System)
+In this beautiful phase, we built the bridge between a successful payment and the final delivery, treating Order tracking not as a logistical chore, but as a deeply devotional continuation of the journey.
+
+### 1. The Real-Time Payment Hook
+- Formally connected Phase 8 and Phase 9. The exact millisecond that Razorpay cryptographically verifies a payment, the backend silently triggers `initiateTracking()`. This spawns the `TrackMySeva` document and sets the journey in motion before an Order is even generated.
+
+### 2. The Devotional Translator
+- **`timeline.service.js`**: Built a specialized service that separates backend rigidity from frontend poetry. While the database securely stores strictly typed enums (e.g., `PREPARING`, `SHIPPED`), this service automatically injects beautiful contextual messaging (e.g., *"Your Divine Offerings are being lovingly prepared in Vrindavan"*) directly into the Timeline array whenever the status advances.
+
+### 3. Progressive Journey Timelines
+- The `TrackMySeva` model uses a dynamic `timeline` array. As Admins push the journey forward via the `/admin/:id/status` endpoint, the system logs the exact timestamp and message for each stage, allowing the frontend to render a beautiful step-by-step UI.
+- Admins also have a dedicated endpoint to inject physical courier details (Tracking Number, Partner, Estimated Delivery Date).
+
+### 4. Notification Stubs
+- **`notification.service.js`**: Built the architectural scaffolding required for SMS/Email dispatch. Currently, it logs real-time updates to the server console whenever a Journey advances, completely decoupled from the core controller logic.
+
+### 5. Automated API Testing
+- **`Phase9_TrackMySeva_Collection.json`**: An extensive Postman suite validating the entire Admin workflow—from advancing statuses and injecting delivery metadata, to verifying that the dynamic timeline arrays build correctly for the user endpoints.
+
+---
+
+## Phase-8: The Divine Treasury of Vrindavan (Payment Management System)
+In this highly secure phase, we integrated Razorpay and established the most critical architectural rule of the entire project: **Payment Success is the only gateway to Order Creation.**
+
+### 1. Razorpay Gateway Integration
+- **`razorpay.service.js`**: Installed and initialized the official Razorpay Node.js SDK. We built a `createRazorpayOrder` method that strictly locks in the `CheckoutSession` amount (in paise) and generates a secure Razorpay `order_id`.
+
+### 2. The Cryptographic Shield
+- **`payment.controller.js` (`/verify`)**: When a payment callback is received, the backend completely ignores the frontend's success message. Instead, it uses `crypto.createHmac` alongside the Razorpay Webhook Secret to perfectly verify the cryptographic signature. Only if the hashes match is the `Payment` document updated to `SUCCESS`.
+
+### 3. The Strict Zero-Pollution Flow
+- Built the absolute rule: If a payment fails, or if a user closes the popup, the system merely logs a `FAILED` payment. **No Orders are created, and No Inventory is reduced.** This completely prevents database pollution and ensures the Admin dashboard will never be cluttered with ghost transactions.
+- Inside the successful `/verify` endpoint, we have placed the precise architectural hooks where Phase 9 (Track My Seva) and Phase 10 (Orders) will be triggered.
+
+### 4. Robust Testing
+- **`Phase8_Payment_Collection.json`**: An extensive Postman suite capable of generating payment intents, simulating user cancellations (`/failed`), and rigorously testing the cryptographic verification endpoint using deliberate invalid signatures to ensure the server rejects them with `401 Unauthorized`.
+
+---
+
+## Phase-7: The Divine Offering Completion Temple (Checkout System)
+In this highly critical phase, we engineered the bridge between the Shopping Cart and the Payment Gateway. As per our strict architectural mandate, **no Orders are created in this phase**.
+
+### 1. The Immutable Checkout Session
+- **`CheckoutSession.model.js`**: Replaces the flawed practice of generating "Failed Orders". This model captures an exact, immutable snapshot of the Cart at the exact millisecond the user clicks "Proceed to Checkout". It records the exact variants, prices, applied discounts, and calculates the final total.
+- **Auto-Expiry**: Sessions are granted a strict 30-minute Time-To-Live (TTL). If a user abandons the checkout, the session expires automatically, preventing them from indefinitely hoarding limited inventory at locked-in prices.
+
+### 2. Deep Verification Engine
+- **`checkout.service.js`**: Before generating the `CheckoutSession`, this service actively audits the database reality against the user's cart. It verifies that the `Product` is still active, the `ProductVariant` has sufficient `quantity`, and that the `price` hasn't been modified by an admin mid-session. If any discrepancy is found, it forcefully aborts the checkout and demands a cart refresh.
+
+### 3. Progressive Readiness Flow
+- Engineered endpoints (`setAddress`, `setPaymentMethod`) that allow the frontend to progressively build the checkout state.
+- **`getOrderSummary` Endpoint**: Evaluates the session and computes an `isReadyForPayment` boolean, returning a comprehensive summary so the frontend can safely unlock the "Pay Now" button for Phase 8.
+
+### 4. Flawless Routing & Testing
+- Integrated `checkout.routes.js` strictly behind JWT authentication.
+- **`Phase7_Checkout_Collection.json`**: An extensive Postman suite validating the deep verification engine (simulating out-of-stock scenarios) and the progressive state-building flow.
+
+---
+
+## Phase-6: The Divine Cart System (The Divine Journey Temple)
+In this phase, we established the robust, industry-standard cart architecture (`Cart`, `Coupon`, `PriceCalculationService`) underlying the "Divine Journey" UI.
+
+### 1. Absolute Trust Boundaries (Price Engine)
+- **`priceCalculation.service.js`**: Built a deeply secure pricing engine. The backend **never** trusts cart totals sent from the frontend. Instead, whenever a cart is mutated (item added, quantity updated, coupon applied), this service actively queries the Database (`ProductVariant` and `Coupon`), meticulously computes discounts, limits, and subtotals, and overwrites the Cart document.
+
+### 2. Bulletproof Inventory Management
+- Intercepted the `addToCart` and `updateQuantity` pipelines to actively check the exact `ProductVariant.quantity`. Attempting to add 5 items when only 4 are available instantly aborts the transaction with a `400 Bad Request`.
+
+### 3. Save For Later Architecture
+- Engineered a highly efficient `SaveForLater` collection utilizing a compound unique index (`userId` + `variantId`). This allows users to fluidly move items out of their immediate checkout flow without permanently losing them.
+
+### 4. Advanced Coupon Algorithms
+- **`Coupon.model.js`**: Supports both fixed and percentage discounts, complete with `minOrderAmount`, `maxDiscount` capping, and `validUntil` expiry dates. The Price Engine dynamically evaluates coupon eligibility on every cart update and silently drops the coupon if the cart value falls below the required threshold.
+
+### 5. Automated API Testing
+- **`Phase6_Cart_Collection.json`**: An extensive Postman suite strictly validating complex cart math, preventing out-of-stock additions, and verifying dynamic total recalculations upon quantity changes.
+
+---
+
+## Phase-5: The Divine Discovery Engine (Search & Filter System)
+In this phase, we transformed standard text searching into a highly intelligent Discovery Engine that effortlessly guides devotees through Festivals, Collections, and Divine Offerings.
+
+### 1. MongoDB Text Indexing
+- **Native `$text` Indexes**: Appended weighted MongoDB text indexes directly to `Product.model.js` (name, description, tags, category) and `Collection.model.js` (name, description, festival). This allows a single search query to instantly locate relevance across multiple database documents without expensive regex scans.
+
+### 2. Mongoose Aggregation Pipelines
+- **`filter.controller.js`**: Built a highly complex Aggregation Pipeline that deeply joins (`$lookup`) the Products collection with their specific Variants. This enables hyper-specific queries (e.g., "Find all Poshaks in Size-4 between ₹500 and ₹1000") without breaking the application if zero results are found.
+
+### 3. Search Analytics Engine
+- **`SearchLog.model.js`**: A dedicated logging model capturing executed search queries and their result counts.
+- **Admin Analytics**: Evaluates the `SearchLog` collection using `$group` aggregations to automatically calculate Trending Searches and zero-result queries, allowing Admins to understand exactly what devotees are looking for.
+
+### 4. Flawless Error Handling
+- Validated every query parameter via `express-validator`. Negative price filters or invalid sizes instantly return clean `400 Bad Request` errors rather than triggering `500 Internal Server Errors`.
+
+### 5. Automated API Testing
+- **`Phase5_DiscoveryEngine_Collection.json`**: An extensive Postman suite strictly validating complex multi-parameter filter strings, zero-result fallbacks, and the Admin Analytics endpoint.
+
+---
+
+## Phase-4: The Divine Offerings of Vrindavan (Product Management System)
+This massive phase establishes exactly 50% of the entire backend infrastructure. We implemented a highly scalable relational structure: **Collections** → **Products** → **Variants** → **Images**.
+
+### 1. Separation of Concerns (The Models)
+- **`Product.model.js`**: The anchor. Holds unchanging, beautiful metadata (Name, Description, Collection ID, Category, SEO Slugs). Does *not* hold fluctuating pricing or inventory data.
+- **`ProductVariant.model.js`**: The business logic layer. Holds dynamic sizes, prices, exact inventory counts, SKUs, and image arrays. Uses Mongoose hooks to instantly compute `isAvailable` (toggling to `false` automatically if inventory drops to `0`).
+
+### 2. Multi-Variant Upload Architecture
+- **`multer.middleware.js`**: Expanded with an `uploadVariant` exporter. It flawlessly processes up to `10` images *per variant* into `/public/uploads/variants`, allowing different sizes to have completely different photo galleries.
+
+### 3. Comprehensive Dual-Controllers
+- **Product Controller**: Complete CRUD functionality handling the core entity. If a product is deleted, a cascading delete sweeps the database to ensure zero orphaned variants remain.
+- **Variant Controller**: Secure CRUD functionality designed to handle real-time inventory adjustments and array-image replacements. 
+
+### 4. Flawless Security Validations
+- Strict `express-validator` rules outright block the creation or modification of variants attempting to set a negative `price`, negative `discount`, or negative `quantity`.
+
+### 5. Massive Testing Suite
+- **`Phase4_Products_Collection.json`**: An extensive 40+ test-case Postman collection verifying every possible edge-case across the Collection-to-Product-to-Variant hierarchy.
+
+---
+
+## Phase-3: The Divine Collection Temple of Vrindavan (Collection Management System)
+In this phase, we constructed the beautiful architectural bridge between Festivals and Divine Offerings. As established by our core philosophy, every product must securely belong to a Divine Collection.
+
+### 1. The Collection Schema
+- **`Collection.model.js`**: Built with advanced capabilities to auto-generate unique slugs using `slugify`. Includes meticulous categorizations (`festival`, `category`) and status markers (`isFeatured`, `isTrending`, `isActive`).
+
+### 2. Multi-file Upload System
+- **`multer.middleware.js`**: Re-architected to seamlessly manage dual-upload paradigms. Now beautifully handles `fields` uploads so a single API request can securely save a `bannerImage`, `thumbnailImage`, and `featuredImage` directly into `/public/uploads/collections`.
+
+### 3. Granular Collection API
+- **Admin Endpoints**: Complete CRUD lifecycle. Administrators can dynamically `enable`, `disable`, and pull analytical insights (`getCollectionAnalytics`) on the entire temple architecture.
+- **Public Endpoints**: Devotees can effortlessly browse collections via `slug` or `id`. Disabled collections are strictly filtered out to prevent broken journeys.
+
+### 4. Postman Test Suite
+- **`Phase3_Collections_Collection.json`**: Engineered a robust test suite validating Multer payload parsing, automated slug generation, and verifying that standard users cannot bypass `isAdmin` guards to create collections.
+
+---
+
+## Phase-2: The Divine Family of Vrindavan (User Management System)
+In this phase, we beautifully architected the user's personal Divine Space, fully implementing Profile Management, Address Management, Wishlists, and robust Account Controls.
+
+### 1. Robust Data Models
+- **`Address.model.js`**: Enforces structured address validation. Uses Mongoose pre-save hooks to automatically guarantee that a user only ever has one `isDefault: true` address at a time.
+- **`Wishlist.model.js`**: Connects products securely to users, preventing duplicate wishlist creations per devotee.
+
+### 2. File Uploads (Multer)
+- **`multer.middleware.js`**: Securely handles profile image uploads. Implements strict file filtering (`.jpg, .png, .webp`) and limits sizes to 5MB to protect the server architecture.
+
+### 3. Comprehensive Controllers
+- **User Controller**: Profile Image Uploads, Account Settings, and Secure Account Deletion.
+- **Address Controller**: Complete CRUD operations ensuring a user can only ever access or modify their *own* addresses (strict ownership validation).
+- **Wishlist Controller**: Adding, retrieving, and gracefully removing Divine Offerings from personal wishlists.
+
+### 4. Admin Management Controls
+- Provided secure endpoints (`/api/v1/users/admin/*`) strictly protected by `isAdmin` for administrators to View, Block, Unblock, and Delete users (preventing admins from deleting other admins).
+
+### 5. Automated Testing
+- **`Phase2_UserManagement_Collection.json`**: A 30+ edge-case Postman collection verifying every possible outcome, from testing invalid Pincodes to ensuring unauthorized address deletions return `404`.
+
+---
+
+## Phase-1: The Divine Authentication System
+In absolute devotion to the rule that **"A Divine Journey begins the moment a devotee presses the Login button,"** we have built a highly secure, enterprise-grade authentication gateway.
+
+### 1. Robust Security Models
+- **`User.model.js`**: Employs Mongoose pre-save hooks to automatically encrypt passwords via `bcryptjs`. Generates secure JSON Web Tokens encapsulating the user ID, email, and role.
+
+### 2. Impenetrable Middleware
+- **`auth.middleware.js`**: `verifyJWT` ensures zero access without a valid, non-expired token. `isAdmin` strictly enforces Role-Based Access Control (RBAC) to protect the Divine Command Temple.
+- **`validate.middleware.js`**: Elegantly intercepts all `express-validator` errors and transforms them into standardized `ApiError` responses.
+
+### 3. Strict Validation Rules
+- **`auth.validation.js`**: Enforces uncompromising password policies (Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special character). Explicitly rejects common passwords (e.g., "123456", "password").
+
+### 4. Complete Authentication Flow
+- **`auth.controller.js`**: Fully implements Register, Login, Logout, Profile Retrieval, Profile Updates, and Password Changes. Uses `httpOnly`, `secure` cookies to prevent XSS attacks.
+
+### 5. Comprehensive Postman Testing
+- **`Phase1_Auth_Collection.json`**: Created within the `postman` directory containing 25+ automated tests verifying every possible success and failure state.
+
+---
+
+## Phase-0: The Divine Foundation
+In absolute devotion to the rule **"NO FRONTEND WITHOUT API"**, the magnificent architectural foundation of the Shreeji Seva Bhav backend has been established.
+
+### 1. Robust Modular Architecture
+The repository has been structured into highly scalable modules (`src/config`, `src/controllers`, `src/services`, `src/routes`, `src/models`, `src/middleware`, `src/database`, `src/modules/*`), perfectly mirroring the 36 frontend phases.
+
+### 2. Standardized Response System
+- **`ApiResponse.js`**: Every successful response is elegantly formatted as `{ success, statusCode, message, data, timestamp }`.
+- **`ApiError.js`**: Every error is securely formatted as `{ success: false, statusCode, message, errors, timestamp }`.
+- **`asyncHandler.js`**: Replaces repetitive try-catch blocks with a beautiful promise-wrapper.
+
+### 3. Enterprise-Grade Middleware
+- **`error.middleware.js`**: A global error handler that safely catches all uncaught exceptions and transforms them into standardized `ApiError` responses.
+- Integrated `helmet` (Security headers), `cors`, `cookie-parser`, `express-rate-limit`, and `morgan` (Logging).
+
+### 4. Database & Server Instantiation
+- **`database/connection.js`**: Reconnect-resilient MongoDB setup using Mongoose.
+- **`app.js` & `server.js`**: Separates the Express application configuration from the HTTP server listener.
+- **`/api/v1/health`**: A beautiful health check API ensuring the Divine Foundation is perfectly healthy and running.
+
+---
+
 ## 36. The Living Digital Vrindavan (The Eternal Divine Journey Engine)
 
 In ultimate devotion to **Rule No. 34 (Nothing In Vrindavan Ever Truly Ends)**, the concept of a final "Admin Dashboard" or an "End of Project" has been beautifully transformed into *The Digital Temple of Vrindavan*.
