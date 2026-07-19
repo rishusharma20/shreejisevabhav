@@ -1,21 +1,12 @@
 const Product = require("../../models/Product.model");
 const Collection = require("../../models/Collection.model");
-const SearchLog = require("../../models/SearchLog.model");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
 
-// Helper function to log searches
+// Helper function to log searches (disabled for V1 MVP)
 const logSearch = async (req, query, totalResults) => {
-    try {
-        await SearchLog.create({
-            userId: req.user ? req.user._id : null,
-            searchQuery: query.toLowerCase(),
-            resultsFound: totalResults
-        });
-    } catch (error) {
-        console.error("Failed to log search:", error);
-    }
+    // No-op for V1 15-collection limit
 };
 
 // @desc    Global Search (Products & Collections)
@@ -108,23 +99,9 @@ const getRelatedProducts = asyncHandler(async (req, res) => {
 // @route   GET /api/v1/search/admin/analytics
 // @access  Private/Admin
 const getAdminAnalytics = asyncHandler(async (req, res) => {
-    // Aggregate trending searches
-    const trendingSearches = await SearchLog.aggregate([
-        { $group: { _id: "$searchQuery", count: { $sum: 1 }, avgResults: { $avg: "$resultsFound" } } },
-        { $sort: { count: -1 } },
-        { $limit: 10 }
-    ]);
-
-    const zeroResultSearches = await SearchLog.aggregate([
-        { $match: { resultsFound: 0 } },
-        { $group: { _id: "$searchQuery", count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 10 }
-    ]);
-
     return res.status(200).json(new ApiResponse(200, "Search Analytics", {
-        trendingSearches,
-        zeroResultSearches
+        trendingSearches: [],
+        zeroResultSearches: []
     }));
 });
 

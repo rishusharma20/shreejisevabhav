@@ -1,6 +1,5 @@
 const crypto = require("crypto");
 const User = require("../../models/User.model");
-const NotificationSettings = require("../../models/NotificationSettings.model");
 const Cart = require("../../models/Cart.model");
 const { dispatchNotification } = require("../notifications/notification.service");
 const asyncHandler = require("../../utils/asyncHandler");
@@ -32,9 +31,6 @@ const registerUser = asyncHandler(async (req, res) => {
         password,
         phone
     });
-
-    // Default settings are all 'true'
-    await NotificationSettings.create({ userId: user._id });
 
     const createdUser = await User.findById(user._id).select("-password");
     const accessToken = user.generateAccessToken();
@@ -207,8 +203,7 @@ const resetPassword = asyncHandler(async (req, res) => {
 const deleteAccount = asyncHandler(async (req, res) => {
     const userId = req.user._id;
 
-    // Delete associated settings and cart
-    await NotificationSettings.findOneAndDelete({ userId });
+    // Delete associated cart
     await Cart.findOneAndDelete({ userId });
     
     // Note: In a production system, we typically anonymize or soft-delete orders to preserve revenue integrity.

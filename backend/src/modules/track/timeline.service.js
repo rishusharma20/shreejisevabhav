@@ -4,6 +4,10 @@
  */
 
 const timelineDictionary = {
+    "ORDER_RECEIVED": {
+        title: "ORDER RECEIVED",
+        description: "Your order has been successfully placed and received."
+    },
     "PAYMENT_SUCCESS": {
         title: "PAYMENT SUCCESSFUL",
         description: "Your Divine Offerings have been accepted with love."

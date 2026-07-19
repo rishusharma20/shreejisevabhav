@@ -20,6 +20,7 @@ const trackMySevaSchema = new mongoose.Schema(
         currentStatus: {
             type: String,
             enum: [
+                "ORDER_RECEIVED",
                 "PAYMENT_SUCCESS",
                 "PREPARING",
                 "PACKAGING",
@@ -28,7 +29,7 @@ const trackMySevaSchema = new mongoose.Schema(
                 "DELIVERED",
                 "COMPLETED"
             ],
-            default: "PAYMENT_SUCCESS"
+            default: "ORDER_RECEIVED"
         },
         trackingNumber: {
             type: String,

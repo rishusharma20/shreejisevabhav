@@ -1,7 +1,6 @@
 const Cart = require("../../models/Cart.model");
 const Product = require("../../models/Product.model");
 const ProductVariant = require("../../models/ProductVariant.model");
-const SaveForLater = require("../../models/SaveForLater.model");
 const { recalculateCart } = require("./priceCalculation.service");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
@@ -152,92 +151,19 @@ const clearCart = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, "Cart cleared successfully", { cart }));
 });
 
-// @desc    Move Item to Save For Later
-// @route   POST /api/v1/cart/save-for-later
-// @access  Private
+// @desc    Move Item to Save For Later (Disabled in V1 MVP)
 const moveToSaveForLater = asyncHandler(async (req, res) => {
-    const { variantId } = req.body;
-    const userId = req.user._id;
-
-    let cart = await Cart.findOne({ userId });
-    if (!cart) throw new ApiError(404, "Cart not found");
-
-    const itemIndex = cart.products.findIndex(p => p.variantId.toString() === variantId);
-    if (itemIndex === -1) throw new ApiError(404, "Item not in cart");
-
-    const item = cart.products[itemIndex];
-
-    // Add to SaveForLater collection (ignore error if it already exists)
-    try {
-        await SaveForLater.create({
-            userId,
-            productId: item.productId,
-            variantId: item.variantId
-        });
-    } catch (err) {
-        // Unique constraint violation means it's already saved, which is fine.
-        if (err.code !== 11000) throw err;
-    }
-
-    // Remove from cart
-    cart.products.splice(itemIndex, 1);
-    cart = await recalculateCart(cart);
-    await cart.save();
-
-    return res.status(200).json(new ApiResponse(200, "Moved to Save For Later", { cart }));
+    return res.status(200).json(new ApiResponse(200, "Save for later disabled in V1"));
 });
 
-// @desc    Get Save For Later Items
-// @route   GET /api/v1/cart/save-for-later
-// @access  Private
+// @desc    Get Save For Later Items (Disabled in V1 MVP)
 const getSaveForLaterItems = asyncHandler(async (req, res) => {
-    const userId = req.user._id;
-    
-    const items = await SaveForLater.find({ userId })
-        .populate("productId", "name slug category")
-        .populate("variantId", "size images price discount");
-
-    return res.status(200).json(new ApiResponse(200, "Save for later items", { items }));
+    return res.status(200).json(new ApiResponse(200, "Save for later disabled in V1", { items: [] }));
 });
 
-// @desc    Move from Save For Later to Cart
-// @route   POST /api/v1/cart/move-to-cart
-// @access  Private
+// @desc    Move from Save For Later to Cart (Disabled in V1 MVP)
 const moveToCart = asyncHandler(async (req, res) => {
-    const { variantId } = req.body;
-    const userId = req.user._id;
-
-    const savedItem = await SaveForLater.findOne({ userId, variantId });
-    if (!savedItem) throw new ApiError(404, "Item not found in saved list");
-
-    // Inventory Check
-    const variant = await ProductVariant.findById(variantId);
-    if (!variant || !variant.isAvailable) {
-        throw new ApiError(400, "This variant is currently out of stock");
-    }
-
-    let cart = await getOrCreateCart(userId);
-    
-    // Check if already in cart
-    const itemIndex = cart.products.findIndex(p => p.variantId.toString() === variantId);
-    if (itemIndex === -1) {
-        cart.products.push({
-            productId: savedItem.productId,
-            variantId: savedItem.variantId,
-            quantity: 1
-        });
-    } else {
-        cart.products[itemIndex].quantity += 1;
-    }
-
-    // Recalculate
-    cart = await recalculateCart(cart);
-    await cart.save();
-
-    // Remove from SaveForLater
-    await SaveForLater.findByIdAndDelete(savedItem._id);
-
-    return res.status(200).json(new ApiResponse(200, "Moved to Cart", { cart }));
+    return res.status(200).json(new ApiResponse(200, "Save for later disabled in V1"));
 });
 
 
