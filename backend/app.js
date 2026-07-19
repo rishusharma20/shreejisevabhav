@@ -45,6 +45,7 @@ const orderRouter = require('./src/modules/orders/order.routes');
 const adminRouter = require('./src/modules/admin/admin.routes');
 const reviewRouter = require('./src/modules/reviews/review.routes');
 const blessingRouter = require('./src/modules/coupons/coupon.routes');
+const festivalRouter = require('./src/modules/festivals/festival.routes');
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
@@ -64,6 +65,7 @@ app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/blessings", blessingRouter);
+app.use("/api/v1/festivals", festivalRouter);
 
 // Health Check API
 app.get("/api/v1/health", (req, res) => {

@@ -1,0 +1,72 @@
+{
+    "info": {
+        "_postman_id": "e5f6g7h8-i9j0-k1l2-m3n4-o5p6q7r8s9t0",
+        "name": "Shreeji Seva Bhav - Phase 14 Festivals",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Admin Create Festival (Scheduler Test)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"title\": \"Janmashtami Mahotsav 2026\",\n    \"description\": \"Celebrate the birth of Lord Krishna.\",\n    \"festivalDate\": \"2026-08-15T00:00:00.000Z\",\n    \"bannerImage\": \"/images/janmashtami-banner.jpg\",\n    \"thumbnailImage\": \"/images/janmashtami-thumb.jpg\",\n    \"startDate\": \"2026-07-01T00:00:00.000Z\",\n    \"endDate\": \"2026-08-20T23:59:59.000Z\",\n    \"festivalTheme\": {\n        \"primaryColor\": \"#5B21B6\",\n        \"enableFallingFlowers\": true,\n        \"greetingPrefix\": \"Radhe Radhe\"\n    }\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/festivals/create",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "festivals", "create"]
+                }
+            }
+        },
+        {
+            "name": "2. Get Current Active Festival (Website Orchestrator)",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/festivals/active",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "festivals", "active"]
+                }
+            }
+        },
+        {
+            "name": "3. Get Upcoming Festivals",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/festivals/upcoming",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "festivals", "upcoming"]
+                }
+            }
+        },
+        {
+            "name": "4. Admin Get Festival Analytics",
+            "request": {
+                "method": "GET",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/festivals/admin/REPLACE_WITH_FESTIVAL_ID/analytics",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "festivals", "admin", "REPLACE_WITH_FESTIVAL_ID", "analytics"]
+                }
+            }
+        }
+    ]
+}
