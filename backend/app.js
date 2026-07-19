@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
+const compression = require("compression");
 const morgan = require("morgan");
 const { errorHandler } = require("./src/middleware/error.middleware");
 const ApiResponse = require("./src/utils/ApiResponse");
@@ -10,6 +11,7 @@ const app = express();
 
 // Security Middlewares
 app.use(helmet());
+app.use(compression());
 app.use(cors({
     origin: process.env.CORS_ORIGIN,
     credentials: true,
@@ -47,6 +49,7 @@ const reviewRouter = require('./src/modules/reviews/review.routes');
 const blessingRouter = require('./src/modules/coupons/coupon.routes');
 const festivalRouter = require('./src/modules/festivals/festival.routes');
 const notificationRouter = require('./src/modules/notifications/notification.routes');
+const orchestrationRouter = require('./src/modules/website/website.routes');
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
@@ -68,6 +71,7 @@ app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/blessings", blessingRouter);
 app.use("/api/v1/festivals", festivalRouter);
 app.use("/api/v1/notifications", notificationRouter);
+app.use("/api/v1/orchestration", orchestrationRouter);
 
 // Health Check API
 app.get("/api/v1/health", (req, res) => {

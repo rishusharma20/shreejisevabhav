@@ -1,0 +1,77 @@
+{
+    "info": {
+        "_postman_id": "g7h8i9j0-k1l2-m3n4-o5p6-q7r8s9t0u1v2",
+        "name": "Shreeji Seva Bhav - Phase 16 Orchestration Engine",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Get Public Website Settings",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/orchestration/settings",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "orchestration", "settings"]
+                }
+            }
+        },
+        {
+            "name": "2. Get Dynamic SEO Sitemap",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/orchestration/sitemap",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "orchestration", "sitemap"]
+                }
+            }
+        },
+        {
+            "name": "3. Admin Enable Maintenance Mode",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"maintenanceMode\": true,\n    \"heroSection\": {\n        \"heading\": \"The Temple is Currently Closed\",\n        \"subheading\": \"We are decorating the divine platform. Please return soon.\",\n        \"backgroundMediaUrl\": \"https://example.com/maintenance.jpg\"\n    }\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/orchestration/settings",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "orchestration", "settings"]
+                }
+            }
+        },
+        {
+            "name": "4. Admin Upload Media",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer REPLACE_WITH_ADMIN_JWT" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"title\": \"Janmashtami Gold Banner 2026\",\n    \"mediaType\": \"IMAGE\",\n    \"url\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n    \"altText\": \"Golden Janmashtami banner with flute\",\n    \"isFeatured\": true\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/orchestration/media",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "v1", "orchestration", "media"]
+                }
+            }
+        }
+    ]
+}
