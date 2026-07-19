@@ -6,35 +6,10 @@ import { ChevronRight, ArrowLeft } from "lucide-react";
 import DivineCartItem from "@/components/cart/DivineCartItem";
 import DivineSummary from "@/components/cart/DivineSummary";
 import CartRecommendations from "@/components/cart/CartRecommendations";
-
-// Mock data reflecting what a devotee might have selected.
-const MOCK_CART_ITEMS = [
-  {
-    id: "dw-1",
-    title: "Midnight Blue Zardozi Vastra",
-    price: "₹4,100",
-    quantity: 1,
-    size: "Size 3",
-    category: "Krishna Vastra",
-    imageSrc: "", // Uses placeholder if empty
-  },
-  {
-    id: "al-1",
-    title: "Pure Gold Plated Peacock Mukut",
-    price: "₹8,500",
-    quantity: 1,
-    size: "Standard",
-    category: "Ratna Alankaar",
-    imageSrc: "",
-  }
-];
-
+import { useCart } from "@/context/CartContext";
 export default function DivineCartPage() {
-  const subtotal = MOCK_CART_ITEMS.reduce((acc, item) => {
-    // Basic calculation for mock data, removing currency symbols for math
-    const priceNum = parseInt(item.price.replace(/[^0-9]/g, ""), 10);
-    return acc + priceNum * item.quantity;
-  }, 0);
+  const { items, totalAmount } = useCart();
+
 
   return (
     <main className="min-h-screen w-full bg-[#FFFBF4] relative overflow-hidden pb-24 pt-32">
@@ -99,9 +74,26 @@ export default function DivineCartPage() {
           {/* LEFT: Offering Items */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             <AnimatePresence>
-              {MOCK_CART_ITEMS.map((item, index) => (
-                <DivineCartItem key={item.id} {...item} />
-              ))}
+              {items.length > 0 ? (
+                items.map((item) => (
+                  <DivineCartItem 
+                    key={item.product.id} 
+                    id={item.product.id}
+                    title={item.product.name}
+                    price={`₹${item.product.price.toLocaleString()}`}
+                    quantity={item.quantity}
+                    category={item.product.category || "Divine Offering"}
+                    imageSrc={item.product.image}
+                  />
+                ))
+              ) : (
+                <div className="text-center py-12 bg-white/40 backdrop-blur-xl border border-gold-start/20 rounded-3xl">
+                  <p className="text-warm-gray mb-4">Your divine cart is empty.</p>
+                  <Link href="/collections" className="text-gold-start font-bold underline">
+                    Explore Offerings
+                  </Link>
+                </div>
+              )}
             </AnimatePresence>
           </div>
           
@@ -112,7 +104,7 @@ export default function DivineCartPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <DivineSummary subtotal={subtotal} />
+              <DivineSummary subtotal={totalAmount} />
             </motion.div>
           </div>
         </div>

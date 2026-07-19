@@ -3,11 +3,6 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import DivinePathHero from "@/components/discovery/path/DivinePathHero";
-import HiddenPathGuidance from "@/components/discovery/path/HiddenPathGuidance";
-import TodaysDivineDarshan404 from "@/components/discovery/path/TodaysDivineDarshan404";
-import DivineSearchSakhi404 from "@/components/discovery/path/DivineSearchSakhi404";
-import ContinueJourney404 from "@/components/discovery/path/ContinueJourney404";
 
 export default function NotFoundPage() {
   return (
@@ -52,14 +47,13 @@ export default function NotFoundPage() {
         </div>
       </div>
 
-      {/* ── PAGE CONTENT ── */}
-      <DivinePathHero />
-      <HiddenPathGuidance />
-      <DivineSearchSakhi404 />
-      <TodaysDivineDarshan404 />
-      
-      {/* ── RULE NO. 25: NO ERROR FEELS LIKE AN ERROR ── */}
-      <ContinueJourney404 />
+      <div className="relative z-50 text-center py-20">
+        <h1 className="text-4xl font-display text-[#5C1A1A] mb-4">Divine Path Not Found</h1>
+        <p className="text-[#8B6F4E]">The path you seek is currently unavailable.</p>
+        <Link href="/" className="mt-8 inline-block px-8 py-3 bg-[#5C1A1A] text-white rounded-full text-xs font-bold uppercase tracking-widest hover:bg-[#8B6F4E] transition-colors">
+          Return to Temple
+        </Link>
+      </div>
 
     </main>
   );

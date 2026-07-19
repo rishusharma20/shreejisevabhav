@@ -4,7 +4,7 @@ import Footer from "@/components/layout/Footer";
 
 async function getProduct(slug: string) {
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/products/${slug}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/products/${slug}`, {
       next: { revalidate: 60 } // Optional caching
     });
     

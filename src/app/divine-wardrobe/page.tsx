@@ -16,58 +16,36 @@ const floatingPetals = [
   { id: 5, left: "20%", delay: 4, size: 22, duration: 13 },
 ];
 
-const MOCK_OFFERINGS = [
-  {
-    id: "pw-1",
-    title: "Golden Zari Lotus Poshak for Thakurji",
-    price: "₹3,100",
-    category: "Premium Offerings",
-    sizes: ["Size 2", "Size 3", "Size 4"],
-    isPremium: true,
-  },
-  {
-    id: "pw-2",
-    title: "Janmashtami Special Vrindavan Silk",
-    price: "₹2,500",
-    category: "Festival Collections",
-    sizes: ["Size 1", "Size 2", "Size 3"],
-    festival: "Janmashtami",
-  },
-  {
-    id: "pw-3",
-    title: "Emerald Handcrafted Choli & Patka",
-    price: "₹4,200",
-    category: "Handmade Collections",
-    sizes: ["Size 4", "Size 5"],
-    isPremium: true,
-  },
-  {
-    id: "pw-4",
-    title: "Radhashtami Sapphire Velvet Set",
-    price: "₹1,800",
-    category: "Festival Collections",
-    sizes: ["Size 0", "Size 1", "Size 2"],
-    festival: "Radhashtami",
-  },
-  {
-    id: "pw-5",
-    title: "Peacock Feather Inspired Silk Vastra",
-    price: "₹3,600",
-    category: "Divine Collections",
-    sizes: ["Size 2", "Size 3", "Size 4", "Size 5"],
-  },
-  {
-    id: "pw-6",
-    title: "Diwali Pure Silver Embroidered Shringar",
-    price: "₹5,500",
-    category: "Premium Offerings",
-    sizes: ["Size 3", "Size 4"],
-    isPremium: true,
-    festival: "Diwali",
-  },
-];
+
+
+import { useState, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 
 export default function DivineWardrobePage() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const colRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/collections/divine-wardrobe`);
+        const colData = await colRes.json();
+        if (colData.success && colData.data.collection) {
+          const prodRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/products/collection/${colData.data.collection._id}`);
+          const prodData = await prodRes.json();
+          if (prodData.success) {
+            setProducts(prodData.data.products);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
     <main className="min-h-screen w-full bg-[#FFFBF4] relative overflow-hidden pb-24">
       
@@ -116,7 +94,7 @@ export default function DivineWardrobePage() {
       >
         <Link href="/" className="text-[#8B6F4E] hover:text-[#5C1A1A] transition-colors">Temple</Link>
         <ChevronRight className="w-3 h-3 text-gold-start/50" />
-        <Link href="/collections" className="text-[#8B6F4E] hover:text-[#5C1A1A] transition-colors">Collections</Link>
+        <Link href="/" className="text-[#8B6F4E] hover:text-[#5C1A1A] transition-colors">Collections</Link>
         <ChevronRight className="w-3 h-3 text-gold-start/50" />
         <span className="text-saffron-deep">Radha Dresses</span>
       </motion.div>
@@ -129,19 +107,37 @@ export default function DivineWardrobePage() {
 
       {/* ── ALL OFFERINGS GRID ── */}
       <div className="w-full max-w-7xl mx-auto px-6 relative z-10 mb-24">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 md:gap-10">
-          {MOCK_OFFERINGS.map((offering, idx) => (
-            <motion.div
-              key={offering.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: idx * 0.1 }}
-            >
-              <OfferingCard {...offering} />
-            </motion.div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-10 h-10 text-gold-start animate-spin" />
+          </div>
+        ) : products.length === 0 ? (
+          <div className="text-center py-20 text-warm-gray">No divine offerings available at this moment.</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 md:gap-10">
+            {products.map((offering, idx) => (
+              <motion.div
+                key={offering._id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+              >
+                <OfferingCard 
+                  id={offering._id}
+                  title={offering.name}
+                  price={`₹${offering.price || 0}`}
+                  imageSrc={offering.images?.[0] ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${offering.images[0]}` : undefined}
+                  category={offering.category || "Divine Offering"}
+                  sizes={[]}
+                  isPremium={offering.isFeatured}
+                  festival={offering.festivalId}
+                  slug={offering.slug}
+                />
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── MOST LOVED BY DEVOTEES ── */}
@@ -158,9 +154,19 @@ export default function DivineWardrobePage() {
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 md:gap-10">
-          {MOCK_OFFERINGS.slice(0, 3).map((offering, idx) => (
-            <motion.div key={`loved-${offering.id}`} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: idx * 0.1 }}>
-              <OfferingCard {...offering} />
+          {!loading && products.slice(0, 3).map((offering, idx) => (
+            <motion.div key={`loved-${offering._id}`} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: idx * 0.1 }}>
+              <OfferingCard 
+                id={offering._id}
+                title={offering.name}
+                price={`₹${offering.price || 0}`}
+                imageSrc={offering.images?.[0] ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${offering.images[0]}` : undefined}
+                category={offering.category || "Divine Offering"}
+                sizes={[]}
+                isPremium={offering.isFeatured}
+                festival={offering.festivalId}
+                slug={offering.slug}
+              />
             </motion.div>
           ))}
         </div>

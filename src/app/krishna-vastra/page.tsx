@@ -7,63 +7,36 @@ import VastraOfferingCard from "@/components/collections/VastraOfferingCard";
 import Link from "next/link";
 import { ArrowLeft, ChevronRight, Heart, Sparkles } from "lucide-react";
 
-const MOCK_OFFERINGS = [
-  {
-    id: "kv-1",
-    title: "Peacock Blue Zardozi Vastra",
-    price: "₹4,100",
-    category: "Premium Zardozi",
-    sizes: ["Size 2", "Size 3", "Size 4"],
-    deity: "Shri Radha Raman Ji",
-    isPremium: true,
-  },
-  {
-    id: "kv-2",
-    title: "Janmashtami Midnight Silk Poshak",
-    price: "₹3,500",
-    category: "Janmashtami Special",
-    sizes: ["Size 1", "Size 2", "Size 3"],
-    deity: "Laddu Gopal Ji",
-    festival: "Janmashtami",
-  },
-  {
-    id: "kv-3",
-    title: "Saffron Pure Silk Everyday Seva",
-    price: "₹2,200",
-    category: "Everyday Seva",
-    sizes: ["Size 3", "Size 4", "Size 5"],
-    deity: "Shri Radha Raman Ji",
-  },
-  {
-    id: "kv-4",
-    title: "Nandotsav Golden Yellow Set",
-    price: "₹3,800",
-    category: "Nandotsav Offerings",
-    sizes: ["Size 0", "Size 1", "Size 2"],
-    deity: "Laddu Gopal Ji",
-    festival: "Nandotsav",
-  },
-  {
-    id: "kv-5",
-    title: "Winter Velvet Teal Attire",
-    price: "₹2,600",
-    category: "Winter Velvet",
-    sizes: ["Size 2", "Size 3", "Size 4", "Size 5"],
-    deity: "Shri Radha Raman Ji",
-  },
-  {
-    id: "kv-6",
-    title: "Govardhan Pooja Heavy Embroidery Set",
-    price: "₹6,500",
-    category: "Premium Zardozi",
-    sizes: ["Size 3", "Size 4"],
-    deity: "Shri Radha Raman Ji",
-    isPremium: true,
-    festival: "Govardhan Pooja",
-  },
-];
+
+
+import { useState, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 
 export default function KrishnaVastraPage() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const colRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/collections/krishna-vastra`);
+        const colData = await colRes.json();
+        if (colData.success && colData.data.collection) {
+          const prodRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/products/collection/${colData.data.collection._id}`);
+          const prodData = await prodRes.json();
+          if (prodData.success) {
+            setProducts(prodData.data.products);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
     <main className="min-h-screen w-full bg-[#FFFBF4] relative overflow-hidden pb-24">
       
@@ -99,7 +72,7 @@ export default function KrishnaVastraPage() {
       >
         <Link href="/" className="text-[#8B6F4E] hover:text-[#1E3A8A] transition-colors">Temple</Link>
         <ChevronRight className="w-3 h-3 text-gold-start/50" />
-        <Link href="/collections" className="text-[#8B6F4E] hover:text-[#1E3A8A] transition-colors">Collections</Link>
+        <Link href="/" className="text-[#8B6F4E] hover:text-[#1E3A8A] transition-colors">Collections</Link>
         <ChevronRight className="w-3 h-3 text-gold-start/50" />
         <span className="text-[#1E3A8A]">Krishna Vastra</span>
       </motion.div>
@@ -112,19 +85,38 @@ export default function KrishnaVastraPage() {
 
       {/* ── ALL OFFERINGS GRID ── */}
       <div className="w-full max-w-7xl mx-auto px-6 relative z-10 mb-24">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 md:gap-10">
-          {MOCK_OFFERINGS.map((offering, idx) => (
-            <motion.div
-              key={offering.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: idx * 0.1 }}
-            >
-              <VastraOfferingCard {...offering} />
-            </motion.div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-10 h-10 text-gold-start animate-spin" />
+          </div>
+        ) : products.length === 0 ? (
+          <div className="text-center py-20 text-warm-gray">No divine offerings available at this moment.</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 md:gap-10">
+            {products.map((offering, idx) => (
+              <motion.div
+                key={offering._id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+              >
+                <VastraOfferingCard 
+                  id={offering._id}
+                  title={offering.name}
+                  price={`₹${offering.price || 0}`}
+                  imageSrc={offering.images?.[0] ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${offering.images[0]}` : undefined}
+                  category={offering.category || "Divine Offering"}
+                  sizes={[]}
+                  deity="Shri Radha Raman Ji"
+                  isPremium={offering.isFeatured}
+                  festival={offering.festivalId}
+                  slug={offering.slug}
+                />
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── MOST LOVED BY DEVOTEES ── */}
@@ -141,9 +133,20 @@ export default function KrishnaVastraPage() {
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 md:gap-10">
-          {MOCK_OFFERINGS.slice(0, 3).map((offering, idx) => (
-            <motion.div key={`loved-${offering.id}`} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: idx * 0.1 }}>
-              <VastraOfferingCard {...offering} />
+          {!loading && products.slice(0, 3).map((offering, idx) => (
+            <motion.div key={`loved-${offering._id}`} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: idx * 0.1 }}>
+              <VastraOfferingCard 
+                  id={offering._id}
+                  title={offering.name}
+                  price={`₹${offering.price || 0}`}
+                  imageSrc={offering.images?.[0] ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${offering.images[0]}` : undefined}
+                  category={offering.category || "Divine Offering"}
+                  sizes={[]}
+                  deity="Shri Radha Raman Ji"
+                  isPremium={offering.isFeatured}
+                  festival={offering.festivalId}
+                  slug={offering.slug}
+              />
             </motion.div>
           ))}
         </div>

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Poppins } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
-import DivineQuickActions from "@/components/mobile/DivineQuickActions";
+
 import EternalTempleFooter from "@/components/footer/EternalTempleFooter";
 import DivineSoundController from "@/components/layout/DivineSoundController";
 import DivinePageAtmosphere from "@/components/layout/DivinePageAtmosphere";
@@ -78,7 +78,7 @@ export default function RootLayout({
           <DivinePageAtmosphere />
           {children}
           <EternalTempleFooter />
-          <DivineQuickActions />
+
           <DivineSoundController />
         </CartProvider>
         

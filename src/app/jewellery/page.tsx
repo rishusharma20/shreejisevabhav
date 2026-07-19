@@ -7,57 +7,36 @@ import AlankaarOfferingCard from "@/components/collections/AlankaarOfferingCard"
 import Link from "next/link";
 import { ArrowLeft, ChevronRight, Crown, Heart, Sparkles } from "lucide-react";
 
-const MOCK_OFFERINGS = [
-  {
-    id: "al-1",
-    title: "Pure Gold Plated Peacock Mukut",
-    price: "₹8,500",
-    category: "Mukut Collections",
-    deity: "Shri Radha Raman Ji",
-    isPremium: true,
-  },
-  {
-    id: "al-2",
-    title: "Lotus Pink Pearl Necklace Set",
-    price: "₹4,200",
-    category: "Necklace Collections",
-    deity: "Shri Radha Rani",
-  },
-  {
-    id: "al-3",
-    title: "Janmashtami Special Diamond Bansuri",
-    price: "₹6,100",
-    category: "Bansuri Collections",
-    deity: "Shri Radha Raman Ji",
-    festival: "Janmashtami",
-    isPremium: true,
-  },
-  {
-    id: "al-4",
-    title: "Golden Morpankh with Emeralds",
-    price: "₹2,800",
-    category: "Morpankh Collections",
-    deity: "Shri Radha Raman Ji",
-  },
-  {
-    id: "al-5",
-    title: "Radhashtami Royal Pearl Choker",
-    price: "₹5,400",
-    category: "Pearl Collections",
-    deity: "Shri Radha Rani",
-    festival: "Radhashtami",
-  },
-  {
-    id: "al-6",
-    title: "Divine Alankaar Complete Shringar Set",
-    price: "₹15,000",
-    category: "Divine Alankaar",
-    deity: "Shri Radha Rani & Thakurji",
-    isPremium: true,
-  },
-];
+
+
+import { useState, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 
 export default function JewelleryPage() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const colRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/collections/jewellery`);
+        const colData = await colRes.json();
+        if (colData.success && colData.data.collection) {
+          const prodRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/products/collection/${colData.data.collection._id}`);
+          const prodData = await prodRes.json();
+          if (prodData.success) {
+            setProducts(prodData.data.products);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
     <main className="min-h-screen w-full bg-[#FFFBF4] relative overflow-hidden pb-24">
       
@@ -100,7 +79,7 @@ export default function JewelleryPage() {
       >
         <Link href="/" className="text-[#8B6F4E] hover:text-[#5C1A1A] transition-colors">Temple</Link>
         <ChevronRight className="w-3 h-3 text-gold-start/50" />
-        <Link href="/collections" className="text-[#8B6F4E] hover:text-[#5C1A1A] transition-colors">Collections</Link>
+        <Link href="/" className="text-[#8B6F4E] hover:text-[#5C1A1A] transition-colors">Collections</Link>
         <ChevronRight className="w-3 h-3 text-gold-start/50" />
         <span className="text-lotus">Ratna Alankaar</span>
       </motion.div>
@@ -113,19 +92,37 @@ export default function JewelleryPage() {
 
       {/* ── ALL OFFERINGS GRID ── */}
       <div className="w-full max-w-7xl mx-auto px-6 relative z-10 mb-24">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 md:gap-10">
-          {MOCK_OFFERINGS.map((offering, idx) => (
-            <motion.div
-              key={offering.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: idx * 0.1 }}
-            >
-              <AlankaarOfferingCard {...offering} />
-            </motion.div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-10 h-10 text-gold-start animate-spin" />
+          </div>
+        ) : products.length === 0 ? (
+          <div className="text-center py-20 text-warm-gray">No divine offerings available at this moment.</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 md:gap-10">
+            {products.map((offering, idx) => (
+              <motion.div
+                key={offering._id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+              >
+                <AlankaarOfferingCard 
+                  id={offering._id}
+                  title={offering.name}
+                  price={`₹${offering.price || 0}`}
+                  imageSrc={offering.images?.[0] ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${offering.images[0]}` : undefined}
+                  category={offering.category || "Divine Offering"}
+                  deity="Shri Radha Rani & Thakurji"
+                  isPremium={offering.isFeatured}
+                  festival={offering.festivalId}
+                  slug={offering.slug}
+                />
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── MOST LOVED BY DEVOTEES ── */}
@@ -142,9 +139,19 @@ export default function JewelleryPage() {
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 md:gap-10">
-          {MOCK_OFFERINGS.slice(0, 3).map((offering, idx) => (
-            <motion.div key={`loved-${offering.id}`} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: idx * 0.1 }}>
-              <AlankaarOfferingCard {...offering} />
+          {!loading && products.slice(0, 3).map((offering, idx) => (
+            <motion.div key={`loved-${offering._id}`} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: idx * 0.1 }}>
+              <AlankaarOfferingCard 
+                  id={offering._id}
+                  title={offering.name}
+                  price={`₹${offering.price || 0}`}
+                  imageSrc={offering.images?.[0] ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${offering.images[0]}` : undefined}
+                  category={offering.category || "Divine Offering"}
+                  deity="Shri Radha Rani & Thakurji"
+                  isPremium={offering.isFeatured}
+                  festival={offering.festivalId}
+                  slug={offering.slug}
+              />
             </motion.div>
           ))}
         </div>

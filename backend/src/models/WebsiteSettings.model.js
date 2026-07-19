@@ -44,6 +44,13 @@ const websiteSettingsSchema = new mongoose.Schema(
             instagram: { type: String, default: "" },
             youtube: { type: String, default: "" },
             facebook: { type: String, default: "" }
+        },
+        aboutUs: {
+            content: { type: String, default: "Shreeji Seva Bhav is dedicated to serving the divine." }
+        },
+        footer: {
+            copyrightText: { type: String, default: "© 2024 Shreeji Seva Bhav. All rights reserved." },
+            address: { type: String, default: "Vrindavan, UP, India" }
         }
     },
     {

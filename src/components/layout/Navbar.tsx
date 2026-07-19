@@ -5,13 +5,13 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Search, Heart, ShoppingBag, User, Menu, ChevronDown, MessageCircle } from "lucide-react";
 import { LotusIcon, PeacockFeatherIcon } from "@/components/icons/DevotionalIcons";
 import { useCart } from "@/context/CartContext";
-import { useWishlist } from "@/hooks/useWishlist";
+
 import MobileDrawer from "./MobileDrawer";
 import SearchBar from "./SearchBar";
 
 const navLinks = [
   { label: "Home", href: "/", hasDropdown: false },
-  { label: "Radha Dresses", href: "/radha-dresses", hasDropdown: true },
+  { label: "Radha Dresses", href: "/divine-wardrobe", hasDropdown: true },
   { label: "Krishna Vastra", href: "/krishna-vastra", hasDropdown: true },
   { label: "Jewellery Sets", href: "/jewellery", hasDropdown: true },
   { label: "About Us", href: "/about", hasDropdown: false },
@@ -23,7 +23,6 @@ export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { totalItems } = useCart();
-  const { wishlistCount } = useWishlist();
 
   const { scrollY } = useScroll();
   const navPadding = useTransform(scrollY, [0, 100], [14, 8]);
@@ -101,24 +100,6 @@ export default function Navbar() {
               >
                 <Search size={18} />
               </button>
-
-              {/* Wishlist */}
-              <a
-                href="/wishlist"
-                className="relative p-2 text-charcoal hover:text-saffron-deep transition-colors rounded-full hover:bg-saffron/5"
-                aria-label={`Wishlist (${wishlistCount} items)`}
-              >
-                <Heart size={18} />
-                {wishlistCount > 0 && (
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute top-0 right-0 min-w-[16px] h-[16px] bg-saffron text-white text-[9px] font-bold flex items-center justify-center rounded-full"
-                  >
-                    {wishlistCount}
-                  </motion.span>
-                )}
-              </a>
 
               {/* Cart with live count badge */}
               <a

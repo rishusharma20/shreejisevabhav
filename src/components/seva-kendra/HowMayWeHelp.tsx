@@ -15,9 +15,7 @@ import {
 import Link from "next/link";
 
 const ASSISTANCE_LINKS = [
-  { title: "Track My Seva", icon: MapPin, href: "/track-seva/active" },
-  { title: "My Divine Offerings", icon: Heart, href: "/my-offerings" },
-  { title: "Festival Collections", icon: Sparkles, href: "/festivals" },
+  { title: "Track My Seva", icon: MapPin, href: "/track-my-seva" },
   { title: "Divine Size Guide", icon: Ruler, href: "#size-guide" },
   { title: "Premium Packaging", icon: Package, href: "/checkout" },
   { title: "Payment Support", icon: CreditCard, href: "#" },

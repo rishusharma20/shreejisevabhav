@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Package, Heart, Crown, Settings } from "lucide-react";
+import { Package, Heart, Crown, Settings, MapPin } from "lucide-react";
 
-export type TabType = "seva-journey" | "beloved-collections" | "prem-seva-membership" | "personal-details";
+export type TabType = "personal-details" | "my-addresses" | "my-orders";
 
 interface DashboardNavProps {
   activeTab: TabType;
@@ -12,10 +12,9 @@ interface DashboardNavProps {
 
 export default function DashboardNav({ activeTab, setActiveTab }: DashboardNavProps) {
   const tabs = [
-    { id: "seva-journey", label: "My Seva Journey", icon: Package },
-    { id: "beloved-collections", label: "Beloved Collections", icon: Heart },
-    { id: "prem-seva-membership", label: "Prem Seva Membership", icon: Crown },
+    { id: "my-orders", label: "My Seva (Orders)", icon: Package },
     { id: "personal-details", label: "Personal Details", icon: Settings },
+    { id: "my-addresses", label: "My Addresses", icon: MapPin },
   ];
 
   return (

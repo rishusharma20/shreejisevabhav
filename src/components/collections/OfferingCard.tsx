@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, MessageCircle, ShoppingBag, Eye, Star, Sparkles } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface OfferingCardProps {
   id: string | number;
@@ -14,19 +15,21 @@ interface OfferingCardProps {
   sizes: string[];
   isPremium?: boolean;
   festival?: string;
+  slug?: string;
 }
 
 export default function OfferingCard({ 
+  id,
   title, 
   price, 
   imageSrc, 
   category, 
   sizes,
   isPremium,
-  festival
+  festival,
+  slug
 }: OfferingCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isWishlisted, setIsWishlisted] = useState(false);
 
   return (
     <motion.div
@@ -51,15 +54,7 @@ export default function OfferingCard({
         )}
       </div>
 
-      {/* ── Wishlist Button ── */}
-      <motion.button 
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setIsWishlisted(!isWishlisted)}
-        className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center border border-gold-start/30 shadow-sm"
-      >
-        <Heart className={`w-4 h-4 transition-colors ${isWishlisted ? "text-lotus fill-lotus" : "text-warm-gray"}`} />
-      </motion.button>
+
 
       {/* ── Image Container ── */}
       <div className="relative w-full aspect-[4/5] bg-cream/50 overflow-hidden">
@@ -114,13 +109,15 @@ export default function OfferingCard({
               className="absolute inset-0 bg-gradient-to-t from-[#5C1A1A]/80 via-[#5C1A1A]/10 to-transparent z-10 flex flex-col justify-end p-6"
             >
               <div className="flex gap-3">
-                <motion.button 
-                  initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}
-                  className="flex-1 py-3 bg-white/95 backdrop-blur-md rounded-xl text-[9px] uppercase tracking-widest font-bold text-[#5C1A1A] hover:bg-white hover:shadow-lg flex items-center justify-center gap-2 transition-all"
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  View Divine Details
-                </motion.button>
+                <Link href={`/product/${slug || id}`} className="flex-1">
+                  <motion.button 
+                    initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}
+                    className="w-full py-3 bg-white/95 backdrop-blur-md rounded-xl text-[9px] uppercase tracking-widest font-bold text-[#5C1A1A] hover:bg-white hover:shadow-lg flex items-center justify-center gap-2 transition-all"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    View Divine Details
+                  </motion.button>
+                </Link>
               </div>
             </motion.div>
           )}

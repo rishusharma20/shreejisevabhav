@@ -16,7 +16,7 @@ const floatingPetals = [
 ];
 
 export default function MySevaPage() {
-  const [activeTab, setActiveTab] = useState<TabType>("seva-journey");
+  const [activeTab, setActiveTab] = useState<TabType>("my-orders");
 
   return (
     <main className="min-h-screen w-full bg-[#FFFBF4] relative overflow-hidden pt-24 pb-12">

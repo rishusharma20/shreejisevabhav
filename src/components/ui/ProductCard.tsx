@@ -7,21 +7,17 @@ import { ShoppingCart, Eye } from "lucide-react";
 import type { Product } from "@/lib/types";
 import Badge from "./Badge";
 import RatingStars from "./RatingStars";
-import WishlistToggle from "./WishlistToggle";
+
 import WhatsAppButton from "./WhatsAppButton";
 
 interface ProductCardProps {
   product: Product;
-  isWishlisted: boolean;
-  onToggleWishlist: () => void;
   onAddToCart: () => void;
   index?: number;
 }
 
 export default function ProductCard({
   product,
-  isWishlisted,
-  onToggleWishlist,
   onAddToCart,
   index = 0,
 }: ProductCardProps) {
@@ -65,10 +61,7 @@ export default function ProductCard({
           </span>
         )}
 
-        {/* Wishlist */}
-        <div className="absolute top-3 right-3 z-10">
-          <WishlistToggle isActive={isWishlisted} onToggle={onToggleWishlist} />
-        </div>
+
 
         {/* Quick view button */}
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">

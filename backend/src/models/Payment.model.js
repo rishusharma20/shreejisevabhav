@@ -24,6 +24,10 @@ const paymentSchema = new mongoose.Schema(
             type: String,
             default: null
         },
+        screenshotUrl: {
+            type: String,
+            default: null
+        },
         paymentMethod: {
             type: String,
             enum: ["ONLINE", "CASH"],
@@ -35,8 +39,8 @@ const paymentSchema = new mongoose.Schema(
         totalAmount: { type: Number, required: true }, // Amount to be paid
         paymentStatus: {
             type: String,
-            enum: ["PENDING", "VERIFICATION_PENDING", "PROCESSING", "SUCCESS", "FAILED", "REFUNDED", "CANCELLED"],
-            default: "PENDING"
+            enum: ["PAYMENT_PENDING", "UNDER_VERIFICATION", "PAYMENT_APPROVED", "PAYMENT_REJECTED", "ORDER_CONFIRMED"],
+            default: "PAYMENT_PENDING"
         },
         transactionId: {
             type: String,

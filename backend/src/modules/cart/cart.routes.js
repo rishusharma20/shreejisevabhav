@@ -5,15 +5,11 @@ const {
     updateQuantity,
     removeFromCart,
     clearCart,
-    moveToSaveForLater,
-    getSaveForLaterItems,
-    moveToCart,
     getPriceDetails
 } = require("./cart.controller");
-const { applyCoupon, removeCoupon } = require("./coupon.controller");
 const { verifyJWT } = require("../../middleware/auth.middleware");
 const { validate } = require("../../middleware/validate.middleware");
-const { addToCartValidation, updateQuantityValidation, applyCouponValidation } = require("./cart.validation");
+const { addToCartValidation, updateQuantityValidation } = require("./cart.validation");
 
 const router = express.Router();
 
@@ -27,14 +23,7 @@ router.put("/update/:variantId", updateQuantityValidation, validate, updateQuant
 router.delete("/remove/:variantId", removeFromCart);
 router.delete("/clear", clearCart);
 
-// Save For Later
-router.post("/save-for-later", moveToSaveForLater);
-router.get("/save-for-later", getSaveForLaterItems);
-router.post("/move-to-cart", moveToCart);
-
-// Pricing and Coupons (Bound to Cart context)
+// Pricing (Bound to Cart context)
 router.get("/price-details", getPriceDetails);
-router.post("/apply-coupon", applyCouponValidation, validate, applyCoupon);
-router.delete("/remove-coupon", removeCoupon);
 
 module.exports = router;

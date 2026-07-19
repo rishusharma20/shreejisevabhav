@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Heart, ShoppingBag, User, MessageCircle } from "lucide-react";
+import { X, ShoppingBag, User, MessageCircle } from "lucide-react";
 import { LotusIcon, PeacockFeatherIcon } from "@/components/icons/DevotionalIcons";
 import { navLinks } from "@/lib/seed-data";
 
@@ -111,13 +111,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
               {/* Quick actions */}
               <div className="mt-6 pt-6 border-t border-cream-dark space-y-2">
-                <a
-                  href="/wishlist"
-                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-charcoal hover:text-saffron-deep hover:bg-saffron/5 rounded-lg transition-all"
-                >
-                  <Heart size={18} />
-                  Wishlist
-                </a>
+
                 <a
                   href="/cart"
                   className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-charcoal hover:text-saffron-deep hover:bg-saffron/5 rounded-lg transition-all"

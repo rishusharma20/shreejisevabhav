@@ -20,7 +20,7 @@ export default function DivineCollections() {
   useEffect(() => {
     async function fetchCollections() {
       try {
-        const res = await fetch("http://localhost:8000/api/v1/collections");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/collections`);
         const data = await res.json();
         if (data.success && data.data.collections) {
           setCollections(data.data.collections);

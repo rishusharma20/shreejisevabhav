@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { Minus, Plus, X, Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useCart } from "@/context/CartContext";
 
 interface DivineCartItemProps {
   id: string;
@@ -17,10 +18,29 @@ interface DivineCartItemProps {
 }
 
 export default function DivineCartItem({ id, title, price, quantity: initialQty, size, category, imageSrc }: DivineCartItemProps) {
+  const { updateQuantity, removeFromCart } = useCart();
   const [quantity, setQuantity] = useState(initialQty);
 
-  const increase = () => setQuantity(q => q + 1);
-  const decrease = () => setQuantity(q => (q > 1 ? q - 1 : 1));
+  // Sync state if context changes
+  useEffect(() => {
+    setQuantity(initialQty);
+  }, [initialQty]);
+
+  const increase = () => {
+    setQuantity(q => q + 1);
+    updateQuantity(id, quantity + 1);
+  };
+  
+  const decrease = () => {
+    if (quantity > 1) {
+      setQuantity(q => q - 1);
+      updateQuantity(id, quantity - 1);
+    }
+  };
+
+  const handleRemove = () => {
+    removeFromCart(id);
+  };
 
   return (
     <motion.div 
@@ -65,7 +85,7 @@ export default function DivineCartItem({ id, title, price, quantity: initialQty,
             )}
           </div>
           
-          <button className="shrink-0 p-2 hover:bg-red-50 rounded-full transition-colors group/remove" title="Remove from Seva">
+          <button onClick={handleRemove} className="shrink-0 p-2 hover:bg-red-50 rounded-full transition-colors group/remove" title="Remove from Seva">
             <X className="w-4 h-4 text-warm-gray group-hover/remove:text-red-400 transition-colors" />
           </button>
         </div>

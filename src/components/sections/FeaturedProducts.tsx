@@ -5,19 +5,18 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import ProductCard from "@/components/ui/ProductCard";
 import ProductCardSkeleton from "@/components/ui/ProductCardSkeleton";
 import { useCart } from "@/context/CartContext";
-import { useWishlist } from "@/hooks/useWishlist";
+
 import type { Product } from "@/lib/types";
 
 export default function FeaturedProducts() {
   const [isLoading, setIsLoading] = useState(true);
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const { addToCart } = useCart();
-  const { isInWishlist, toggleWishlist } = useWishlist();
 
   useEffect(() => {
     async function fetchFeaturedProducts() {
       try {
-        const res = await fetch("http://localhost:8000/api/v1/products/type/featured");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/products/type/featured`);
         const data = await res.json();
         if (data.success && data.data.products) {
           // Map backend products to the frontend Product type interface
@@ -64,8 +63,6 @@ export default function FeaturedProducts() {
                 key={product.id}
                 product={product}
                 index={index}
-                isWishlisted={isInWishlist(product.id)}
-                onToggleWishlist={() => toggleWishlist(product.id)}
                 onAddToCart={() => addToCart(product)}
               />
             ))}

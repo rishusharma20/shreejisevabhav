@@ -60,20 +60,17 @@ const orderSchema = new mongoose.Schema(
         orderStatus: {
             type: String,
             enum: [
-                "PENDING",
-                "VERIFICATION_PENDING",
-                "ACCEPTED",
-                "PROCESSING",
+                "PAYMENT_PENDING",
+                "UNDER_VERIFICATION",
+                "PAYMENT_APPROVED",
+                "PAYMENT_REJECTED",
+                "ORDER_CONFIRMED",
+                "PREPARING",
                 "PACKAGING",
                 "SHIPPED",
-                "OUT_FOR_DELIVERY",
-                "DELIVERED",
-                "COMPLETED",
-                "CANCELLED",
-                "RETURNED",
-                "REFUNDED"
+                "DELIVERED"
             ],
-            default: "VERIFICATION_PENDING"
+            default: "PAYMENT_PENDING"
         },
         orderNumber: {
             type: String,

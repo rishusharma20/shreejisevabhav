@@ -5,6 +5,10 @@ const { generateSalesReport } = require("./report.service");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
+const Payment = require("../../models/Payment.model");
+const Order = require("../../models/Order.model");
+const TrackMySeva = require("../../models/TrackMySeva.model");
+const WebsiteSettings = require("../../models/WebsiteSettings.model");
 
 // @desc    Get Master Dashboard Overview
 // @route   GET /api/v1/admin/dashboard
@@ -75,6 +79,135 @@ const unblockUser = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, "User has been unblocked successfully", { user: targetUser }));
 });
 
+// ==========================================
+// PAYMENT VERIFICATION MODULE
+// ==========================================
+
+const getPendingPayments = asyncHandler(async (req, res) => {
+    const payments = await Payment.find({ paymentStatus: "UNDER_VERIFICATION" })
+        .populate("userId", "fullName email phone")
+        .sort({ updatedAt: -1 });
+
+    return res.status(200).json(
+        new ApiResponse(200, "Pending payments fetched successfully", { payments })
+    );
+});
+
+const approvePayment = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const payment = await Payment.findById(id);
+    if (!payment) {
+        throw new ApiError(404, "Payment record not found");
+    }
+
+    if (payment.paymentStatus !== "UNDER_VERIFICATION") {
+        throw new ApiError(400, "Payment is not under verification");
+    }
+
+    payment.paymentStatus = "PAYMENT_APPROVED";
+    await payment.save();
+
+    const order = await Order.findOne({ paymentId: id });
+    if (order) {
+        order.orderStatus = "ORDER_CONFIRMED";
+        
+        // Create TrackMySeva document
+        const track = await TrackMySeva.create({
+            userId: payment.userId,
+            orderId: order._id,
+            paymentId: payment._id,
+            currentStatus: "PAYMENT_APPROVED",
+            timeline: [
+                {
+                    status: "PAYMENT_APPROVED",
+                    title: "Payment Approved",
+                    description: "Your payment has been manually verified and approved."
+                }
+            ]
+        });
+        
+        order.trackMySevaId = track._id;
+        await order.save();
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, "Payment approved successfully", { payment })
+    );
+});
+
+const rejectPayment = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const payment = await Payment.findById(id);
+    if (!payment) {
+        throw new ApiError(404, "Payment record not found");
+    }
+
+    if (payment.paymentStatus !== "UNDER_VERIFICATION") {
+        throw new ApiError(400, "Payment is not under verification");
+    }
+
+    payment.paymentStatus = "PAYMENT_REJECTED";
+    await payment.save();
+
+    const order = await Order.findOne({ paymentId: id });
+    if (order) {
+        order.orderStatus = "PAYMENT_REJECTED";
+        await order.save();
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, "Payment rejected successfully", { payment })
+    );
+});
+
+// ==========================================
+// WEBSITE MANAGEMENT MODULE
+// ==========================================
+
+const getWebsiteSettings = asyncHandler(async (req, res) => {
+    let settings = await WebsiteSettings.findOne({ isSingleton: true });
+    
+    if (!settings) {
+        settings = await WebsiteSettings.create({ isSingleton: true });
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, "Website settings fetched successfully", { settings })
+    );
+});
+
+const updateWebsiteSettings = asyncHandler(async (req, res) => {
+    let settings = await WebsiteSettings.findOne({ isSingleton: true });
+    
+    if (!settings) {
+        settings = new WebsiteSettings({ isSingleton: true });
+    }
+
+    const {
+        websiteName, websiteDescription, websiteTheme,
+        heroSection, maintenanceMode, seoSettings,
+        contactDetails, socialLinks, aboutUs, footer
+    } = req.body;
+
+    if (websiteName) settings.websiteName = websiteName;
+    if (websiteDescription) settings.websiteDescription = websiteDescription;
+    if (websiteTheme) settings.websiteTheme = { ...settings.websiteTheme, ...websiteTheme };
+    if (heroSection) settings.heroSection = { ...settings.heroSection, ...heroSection };
+    if (maintenanceMode !== undefined) settings.maintenanceMode = maintenanceMode;
+    if (seoSettings) settings.seoSettings = { ...settings.seoSettings, ...seoSettings };
+    if (contactDetails) settings.contactDetails = { ...settings.contactDetails, ...contactDetails };
+    if (socialLinks) settings.socialLinks = { ...settings.socialLinks, ...socialLinks };
+    if (aboutUs) settings.aboutUs = { ...settings.aboutUs, ...aboutUs };
+    if (footer) settings.footer = { ...settings.footer, ...footer };
+
+    await settings.save();
+
+    return res.status(200).json(
+        new ApiResponse(200, "Website settings updated successfully", { settings })
+    );
+});
 
 module.exports = {
     getDashboard,
@@ -82,5 +215,10 @@ module.exports = {
     getSalesReport,
     getAllUsers,
     blockUser,
-    unblockUser
+    unblockUser,
+    getPendingPayments,
+    approvePayment,
+    rejectPayment,
+    getWebsiteSettings,
+    updateWebsiteSettings
 };

@@ -1,7 +1,6 @@
 const crypto = require("crypto");
 const User = require("../../models/User.model");
 const Cart = require("../../models/Cart.model");
-const { dispatchNotification } = require("../notifications/notification.service");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
@@ -153,15 +152,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
     console.log(resetToken);
     console.log("=======================================");
 
-    try {
-        await dispatchNotification(user._id, "WEBSITE", "Password Reset Request", message, resetUrl, true);
-        return res.status(200).json(new ApiResponse(200, "Reset token sent to email"));
-    } catch (error) {
-        user.forgotPasswordToken = undefined;
-        user.forgotPasswordExpiry = undefined;
-        await user.save({ validateBeforeSave: false });
-        throw new ApiError(500, "Email could not be sent");
-    }
+    return res.status(200).json(new ApiResponse(200, "Reset token generated and logged to console for testing"));
 });
 
 // @desc    Reset Password

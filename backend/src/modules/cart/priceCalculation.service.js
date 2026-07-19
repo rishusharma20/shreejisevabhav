@@ -1,6 +1,4 @@
 const ProductVariant = require("../../models/ProductVariant.model");
-const Coupon = require("../../models/Coupon.model");
-
 /**
  * Recalculates the entire cart pricing structure.
  * ALWAYS trusts the Database for variant pricing, NEVER the frontend.
@@ -42,29 +40,9 @@ const recalculateCart = async (cart) => {
 
     let totalAmount = subtotal - totalDiscount;
 
-    // 2. Process Coupon if exists
+    // 2. Process Coupon if exists (Removed in V1)
     cart.couponDiscount = 0;
-    if (cart.couponCode) {
-        const coupon = await Coupon.findOne({ code: cart.couponCode });
-        
-        if (coupon && coupon.isValid() && totalAmount >= coupon.minOrderAmount) {
-            if (coupon.discountType === "percentage") {
-                let calculatedCouponDiscount = (totalAmount * coupon.discountValue) / 100;
-                
-                // Apply max discount cap if it exists
-                if (coupon.maxDiscount > 0 && calculatedCouponDiscount > coupon.maxDiscount) {
-                    calculatedCouponDiscount = coupon.maxDiscount;
-                }
-                cart.couponDiscount = calculatedCouponDiscount;
-            } else {
-                // Fixed discount
-                cart.couponDiscount = coupon.discountValue;
-            }
-        } else {
-            // Coupon became invalid (expired, or order amount dropped below minimum)
-            cart.couponCode = null;
-        }
-    }
+    cart.couponCode = null;
 
     totalAmount -= cart.couponDiscount;
 

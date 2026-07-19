@@ -74,56 +74,7 @@ export default function ProfileHeader() {
             </div>
           </div>
           
-          {/* Stats Badges Grid */}
-          <div className="grid grid-cols-2 gap-4 w-full xl:w-auto shrink-0 mt-4 xl:mt-0">
-            {/* Divine Offerings */}
-            <motion.div 
-              whileHover={{ y: -4, boxShadow: "0 12px 30px rgba(212,168,83,0.15)" }}
-              className="bg-white/60 backdrop-blur-xl border border-gold-start/20 rounded-2xl p-4 flex flex-col items-center justify-center min-w-[130px] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all cursor-default"
-            >
-              <PackageOpen className="w-5 h-5 text-saffron mb-2" />
-              <span className="text-2xl font-display font-bold text-charcoal">12</span>
-              <span className="text-[9px] uppercase tracking-widest text-warm-gray font-bold mt-1 text-center">
-                Divine Offerings
-              </span>
-            </motion.div>
 
-            {/* Beloved Collections */}
-            <motion.div 
-              whileHover={{ y: -4, boxShadow: "0 12px 30px rgba(255,183,178,0.2)" }}
-              className="bg-white/60 backdrop-blur-xl border border-gold-start/20 rounded-2xl p-4 flex flex-col items-center justify-center min-w-[130px] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all cursor-default"
-            >
-              <Heart className="w-5 h-5 text-lotus mb-2 fill-lotus/20" />
-              <span className="text-2xl font-display font-bold text-charcoal">24</span>
-              <span className="text-[9px] uppercase tracking-widest text-warm-gray font-bold mt-1 text-center">
-                Beloved<br/>Collections
-              </span>
-            </motion.div>
-            
-            {/* Festival Collections */}
-            <motion.div 
-              whileHover={{ y: -4, boxShadow: "0 12px 30px rgba(212,168,83,0.15)" }}
-              className="bg-white/60 backdrop-blur-xl border border-gold-start/20 rounded-2xl p-4 flex flex-col items-center justify-center min-w-[130px] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all cursor-default"
-            >
-              <Sparkles className="w-5 h-5 text-gold-start mb-2" />
-              <span className="text-2xl font-display font-bold text-charcoal">3</span>
-              <span className="text-[9px] uppercase tracking-widest text-warm-gray font-bold mt-1 text-center">
-                Festival<br/>Collections
-              </span>
-            </motion.div>
-
-            {/* Prem Seva Circle */}
-            <motion.div 
-              whileHover={{ y: -4, boxShadow: "0 12px 30px rgba(42,175,160,0.15)" }}
-              className="bg-white/60 backdrop-blur-xl border border-gold-start/20 rounded-2xl p-4 flex flex-col items-center justify-center min-w-[130px] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all cursor-default"
-            >
-              <Star className="w-5 h-5 text-peacock mb-2 fill-peacock/20" />
-              <span className="text-2xl font-display font-bold text-charcoal">1</span>
-              <span className="text-[9px] uppercase tracking-widest text-warm-gray font-bold mt-1 text-center">
-                Prem Seva<br/>Circle
-              </span>
-            </motion.div>
-          </div>
           
         </div>
       </div>

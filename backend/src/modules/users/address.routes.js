@@ -18,6 +18,6 @@ router.post("/add", addressValidation, validate, addAddress);
 router.get("/", getAddresses);
 router.put("/update/:id", addressValidation, validate, updateAddress);
 router.delete("/delete/:id", deleteAddress);
-router.put("/set-default/:id", setDefaultAddress);
+router.put("/default/:id", setDefaultAddress);
 
 module.exports = router;

@@ -30,7 +30,7 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
       variantId: selectedVariant._id,
       name: product.name,
       price: selectedVariant.price,
-      image: `http://localhost:8000${images[0]}`,
+      image: `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${images[0]}`,
       slug: product.slug,
       category: product.category,
       badge: product.isFeatured ? "bestseller" : undefined,
@@ -61,7 +61,7 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
                   activeImageIndex === idx ? 'border-gold-start' : 'border-transparent hover:border-gold-start/50'
                 }`}
               >
-                <Image src={img.startsWith('http') ? img : `http://localhost:8000${img}`} alt="Thumbnail" fill className="object-cover" />
+                <Image src={img.startsWith('http') ? img : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${img}`} alt="Thumbnail" fill className="object-cover" />
               </div>
             ))}
           </div>
@@ -78,7 +78,7 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
                 className="absolute inset-0"
               >
                 <Image 
-                  src={images[activeImageIndex].startsWith('http') ? images[activeImageIndex] : `http://localhost:8000${images[activeImageIndex]}`} 
+                  src={images[activeImageIndex].startsWith('http') ? images[activeImageIndex] : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${images[activeImageIndex]}`} 
                   alt={product.name} 
                   fill 
                   className="object-cover hover:scale-105 transition-transform duration-700" 
@@ -150,7 +150,9 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
                   </button>
                 ))}
               </div>
-              {!selectedVariant.isAvailable && (
+              {selectedVariant.isAvailable ? (
+                <p className="text-xs text-emerald-600 mt-2 font-medium">In Stock: {selectedVariant.quantity} available</p>
+              ) : (
                 <p className="text-xs text-rose-500 mt-2 font-medium">This size is currently out of stock.</p>
               )}
             </div>

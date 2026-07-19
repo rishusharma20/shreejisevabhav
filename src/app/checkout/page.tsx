@@ -1,278 +1,247 @@
 "use client";
 
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
-import CheckoutWelcome from "@/components/checkout/CheckoutWelcome";
-import CheckoutForm from "@/components/checkout/CheckoutForm";
-import DivineSummary from "@/components/checkout/DivineSummary";
-import CheckoutRecommendations from "@/components/checkout/CheckoutRecommendations";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronRight, ArrowLeft, MapPin, Check, ShieldCheck, Heart } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
-export default function OfferWithLovePage() {
+export default function CheckoutPage() {
   const router = useRouter();
-  const [addressData, setAddressData] = useState({
-    name: "",
-    mobile: "",
-    email: "",
-    addressLine1: "",
-    pincode: "",
-  });
-  
-  const [isProcessing, setIsProcessing] = useState(false);
-  
-  // Phase 3: Manual UPI Payment State
-  const [showQRModal, setShowQRModal] = useState(false);
-  const [utrNumber, setUtrNumber] = useState("");
-  const [isSubmittingUTR, setIsSubmittingUTR] = useState(false);
+  const { clearCart } = useCart();
+  const [addresses, setAddresses] = useState<any[]>([]);
+  const [summary, setSummary] = useState<any>(null);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [addrRes, sumRes] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/address`, { credentials: "include" }),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/checkout/summary`, { credentials: "include" })
+        ]);
+
+        if (addrRes.status === 401 || sumRes.status === 401) {
+          router.push("/login");
+          return;
+        }
+
+        if (addrRes.ok) {
+          const data = await addrRes.json();
+          setAddresses(data.data.addresses || []);
+          const defaultAddr = data.data.addresses?.find((a: any) => a.isDefault);
+          if (defaultAddr) setSelectedAddressId(defaultAddr._id);
+          else if (data.data.addresses?.length > 0) setSelectedAddressId(data.data.addresses[0]._id);
+        }
+
+        if (sumRes.ok) {
+          const data = await sumRes.json();
+          setSummary(data.data.cart);
+        } else {
+          setError("Your cart is empty or unable to fetch checkout summary.");
+        }
+      } catch (err) {
+        setError("Something went wrong. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [router]);
 
   const handleCheckout = async () => {
-    try {
-      setIsProcessing(true);
-      // 1. Create Address
-      const addressRes = await fetch("http://localhost:8000/api/v1/address/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          fullName: addressData.name,
-          mobileNumber: addressData.mobile,
-          addressLine1: addressData.addressLine1,
-          pincode: addressData.pincode,
-          city: "Vrindavan", // Default for demo
-          state: "Uttar Pradesh",
-          country: "India",
-          addressType: "HOME"
-        })
-      });
-      
-      if (addressRes.status === 401) {
-        router.push("/login");
-        return;
-      }
-      
-      const addressDataResponse = await addressRes.json();
-      const addressId = addressDataResponse?.data?.address?._id;
-
-      if (!addressId) {
-         throw new Error("Failed to create address");
-      }
-
-      // 2. Create Checkout Session
-      const sessionRes = await fetch("http://localhost:8000/api/v1/checkout/create", {
-        method: "POST",
-        credentials: "include"
-      });
-      
-      const sessionData = await sessionRes.json();
-      
-      // 3. Attach Address to Session
-      await fetch("http://localhost:8000/api/v1/checkout/address", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ addressId })
-      });
-
-      // 4. Set Payment Method (Manual UPI)
-      await fetch("http://localhost:8000/api/v1/checkout/payment-method", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ paymentMethod: "ONLINE" })
-      });
-
-      // Instead of alert, show QR modal
-      setShowQRModal(true);
-
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong during checkout.");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleSubmitUTR = async () => {
-    if (!utrNumber || utrNumber.length < 6) {
-      alert("Please enter a valid UTR number.");
+    if (!selectedAddressId) {
+      setError("Please select a delivery address.");
       return;
     }
+    
+    setSubmitting(true);
+    setError("");
 
     try {
-      setIsSubmittingUTR(true);
-      const res = await fetch("http://localhost:8000/api/v1/orders/create-manual", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ utrNumber })
+        body: JSON.stringify({ addressId: selectedAddressId })
       });
-      
+
       const data = await res.json();
-      if (res.ok && data.success) {
-        setShowQRModal(false);
-        // Dispatch to clear cart context not strictly needed since backend clears it and next load will be empty
-        // But forcing a reload or redirecting is good
-        router.push("/my-seva"); // Redirect to dashboard to track seva
+      if (res.ok) {
+        clearCart();
+        // Route to Phase 5 Payment Page
+        router.push(`/payment/${data.data.orderId}`);
       } else {
-        alert(data.message || "Failed to submit UTR. Please try again.");
+        setError(data.message || "Failed to create order. Please try again.");
+        setSubmitting(false);
       }
     } catch (err) {
-      console.error("UTR submission error:", err);
-      alert("An error occurred while submitting UTR.");
-    } finally {
-      setIsSubmittingUTR(false);
+      setError("An unexpected error occurred. Please try again.");
+      setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FFFBF4]">
+        <div className="w-12 h-12 border-4 border-gold-start/20 border-t-gold-start rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !summary) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#FFFBF4] p-6 text-center">
+        <h2 className="text-2xl font-display font-bold text-[#5C1A1A] mb-4">Cannot Proceed</h2>
+        <p className="text-warm-gray mb-8">{error || "Your cart is empty."}</p>
+        <Link href="/divine-cart">
+          <button className="px-6 py-3 bg-gold-start text-white font-bold rounded-full text-xs uppercase tracking-widest">
+            Return to Cart
+          </button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen w-full bg-[#FFFBF4] relative overflow-hidden pb-24 pt-32">
-      
       {/* ── ATMOSPHERIC BACKGROUND ── */}
       <div className="fixed inset-0 pointer-events-none select-none z-0">
         <div className="absolute top-0 left-0 w-full h-[60vh] bg-gradient-to-b from-[#FFF5E6] to-transparent opacity-60" />
-        <motion.div 
-          initial={{ opacity: 0 }} animate={{ opacity: 0.3 }} transition={{ duration: 2 }}
-          className="absolute w-[80%] h-[80%] top-[10%] left-[-10%] bg-radial from-gold-start/20 via-[#FFF3DF]/50 to-transparent filter blur-[100px]" 
-        />
-        <motion.div 
-          initial={{ opacity: 0 }} animate={{ opacity: 0.2 }} transition={{ duration: 2, delay: 0.5 }}
-          className="absolute w-[60%] h-[60%] top-[30%] right-[-10%] bg-radial from-lotus/10 to-transparent filter blur-[100px]" 
-        />
-        {/* Subtle floating petals */}
-        {Array.from({ length: 6 }).map((_, i) => (
-          <motion.div
-            key={`petal-checkout-${i}`}
-            className="absolute rounded-[40%_0_40%_0] bg-gold-start/20 blur-[1.5px]"
-            style={{ 
-              width: Math.random() * 15 + 10, 
-              height: Math.random() * 15 + 10,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`
-            }}
-            animate={{ 
-              y: [0, -100], 
-              opacity: [0, 0.6, 0], 
-              rotate: [0, 180] 
-            }}
-            transition={{ duration: 12 + Math.random() * 10, repeat: Infinity, delay: Math.random() * 5 }}
-          />
-        ))}
       </div>
 
-      {/* ── DIVINE NAVIGATION ── */}
-      <div className="w-full max-w-7xl mx-auto px-6 mb-8 relative z-50">
+      <div className="w-full max-w-7xl mx-auto px-6 mb-8 relative z-50 flex items-center justify-between">
         <div className="flex flex-wrap items-center gap-2 text-[9px] uppercase tracking-widest font-bold">
-          <Link href="/" className="text-[#8B6F4E] hover:text-[#5C1A1A] transition-colors">Home</Link>
+          <Link href="/divine-cart" className="text-[#8B6F4E] hover:text-[#5C1A1A] transition-colors">Divine Cart</Link>
           <ChevronRight className="w-3 h-3 text-gold-start/50" />
-          <Link href="/collections" className="text-[#8B6F4E] hover:text-[#5C1A1A] transition-colors">Divine Offering</Link>
-          <ChevronRight className="w-3 h-3 text-gold-start/50" />
-          <Link href="/divine-cart" className="text-[#8B6F4E] hover:text-[#5C1A1A] transition-colors">Complete Your Divine Seva</Link>
-          <ChevronRight className="w-3 h-3 text-gold-start/50" />
-          <span className="text-[#5C1A1A]">Offer With Love</span>
+          <span className="text-[#5C1A1A]">Checkout</span>
         </div>
+        <Link href="/divine-cart" className="hidden md:flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-warm-gray hover:text-gold-start transition-colors group">
+          <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
+          Back to Cart
+        </Link>
       </div>
 
       <div className="w-full max-w-7xl mx-auto px-6 relative z-10">
-        
-        {/* ── HEADER / WELCOME ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <CheckoutWelcome />
-        </motion.div>
+        <div className="mb-12">
+          <h1 className="font-display text-4xl md:text-5xl font-extrabold text-[#5C1A1A] leading-[1.1] mb-4">
+            Complete Your Seva
+          </h1>
+          <p className="text-sm md:text-base text-warm-gray max-w-2xl">
+            Select your delivery address and confirm your offerings.
+          </p>
+        </div>
 
-        {/* ── LAYOUT GRID ── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16 items-start">
-          
-          {/* LEFT: Checkout Form (Delivery, Packaging, Gift) */}
-          <div className="lg:col-span-2">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <CheckoutForm addressData={addressData} setAddressData={setAddressData} />
-            </motion.div>
+          {/* LEFT: Address Selection */}
+          <div className="lg:col-span-2 flex flex-col gap-6">
+            <h2 className="font-display text-2xl font-bold text-charcoal border-b border-gold-start/20 pb-4">
+              Select Delivery Address
+            </h2>
+
+            {addresses.length === 0 ? (
+              <div className="bg-white/40 backdrop-blur-xl border border-gold-start/20 rounded-2xl p-6 text-center">
+                <p className="text-warm-gray mb-4">No saved addresses found.</p>
+                <Link href="/my-seva">
+                  <button className="px-4 py-2 border border-gold-start text-gold-start font-bold rounded-full text-xs uppercase tracking-widest hover:bg-gold-start hover:text-white transition-colors">
+                    Add Address in Profile
+                  </button>
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {addresses.map((address) => (
+                  <div
+                    key={address._id}
+                    onClick={() => setSelectedAddressId(address._id)}
+                    className={`relative p-5 rounded-2xl border-2 transition-all cursor-pointer bg-white/60 backdrop-blur-sm ${
+                      selectedAddressId === address._id
+                        ? "border-gold-start shadow-md bg-gold-start/5"
+                        : "border-transparent hover:border-gold-start/40"
+                    }`}
+                  >
+                    {selectedAddressId === address._id && (
+                      <div className="absolute top-4 right-4 text-gold-start">
+                        <Check className="w-5 h-5" />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 mb-2">
+                      <MapPin className="w-4 h-4 text-warm-gray" />
+                      <span className="font-bold text-charcoal">{address.type}</span>
+                    </div>
+                    <p className="text-sm text-charcoal font-medium">{address.fullName}</p>
+                    <p className="text-xs text-warm-gray mt-1 line-clamp-2">
+                      {address.addressLine1}, {address.city}, {address.state} - {address.pinCode}
+                    </p>
+                    <p className="text-xs text-warm-gray mt-1">Phone: {address.phone}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           
-          {/* RIGHT: Divine Summary */}
+          {/* RIGHT: Order Summary */}
           <div className="lg:col-span-1">
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <DivineSummary handleCheckout={handleCheckout} isProcessing={isProcessing} />
-            </motion.div>
+            <div className="w-full bg-white/50 backdrop-blur-2xl border border-gold-start/30 rounded-[2rem] p-6 shadow-sm sticky top-32">
+              <h2 className="font-display text-xl font-bold text-charcoal mb-6 pb-4 border-b border-gold-start/15">
+                Order Summary
+              </h2>
+
+              <div className="space-y-4 mb-6">
+                {summary.products.map((item: any, idx: number) => (
+                  <div key={idx} className="flex justify-between items-start gap-4 text-sm">
+                    <div className="flex-1">
+                      <p className="font-bold text-charcoal line-clamp-1">{item.productId.name}</p>
+                      <p className="text-xs text-warm-gray">Qty: {item.quantity}</p>
+                    </div>
+                    <span className="font-bold text-charcoal">₹{(item.variantId.price * item.quantity).toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-2 mb-6 pt-4 border-t border-gold-start/15 text-sm">
+                <div className="flex justify-between items-center text-warm-gray font-medium">
+                  <span>Subtotal</span>
+                  <span className="font-bold text-charcoal">₹{summary.totalAmount?.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center text-warm-gray font-medium">
+                  <span>Delivery</span>
+                  <span className="font-bold text-[#25D366]">Complimentary</span>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-gold-start/20 mb-8 flex justify-between items-end">
+                <div className="text-[10px] uppercase tracking-widest font-bold text-warm-gray mb-1">Total Amount</div>
+                <div className="font-display text-2xl font-bold text-[#5C1A1A]">₹{summary.totalAmount?.toLocaleString()}</div>
+              </div>
+
+              <button 
+                onClick={handleCheckout}
+                disabled={submitting || !selectedAddressId}
+                className={`w-full py-4 px-6 rounded-2xl flex items-center justify-center gap-3 shadow-md transition-all duration-300 ${
+                  submitting || !selectedAddressId 
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+                    : "bg-gradient-to-r from-[#D4A853] via-[#E8850A] to-[#D4A853] text-white hover:scale-[1.02]"
+                }`}
+              >
+                <Heart className="w-5 h-5 fill-current" />
+                <span className="text-[11px] uppercase tracking-[0.15em] font-bold">
+                  {submitting ? "Processing..." : "Proceed to Payment"}
+                </span>
+              </button>
+              
+              <div className="mt-6 flex items-center justify-center gap-2 opacity-60">
+                <ShieldCheck className="w-4 h-4 text-charcoal" />
+                <span className="text-[8px] uppercase tracking-widest font-bold text-charcoal">Secure Checkout</span>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* ── RECOMMENDATIONS ── */}
-        <CheckoutRecommendations />
-
       </div>
-
-      {/* ── QR CODE MODAL (Phase 3) ── */}
-      {showQRModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
-          >
-            <div className="text-center mb-6">
-              <h2 className="font-display text-2xl font-bold text-[#5C1A1A] mb-2">Divine Offering Payment</h2>
-              <p className="text-sm text-warm-gray">Please scan the QR code below using any UPI app to complete your payment.</p>
-            </div>
-            
-            <div className="flex justify-center mb-6">
-              <img 
-                src="/images/payment-qr.png" 
-                alt="UPI QR Code" 
-                className="w-64 h-64 object-contain border-2 border-gold-start/20 p-2 rounded-2xl shadow-sm"
-              />
-            </div>
-            
-            <div className="space-y-4">
-              <div className="text-center">
-                <span className="text-[10px] uppercase tracking-widest font-bold text-warm-gray">UPI ID</span>
-                <p className="font-bold text-charcoal">sharmaakriti232000-1@okhdfcbank</p>
-              </div>
-
-              <div className="relative group mt-4">
-                <input 
-                  type="text" 
-                  value={utrNumber}
-                  onChange={(e) => setUtrNumber(e.target.value)}
-                  placeholder="Enter 12-digit UTR Number" 
-                  className="w-full bg-white border border-gold-start/30 rounded-xl py-3.5 px-4 text-center text-sm font-bold tracking-widest text-charcoal focus:outline-none focus:border-gold-start focus:ring-1 focus:ring-gold-start/50 transition-all placeholder:text-warm-gray/60 placeholder:font-normal"
-                />
-              </div>
-
-              <motion.button 
-                onClick={handleSubmitUTR}
-                disabled={isSubmittingUTR || utrNumber.length < 6}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-[#D4A853] via-[#E8850A] to-[#D4A853] bg-[length:200%_auto] text-white flex items-center justify-center font-bold text-sm tracking-widest uppercase hover:bg-[position:right_center] transition-all disabled:opacity-50"
-              >
-                {isSubmittingUTR ? "Verifying..." : "Submit Payment"}
-              </motion.button>
-              
-              <button 
-                onClick={() => setShowQRModal(false)}
-                className="w-full py-3 text-[10px] font-bold text-warm-gray uppercase tracking-widest hover:text-[#5C1A1A] transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
     </main>
   );
 }

@@ -151,20 +151,6 @@ const clearCart = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, "Cart cleared successfully", { cart }));
 });
 
-// @desc    Move Item to Save For Later (Disabled in V1 MVP)
-const moveToSaveForLater = asyncHandler(async (req, res) => {
-    return res.status(200).json(new ApiResponse(200, "Save for later disabled in V1"));
-});
-
-// @desc    Get Save For Later Items (Disabled in V1 MVP)
-const getSaveForLaterItems = asyncHandler(async (req, res) => {
-    return res.status(200).json(new ApiResponse(200, "Save for later disabled in V1", { items: [] }));
-});
-
-// @desc    Move from Save For Later to Cart (Disabled in V1 MVP)
-const moveToCart = asyncHandler(async (req, res) => {
-    return res.status(200).json(new ApiResponse(200, "Save for later disabled in V1"));
-});
 
 
 // @desc    Get Cart Price Details (Summary)
@@ -196,8 +182,5 @@ module.exports = {
     updateQuantity,
     removeFromCart,
     clearCart,
-    moveToSaveForLater,
-    getSaveForLaterItems,
-    moveToCart,
     getPriceDetails
 };

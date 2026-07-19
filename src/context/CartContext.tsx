@@ -82,7 +82,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function loadBackendCart() {
       try {
-        const res = await fetch("http://localhost:8000/api/v1/cart", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/cart`, {
           credentials: "include"
         });
         if (res.ok) {
@@ -129,7 +129,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const addToCart = useCallback(
     async (product: Product) => {
       try {
-        const res = await fetch("http://localhost:8000/api/v1/cart/add", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/cart/add`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -163,7 +163,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (!item) return;
 
       try {
-        const res = await fetch(`http://localhost:8000/api/v1/cart/remove/${item.product.variantId || productId}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/cart/remove/${item.product.variantId || productId}`, {
           method: "DELETE",
           credentials: "include"
         });
@@ -183,7 +183,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (!item) return;
 
       try {
-        const res = await fetch(`http://localhost:8000/api/v1/cart/update/${item.product.variantId || productId}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/cart/update/${item.product.variantId || productId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -201,7 +201,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = useCallback(async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/v1/cart/clear", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/cart/clear`, {
         method: "DELETE",
         credentials: "include"
       });
