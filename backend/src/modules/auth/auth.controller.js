@@ -1,4 +1,5 @@
 const User = require("../../models/User.model");
+const NotificationSettings = require("../../models/NotificationSettings.model");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
@@ -28,6 +29,9 @@ const registerUser = asyncHandler(async (req, res) => {
         password,
         phone
     });
+
+    // Default settings are all 'true'
+    await NotificationSettings.create({ userId: user._id });
 
     const createdUser = await User.findById(user._id).select("-password");
     const accessToken = user.generateAccessToken();
