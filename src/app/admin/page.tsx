@@ -38,7 +38,7 @@ export default function AdminDashboardPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-96">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-saffron-deep" />
       </div>
     );
   }
@@ -54,70 +54,70 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
-        <p className="text-sm text-gray-500">Welcome back, Admin</p>
+        <h1 className="font-display text-3xl font-extrabold text-[#5C1A1A] tracking-wider">Dashboard Overview</h1>
+        <p className="text-sm font-bold uppercase tracking-wider text-[#8B6F4E]">Welcome back, Admin</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Users */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
-          <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
-            <Users className="w-6 h-6 text-blue-600" />
+        <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-gold-start/20 flex items-center gap-4 transition-transform hover:-translate-y-1">
+          <div className="w-12 h-12 bg-gold-start/10 rounded-full flex items-center justify-center">
+            <Users className="w-6 h-6 text-saffron-deep" />
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Total Users</p>
-            <p className="text-2xl font-bold text-gray-900">{data?.totalUsers || 0}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-charcoal/60">Total Users</p>
+            <p className="text-2xl font-bold text-[#5C1A1A]">{data?.totalUsers || 0}</p>
           </div>
         </div>
 
         {/* Total Orders */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
-          <div className="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center">
-            <Package className="w-6 h-6 text-purple-600" />
+        <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-gold-start/20 flex items-center gap-4 transition-transform hover:-translate-y-1">
+          <div className="w-12 h-12 bg-saffron/10 rounded-full flex items-center justify-center">
+            <Package className="w-6 h-6 text-saffron-deep" />
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Total Orders</p>
-            <p className="text-2xl font-bold text-gray-900">{data?.totalOrders || 0}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-charcoal/60">Total Orders</p>
+            <p className="text-2xl font-bold text-[#5C1A1A]">{data?.totalOrders || 0}</p>
           </div>
         </div>
 
         {/* Total Revenue */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
-          <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
-            <IndianRupee className="w-6 h-6 text-green-600" />
+        <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-gold-start/20 flex items-center gap-4 transition-transform hover:-translate-y-1">
+          <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center border border-green-100">
+            <IndianRupee className="w-6 h-6 text-green-700" />
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Total Revenue</p>
-            <p className="text-2xl font-bold text-gray-900">₹{data?.totalRevenue?.toLocaleString() || 0}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-charcoal/60">Total Revenue</p>
+            <p className="text-2xl font-bold text-[#5C1A1A]">₹{data?.totalRevenue?.toLocaleString() || 0}</p>
           </div>
         </div>
 
         {/* Pending Verification */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
-          <div className="w-12 h-12 bg-yellow-50 rounded-full flex items-center justify-center">
-            <AlertTriangle className="w-6 h-6 text-yellow-600" />
+        <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-gold-start/20 flex items-center gap-4 transition-transform hover:-translate-y-1">
+          <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center border border-red-100">
+            <AlertTriangle className="w-6 h-6 text-red-600" />
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Pending Payments</p>
-            <p className="text-2xl font-bold text-gray-900">{data?.pendingPayments || 0}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-charcoal/60">Pending Payments</p>
+            <p className="text-2xl font-bold text-[#5C1A1A]">{data?.pendingPayments || 0}</p>
           </div>
         </div>
       </div>
       
       {/* Additional Stats Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-8">
-         <h2 className="text-lg font-bold text-gray-900 mb-4">Quick Links</h2>
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-[0_4px_20px_rgba(212,168,83,0.05)] border border-gold-start/20 p-6 mt-8">
+         <h2 className="font-display text-xl font-bold text-[#5C1A1A] mb-6">Quick Links</h2>
          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-           <button onClick={() => router.push('/admin/products')} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center text-sm font-medium text-gray-700">
+           <button onClick={() => router.push('/admin/products')} className="p-4 border border-gold-start/20 rounded-xl hover:bg-gold-start/5 hover:border-gold-start/40 transition-all text-center text-[11px] font-bold uppercase tracking-wider text-charcoal shadow-sm">
              Manage Products
            </button>
-           <button onClick={() => router.push('/admin/collections')} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center text-sm font-medium text-gray-700">
+           <button onClick={() => router.push('/admin/collections')} className="p-4 border border-gold-start/20 rounded-xl hover:bg-gold-start/5 hover:border-gold-start/40 transition-all text-center text-[11px] font-bold uppercase tracking-wider text-charcoal shadow-sm">
              Manage Collections
            </button>
-           <button onClick={() => router.push('/admin/orders')} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center text-sm font-medium text-gray-700">
+           <button onClick={() => router.push('/admin/orders')} className="p-4 border border-gold-start/20 rounded-xl hover:bg-gold-start/5 hover:border-gold-start/40 transition-all text-center text-[11px] font-bold uppercase tracking-wider text-charcoal shadow-sm">
              Process Orders
            </button>
-           <button onClick={() => router.push('/admin/payments')} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center text-sm font-medium text-gray-700">
+           <button onClick={() => router.push('/admin/payments')} className="p-4 border border-gold-start/20 rounded-xl hover:bg-gold-start/5 hover:border-gold-start/40 transition-all text-center text-[11px] font-bold uppercase tracking-wider text-charcoal shadow-sm">
              Verify Payments
            </button>
          </div>

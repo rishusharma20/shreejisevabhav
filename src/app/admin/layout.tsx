@@ -36,17 +36,18 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   if (!isPinVerified) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-md w-full">
-          <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center">
-              <Lock className="w-8 h-8 text-indigo-600" />
+      <div className="min-h-screen bg-cream bg-lotus-watermark flex items-center justify-center p-4">
+        <div className="bg-white/60 backdrop-blur-xl p-8 rounded-[2rem] shadow-[0_20px_60px_rgba(212,168,83,0.15)] border border-gold-start/40 max-w-md w-full relative overflow-hidden">
+          <div className="absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-br from-gold-start/20 to-saffron/10 rounded-full blur-[40px] pointer-events-none" />
+          <div className="flex justify-center mb-6 relative z-10">
+            <div className="w-16 h-16 bg-gradient-to-tr from-gold-start to-saffron rounded-full flex items-center justify-center shadow-lg">
+              <Lock className="w-8 h-8 text-white" />
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-center text-gray-900 mb-2">Admin Access</h2>
-          <p className="text-sm text-center text-gray-500 mb-8">Please enter your 6-digit security PIN to continue.</p>
+          <h2 className="font-display text-3xl font-extrabold text-[#5C1A1A] tracking-wider text-center mb-2 relative z-10">Admin Access</h2>
+          <p className="text-[11px] tracking-[0.15em] text-[#8B6F4E] uppercase font-bold text-center mb-8 relative z-10">Enter digital boutique security PIN</p>
           
-          <form onSubmit={handlePinSubmit} className="space-y-4">
+          <form onSubmit={handlePinSubmit} className="space-y-4 relative z-10">
             <div>
               <input
                 type="password"
@@ -54,15 +55,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 value={pin}
                 onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
                 placeholder="••••••"
-                className="w-full text-center tracking-[1em] font-mono text-2xl py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full text-center tracking-[1em] font-mono text-2xl py-4 bg-white/40 backdrop-blur-sm border border-gold-start/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start/50 transition-all text-charcoal shadow-inner"
                 required
                 autoFocus
               />
             </div>
-            {error && <p className="text-sm text-red-500 text-center font-medium">{error}</p>}
+            {error && <p className="text-sm text-red-600 text-center font-bold bg-red-50/50 py-2 rounded-lg border border-red-200/50">{error}</p>}
             <button
               type="submit"
-              className="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold uppercase tracking-wider hover:bg-indigo-700 transition-colors"
+              className="w-full py-4 bg-gradient-to-r from-[#D4A853] via-[#E8850A] to-[#D4A853] bg-[length:200%_auto] text-white rounded-xl font-bold uppercase tracking-[0.15em] text-xs shadow-[0_4px_15px_rgba(212,168,83,0.2)] hover:bg-[position:right_center] transition-all duration-500"
             >
               Verify Access
             </button>
@@ -82,12 +83,12 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50 pt-20">
+    <div className="flex h-screen bg-cream bg-lotus-watermark pt-20">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col hidden md:flex h-full fixed top-20 bottom-0">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800">Admin Panel</h2>
-          <p className="text-xs text-gray-500 mt-1">Shreeji Seva Bhav</p>
+      <aside className="w-64 bg-white/80 backdrop-blur-md border-r border-gold-start/20 flex flex-col hidden md:flex h-full fixed top-20 bottom-0 shadow-[4px_0_24px_rgba(212,168,83,0.05)]">
+        <div className="p-6 border-b border-gold-start/10">
+          <h2 className="font-display text-2xl font-extrabold text-[#5C1A1A] tracking-wider">Admin Panel</h2>
+          <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#8B6F4E] mt-1">Shreeji Seva Bhav</p>
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4">
@@ -99,13 +100,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 <li key={item.name}>
                   <Link
                     href={item.href}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
                       isActive
-                        ? "bg-indigo-50 text-indigo-700"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        ? "bg-gold-start/15 text-saffron-deep shadow-sm"
+                        : "text-charcoal/70 hover:bg-gold-start/5 hover:text-saffron-deep"
                     }`}
                   >
-                    <Icon className={`w-5 h-5 ${isActive ? "text-indigo-700" : "text-gray-400"}`} />
+                    <Icon className={`w-4 h-4 ${isActive ? "text-saffron-deep" : "text-warm-gray"}`} />
                     {item.name}
                   </Link>
                 </li>
@@ -114,22 +115,22 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </ul>
         </nav>
 
-        <div className="p-4 border-t border-gray-200">
+        <div className="p-4 border-t border-gold-start/10">
           <button
             onClick={() => {
               sessionStorage.removeItem("adminPinVerified");
               window.location.href = "/login";
             }}
-            className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-wider text-red-700 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100"
           >
-            <LogOut className="w-5 h-5" />
+            <LogOut className="w-4 h-4" />
             Logout
           </button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto md:ml-64">
+      <main className="flex-1 overflow-y-auto md:ml-64 relative z-10">
         <div className="p-4 md:p-8 w-full max-w-7xl mx-auto min-h-full">
           {children}
         </div>
