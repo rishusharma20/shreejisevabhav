@@ -35,7 +35,9 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
       category: product.category,
       badge: product.isFeatured ? "bestseller" : undefined,
       rating: 5,
-      reviewCount: 0
+      reviewCount: 0,
+      description: product.description,
+      inStock: true
     };
     
     addToCart(cartProduct);

@@ -3,7 +3,8 @@
 import { cookies } from "next/headers";
 
 export async function setAuthCookie(token: string) {
-  cookies().set("accessToken", token, {
+  const cookieStore = await cookies();
+  cookieStore.set("accessToken", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -13,5 +14,6 @@ export async function setAuthCookie(token: string) {
 }
 
 export async function removeAuthCookie() {
-  cookies().delete("accessToken");
+  const cookieStore = await cookies();
+  cookieStore.delete("accessToken");
 }
