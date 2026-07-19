@@ -11,7 +11,7 @@ async function runTests() {
         console.log("1. Testing Registration...");
         const registerRes = await axios.post(`${BASE_URL}/register`, {
             name: "Test Devotee",
-            email: "test@shreejisevabhav.com",
+            email: "test@gmail.com",
             password: "Password123!"
         });
         console.log("✅ Registration Successful:", registerRes.data.message);
@@ -20,7 +20,7 @@ async function runTests() {
         // 2. Login User
         console.log("\n2. Testing Login...");
         const loginRes = await axios.post(`${BASE_URL}/login`, {
-            email: "test@shreejisevabhav.com",
+            email: "test@gmail.com",
             password: "Password123!"
         });
         console.log("✅ Login Successful:", loginRes.data.message);
@@ -46,7 +46,7 @@ async function runTests() {
         // 5. Test login with new password
         console.log("\n5. Testing Login with New Password...");
         const newLoginRes = await axios.post(`${BASE_URL}/login`, {
-            email: "test@shreejisevabhav.com",
+            email: "test@gmail.com",
             password: "NewPassword123!"
         });
         console.log("✅ Login with New Password Successful");
@@ -70,7 +70,7 @@ async function runTests() {
         console.log("\n8. Verifying Account is Deleted (Should Fail Login)...");
         try {
             await axios.post(`${BASE_URL}/login`, {
-                email: "test@shreejisevabhav.com",
+                email: "test@gmail.com",
                 password: "NewPassword123!"
             });
             console.log("❌ Login succeeded, but it should have failed.");

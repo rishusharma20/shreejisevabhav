@@ -13,6 +13,12 @@ const registerValidation = [
         .withMessage("Email is required")
         .isEmail()
         .withMessage("Please provide a valid email")
+        .custom((value) => {
+            if (!value.toLowerCase().endsWith("@gmail.com")) {
+                throw new Error("Only @gmail.com email addresses are allowed for registration");
+            }
+            return true;
+        })
         .normalizeEmail(),
     body("password")
         .trim()
