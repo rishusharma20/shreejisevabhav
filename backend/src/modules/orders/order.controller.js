@@ -216,6 +216,25 @@ const getAllOrders = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, "All Orders", { orders }));
 });
 
+// @desc    Get order details by ID for Admin
+// @route   GET /api/v1/orders/admin/:id
+// @access  Private/Admin
+const getAdminOrderById = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const order = await Order.findById(id)
+        .populate("userId", "name email mobileNumber")
+        .populate("addressId")
+        .populate("paymentId")
+        .populate("trackMySevaId");
+
+    if (!order) {
+        throw new ApiError(404, "Order not found");
+    }
+
+    return res.status(200).json(new ApiResponse(200, "Order details", { order }));
+});
+
 // @desc    Update Order Status
 // @route   PUT /api/v1/orders/admin/:id/status
 // @access  Private/Admin
@@ -274,6 +293,7 @@ module.exports = {
     cancelOrder,
     downloadInvoice,
     getAllOrders,
+    getAdminOrderById,
     updateOrderStatus,
     getAdminAnalytics
 };

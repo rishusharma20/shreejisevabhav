@@ -6,6 +6,7 @@ const {
     cancelOrder,
     downloadInvoice,
     getAllOrders,
+    getAdminOrderById,
     updateOrderStatus,
     getAdminAnalytics
 } = require("./order.controller");
@@ -27,6 +28,7 @@ router.get("/:id/invoice", downloadInvoice);
 // Admin Routes
 router.get("/admin/all", isAdmin, getAllOrders);
 router.get("/admin/analytics", isAdmin, getAdminAnalytics);
+router.get("/admin/:id", isAdmin, getAdminOrderById);
 router.put("/admin/:id/status", isAdmin, updateOrderStatusValidation, validate, updateOrderStatus);
 
 module.exports = router;
