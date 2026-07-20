@@ -22,6 +22,7 @@ export default function AdminOrdersPage() {
     "PREPARING",
     "PACKAGING",
     "SHIPPED",
+    "OUT_FOR_DELIVERY",
     "DELIVERED",
     "CANCELLED"
   ];

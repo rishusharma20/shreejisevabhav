@@ -3,6 +3,8 @@ const Order = require("../../models/Order.model");
 const ApiResponse = require("../../utils/ApiResponse");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
+const sendEmail = require("../../utils/sendEmail");
+const { getOrderStatusEmail } = require("../../utils/emailTemplates");
 
 const submitPayment = asyncHandler(async (req, res) => {
     const { orderId, utrNumber, screenshotUrl } = req.body;
@@ -33,6 +35,21 @@ const submitPayment = asyncHandler(async (req, res) => {
 
     order.orderStatus = "UNDER_VERIFICATION";
     await order.save();
+
+    // Send email notification
+    if (req.user && req.user.email) {
+        try {
+            const emailData = getOrderStatusEmail(order, "UNDER_VERIFICATION");
+            await sendEmail({
+                email: req.user.email,
+                subject: emailData.subject,
+                message: emailData.text,
+                html: emailData.html
+            });
+        } catch (error) {
+            console.error("Failed to send payment submitted email:", error);
+        }
+    }
 
     return res.status(200).json(
         new ApiResponse(200, "Payment details submitted successfully", { payment })

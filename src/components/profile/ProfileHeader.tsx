@@ -2,10 +2,27 @@
 
 import { motion } from "framer-motion";
 import { User, PackageOpen, Heart, Crown, Sparkles, Star } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function ProfileHeader() {
-  const userName = "Devotee"; // Dynamic user name
-  const status = "Premium Devotee"; // Dynamic status
+  const [userName, setUserName] = useState("Devotee"); // Dynamic user name
+  const [status, setStatus] = useState("Premium Devotee"); // Dynamic status
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/profile`, { credentials: "include" });
+        const data = await res.json();
+        if (data.success && data.data && data.data.name) {
+          const firstName = data.data.name.split(" ")[0];
+          setUserName(firstName);
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile", error);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   return (
     <motion.div

@@ -5,6 +5,8 @@ const { getOrderAnalytics } = require("./analytics.service");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
+const sendEmail = require("../../utils/sendEmail");
+const { getOrderStatusEmail } = require("../../utils/emailTemplates");
 
 const Payment = require("../../models/Payment.model");
 const Cart = require("../../models/Cart.model");
@@ -146,7 +148,7 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const order = await Order.findById(id).populate("paymentId");
+    const order = await Order.findById(id).populate("paymentId").populate("userId");
     if (!order) throw new ApiError(404, "Order not found");
 
     order.orderStatus = status;
@@ -168,6 +170,9 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
         } else if (status === "SHIPPED") {
             title = "Shipped";
             description = "Your offerings are on their way.";
+        } else if (status === "OUT_FOR_DELIVERY") {
+            title = "Out for Delivery";
+            description = "Your offerings will be arriving today.";
         } else if (status === "DELIVERED") {
             title = "Delivered";
             description = "Your offerings have been delivered successfully.";
@@ -184,6 +189,21 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
                 }
             }
         });
+    }
+
+    // Send email notification
+    if (order.userId && order.userId.email) {
+        try {
+            const emailData = getOrderStatusEmail(order, status);
+            await sendEmail({
+                email: order.userId.email,
+                subject: emailData.subject,
+                message: emailData.text,
+                html: emailData.html
+            });
+        } catch (error) {
+            console.error("Failed to send order status email:", error);
+        }
     }
 
     return res.status(200).json(new ApiResponse(200, "Order status updated", { order }));
