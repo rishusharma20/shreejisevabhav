@@ -60,7 +60,7 @@ export default function ProfileHeader() {
               {status}
             </motion.div>
             <h1 className="font-display text-3xl md:text-4xl text-[#5C1A1A] font-extrabold tracking-wide drop-shadow-sm">
-              Jai Shri Radhe, {userName}
+              Radhe Radhe, {userName}
             </h1>
             <p className="text-xs md:text-sm text-[#8B6F4E] font-medium tracking-wide">
               May Shri Radha Raman Ji’s grace forever illuminate your path.

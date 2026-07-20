@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { QrCode, Upload, ShieldCheck, ChevronRight, Copy, Check } from "lucide-react";
 
-export default function PaymentPage({ params }: { params: { orderId: string } }) {
+import { use } from 'react';
+
+export default function PaymentPage({ params }: { params: Promise<{ orderId: string }> }) {
   const router = useRouter();
-  const { orderId } = params;
+  const resolvedParams = use(params);
+  const orderId = resolvedParams.orderId;
   
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -40,7 +43,7 @@ export default function PaymentPage({ params }: { params: { orderId: string } })
   }, [orderId, router]);
 
   const handleCopyUpi = () => {
-    navigator.clipboard.writeText("shreejisevabhav@upi");
+    navigator.clipboard.writeText("sharmaakriti232000-1@okhdfcbank");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -116,18 +119,19 @@ export default function PaymentPage({ params }: { params: { orderId: string } })
             
             {/* LEFT: QR Code Section */}
             <div className="flex flex-col items-center p-8 bg-white rounded-3xl shadow-sm border border-gold-start/10">
-              <div className="w-48 h-48 bg-gray-100 rounded-2xl mb-6 flex items-center justify-center border-2 border-dashed border-gold-start/30 relative overflow-hidden">
-                <QrCode className="w-16 h-16 text-gold-start/40" />
-                {/* In a real app, replace with an actual Image tag for the static QR code */}
-                <div className="absolute inset-0 flex items-center justify-center bg-white/90">
-                  <span className="font-bold text-warm-gray tracking-widest uppercase text-xs">MOCK QR</span>
+              <div className="relative w-48 h-48 sm:w-56 sm:h-56 mx-auto mb-6 bg-white p-2 sm:p-4 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gold-start/10">
+                <div className="w-full h-full relative rounded-xl overflow-hidden bg-[#FFFBF4] border border-gold-start/20 flex flex-col items-center justify-center">
+                  <img 
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi%3A%2F%2Fpay%3Fpa%3Dsharmaakriti232000-1%40okhdfcbank%26pn%3DShreeji%2520Seva%2520Bhav" 
+                    alt="Payment QR Code" 
+                    className="w-full h-full object-contain mix-blend-multiply p-2" 
+                  />
                 </div>
               </div>
-              
               <div className="w-full text-center space-y-3">
                 <p className="text-[10px] uppercase tracking-widest font-bold text-warm-gray">Scan to Pay using UPI</p>
-                <div className="flex items-center justify-between bg-[#FFFBF4] px-4 py-3 rounded-xl border border-gold-start/20">
-                  <span className="text-sm font-bold text-charcoal">shreejisevabhav@upi</span>
+                <div className="flex items-center justify-between mt-2 p-3 bg-white border border-gold-start/20 rounded-xl">
+                  <span className="text-sm font-bold text-charcoal">sharmaakriti232000-1@okhdfcbank</span>
                   <button onClick={handleCopyUpi} className="p-1.5 hover:bg-gold-start/10 rounded-lg transition-colors">
                     {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4 text-warm-gray" />}
                   </button>

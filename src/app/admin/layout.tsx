@@ -3,7 +3,7 @@
 import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Package, FolderTree, CreditCard, ShoppingBag, Settings, LogOut, Lock } from "lucide-react";
+import { LayoutDashboard, Package, FolderTree, CreditCard, ShoppingBag, Settings, LogOut, Lock, Image as ImageIcon } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -79,6 +79,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     { name: "Collections", href: "/admin/collections", icon: FolderTree },
     { name: "Payments", href: "/admin/payments", icon: CreditCard },
     { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
+    { name: "Gallery", href: "/admin/gallery", icon: ImageIcon },
     { name: "Website Settings", href: "/admin/settings", icon: Settings },
   ];
 

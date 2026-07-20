@@ -92,12 +92,10 @@ productSchema.index({
     tags: "text"
 });
 
-// Pre-save hook to generate slug if not provided or name modified
-productSchema.pre("save", function (next) {
+productSchema.pre("save", function () {
     if (this.isModified("name") && !this.slug) {
         this.slug = slugify(this.name, { lower: true, strict: true });
     }
-    next();
 });
 
 const Product = mongoose.model("Product", productSchema);

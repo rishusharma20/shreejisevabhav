@@ -98,7 +98,7 @@ export default function CheckoutPage() {
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#FFFBF4] p-6 text-center">
         <h2 className="text-2xl font-display font-bold text-[#5C1A1A] mb-4">Cannot Proceed</h2>
         <p className="text-warm-gray mb-8">{error || "Your cart is empty."}</p>
-        <Link href="/divine-cart">
+        <Link href="/cart">
           <button className="px-6 py-3 bg-gold-start text-white font-bold rounded-full text-xs uppercase tracking-widest">
             Return to Cart
           </button>
@@ -116,12 +116,12 @@ export default function CheckoutPage() {
 
       <div className="w-full max-w-7xl mx-auto px-6 mb-8 relative z-50 flex items-center justify-between">
         <div className="flex flex-wrap items-center gap-2 text-[9px] uppercase tracking-widest font-bold">
-          <Link href="/divine-cart" className="text-[#8B6F4E] hover:text-[#5C1A1A] transition-colors">Divine Cart</Link>
+          <Link href="/cart" className="text-[#8B6F4E] hover:text-[#5C1A1A] transition-colors">Cart</Link>
           <ChevronRight className="w-3 h-3 text-gold-start/50" />
           <span className="text-[#5C1A1A]">Checkout</span>
         </div>
-        <Link href="/divine-cart" className="hidden md:flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-warm-gray hover:text-gold-start transition-colors group">
-          <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
+        <Link href="/cart" className="hidden md:flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-warm-gray hover:text-gold-start transition-colors group">
+          <ChevronRight size={14} className="rotate-180 group-hover:-translate-x-1 transition-transform" />
           Back to Cart
         </Link>
       </div>

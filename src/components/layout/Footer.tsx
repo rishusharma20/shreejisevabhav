@@ -18,10 +18,17 @@ export default function Footer() {
     }
   };
 
+  const quickLinks = [
+    { label: "Home", href: "/" },
+    { label: "Festive Offers", href: "/collections/festive-offers" },
+    { label: "Poshaks", href: "/collections/thakurjis-summer-collection" },
+    { label: "Jewellery", href: "/collections/divine-jewelry" },
+  ];
+
   const shopLinks = [
-    { label: "Radha Dresses", href: "/divine-wardrobe" },
-    { label: "Krishna Vastra", href: "/krishna-vastra" },
-    { label: "Jewellery Sets", href: "/jewellery" },
+    { label: "Festive Offers", href: "/collections/festive-offers" },
+    { label: "Poshaks", href: "/collections/thakurjis-summer-collection" },
+    { label: "Jewellery", href: "/collections/divine-jewelry" },
   ];
 
   return (
@@ -126,12 +133,12 @@ export default function Footer() {
             {/* Contact */}
             <div className="space-y-2 text-sm text-warm-gray-light">
               <p>📧 seva@shreejisevabhav.com</p>
-              <p>📞 +91 99999 99999</p>
+              <p>📞 +91 88699 96210</p>
             </div>
 
             {/* WhatsApp */}
             <a
-              href="https://wa.me/919999999999"
+              href="https://wa.me/918869996210"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 bg-[#25D366] text-white text-sm font-semibold rounded-pill hover:bg-[#1EB554] transition-colors"

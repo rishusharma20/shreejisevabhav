@@ -89,6 +89,27 @@ const createVariant = asyncHandler(async (req, res) => {
     return res.status(201).json(new ApiResponse(201, "Variant created successfully", { variant }));
 });
 
+// Helper to attach default variant info (price, images, variantId) to products
+const attachVariantsToProducts = async (products) => {
+    if (!products || products.length === 0) return [];
+    
+    const plainProducts = products.map(p => (typeof p.toObject === "function" ? p.toObject() : p));
+    const productIds = plainProducts.map(p => p._id);
+    const variants = await ProductVariant.find({ productId: { $in: productIds } }).lean();
+
+    return plainProducts.map(product => {
+        const productVariants = variants.filter(v => v.productId.toString() === product._id.toString());
+        const defaultVariant = productVariants[0] || {};
+        return {
+            ...product,
+            variantId: defaultVariant._id,
+            price: defaultVariant.price || 0,
+            originalPrice: (defaultVariant.price || 0) + (defaultVariant.discount || 0),
+            images: (defaultVariant.images && defaultVariant.images.length > 0) ? defaultVariant.images : ["/images/products/placeholder.jpg"]
+        };
+    });
+};
+
 // @desc    Get all active products
 // @route   GET /api/v1/products
 // @access  Public
@@ -98,21 +119,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
         .sort({ displayOrder: 1, createdAt: -1 })
         .lean();
 
-    // Attach the first available variant to each product for thumbnail/price
-    const productIds = products.map(p => p._id);
-    const variants = await ProductVariant.find({ productId: { $in: productIds } }).lean();
-    
-    const productsWithVariants = products.map(product => {
-        const productVariants = variants.filter(v => v.productId.toString() === product._id.toString());
-        const defaultVariant = productVariants[0] || {};
-        return {
-            ...product,
-            variantId: defaultVariant._id,
-            price: defaultVariant.price || 0,
-            originalPrice: (defaultVariant.price || 0) + (defaultVariant.discount || 0),
-            images: defaultVariant.images || ["/images/products/placeholder.jpg"]
-        };
-    });
+    const productsWithVariants = await attachVariantsToProducts(products);
 
     return res.status(200).json(new ApiResponse(200, "Products retrieved successfully", { products: productsWithVariants }));
 });
@@ -186,21 +193,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // @access  Public
 const getFeaturedProducts = asyncHandler(async (req, res) => {
     const products = await Product.find({ isActive: true, isFeatured: true }).sort({ displayOrder: 1 }).lean();
-    
-    const productIds = products.map(p => p._id);
-    const variants = await ProductVariant.find({ productId: { $in: productIds } }).lean();
-    
-    const productsWithVariants = products.map(product => {
-        const productVariants = variants.filter(v => v.productId.toString() === product._id.toString());
-        const defaultVariant = productVariants[0] || {};
-        return {
-            ...product,
-            variantId: defaultVariant._id,
-            price: defaultVariant.price || 0,
-            originalPrice: (defaultVariant.price || 0) + (defaultVariant.discount || 0),
-            images: defaultVariant.images || ["/images/products/placeholder.jpg"]
-        };
-    });
+    const productsWithVariants = await attachVariantsToProducts(products);
 
     return res.status(200).json(new ApiResponse(200, "Featured products", { products: productsWithVariants }));
 });
@@ -209,8 +202,10 @@ const getFeaturedProducts = asyncHandler(async (req, res) => {
 // @route   GET /api/v1/products/type/trending
 // @access  Public
 const getTrendingProducts = asyncHandler(async (req, res) => {
-    const products = await Product.find({ isActive: true, isTrending: true }).sort({ displayOrder: 1 });
-    return res.status(200).json(new ApiResponse(200, "Trending products", { products }));
+    const products = await Product.find({ isActive: true, isTrending: true }).sort({ displayOrder: 1 }).lean();
+    const productsWithVariants = await attachVariantsToProducts(products);
+
+    return res.status(200).json(new ApiResponse(200, "Trending products", { products: productsWithVariants }));
 });
 
 // @desc    Get products by collection
@@ -218,8 +213,10 @@ const getTrendingProducts = asyncHandler(async (req, res) => {
 // @access  Public
 const getProductsByCollection = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const products = await Product.find({ collectionId: id, isActive: true }).sort({ displayOrder: 1 });
-    return res.status(200).json(new ApiResponse(200, "Collection products", { products }));
+    const products = await Product.find({ collectionId: id, isActive: true }).sort({ displayOrder: 1 }).lean();
+    const productsWithVariants = await attachVariantsToProducts(products);
+
+    return res.status(200).json(new ApiResponse(200, "Collection products", { products: productsWithVariants }));
 });
 
 module.exports = {

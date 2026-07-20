@@ -68,7 +68,8 @@ const orderSchema = new mongoose.Schema(
                 "PREPARING",
                 "PACKAGING",
                 "SHIPPED",
-                "DELIVERED"
+                "DELIVERED",
+                "CANCELLED"
             ],
             default: "PAYMENT_PENDING"
         },

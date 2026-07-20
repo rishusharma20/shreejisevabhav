@@ -9,7 +9,7 @@ interface WhatsAppButtonProps {
   label?: string;
 }
 
-const WHATSAPP_NUMBER = "919999999999"; // Replace with actual number
+const WHATSAPP_NUMBER = "918869996210"; // Replace with actual number
 
 export default function WhatsAppButton({
   productName,

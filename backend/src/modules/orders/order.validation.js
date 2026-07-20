@@ -1,16 +1,16 @@
 const { body } = require("express-validator");
 
 const validAdminStatuses = [
-    "ACCEPTED",
-    "PROCESSING",
+    "PAYMENT_PENDING",
+    "UNDER_VERIFICATION",
+    "PAYMENT_APPROVED",
+    "PAYMENT_REJECTED",
+    "ORDER_CONFIRMED",
+    "PREPARING",
     "PACKAGING",
     "SHIPPED",
-    "OUT_FOR_DELIVERY",
     "DELIVERED",
-    "COMPLETED",
-    "CANCELLED",
-    "RETURNED",
-    "REFUNDED"
+    "CANCELLED"
 ];
 
 const updateOrderStatusValidation = [

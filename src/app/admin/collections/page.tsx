@@ -20,8 +20,11 @@ export default function AdminCollectionsPage() {
     name: "",
     slug: "",
     description: "",
+    category: "Poshak",
     isActive: true,
   });
+  const [bannerImage, setBannerImage] = useState<File | null>(null);
+  const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
   const fetchCollections = async () => {
@@ -51,16 +54,22 @@ export default function AdminCollectionsPage() {
         name: collection.name,
         slug: collection.slug,
         description: collection.description || "",
+        category: collection.category || "Poshak",
         isActive: collection.isActive,
       });
+      setBannerImage(null);
+      setThumbnailImage(null);
     } else {
       setEditingCollection(null);
       setForm({
         name: "",
         slug: "",
         description: "",
+        category: "Poshak",
         isActive: true,
       });
+      setBannerImage(null);
+      setThumbnailImage(null);
     }
     setIsModalOpen(true);
   };
@@ -74,7 +83,11 @@ export default function AdminCollectionsPage() {
     formData.append("name", form.name);
     formData.append("slug", form.slug);
     formData.append("description", form.description);
+    formData.append("category", form.category);
     formData.append("isActive", String(form.isActive));
+
+    if (bannerImage) formData.append("bannerImage", bannerImage);
+    if (thumbnailImage) formData.append("thumbnailImage", thumbnailImage);
 
     const url = editingCollection 
       ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/admin/collections/${editingCollection._id}`
@@ -249,6 +262,43 @@ export default function AdminCollectionsPage() {
                   onChange={e => setForm({...form, description: e.target.value})}
                   className="w-full border border-gold-start/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start/50 bg-white/50"
                 />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8B6F4E] mb-1.5">Category</label>
+                <select 
+                  value={form.category}
+                  onChange={e => setForm({...form, category: e.target.value})}
+                  className="w-full border border-gold-start/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start/50 bg-white/50"
+                >
+                  <option value="Poshak">Poshak</option>
+                  <option value="Accessories">Accessories</option>
+                  <option value="Idols">Idols</option>
+                  <option value="Offerings">Offerings</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8B6F4E] mb-1.5">Banner Image</label>
+                  <input 
+                    required={!editingCollection}
+                    type="file" 
+                    accept="image/*"
+                    onChange={e => setBannerImage(e.target.files?.[0] || null)}
+                    className="w-full border border-gold-start/30 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start/50 bg-white/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8B6F4E] mb-1.5">Thumbnail Image</label>
+                  <input 
+                    required={!editingCollection}
+                    type="file" 
+                    accept="image/*"
+                    onChange={e => setThumbnailImage(e.target.files?.[0] || null)}
+                    className="w-full border border-gold-start/30 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start/50 bg-white/50"
+                  />
+                </div>
               </div>
 
               <div className="flex items-center gap-3 pt-2">

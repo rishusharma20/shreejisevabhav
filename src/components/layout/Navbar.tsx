@@ -1,26 +1,41 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Search, Heart, ShoppingBag, User, Menu, ChevronDown, MessageCircle } from "lucide-react";
+import { Search, Heart, ShoppingBag, User, Menu, ChevronDown, MessageCircle, LogOut } from "lucide-react";
 import { LotusIcon, PeacockFeatherIcon } from "@/components/icons/DevotionalIcons";
 import { useCart } from "@/context/CartContext";
+import { checkAuth, removeAuthCookie } from "@/app/actions/auth";
 
 import MobileDrawer from "./MobileDrawer";
 import SearchBar from "./SearchBar";
 
 const navLinks = [
   { label: "Home", href: "/", hasDropdown: false },
-  { label: "Radha Dresses", href: "/divine-wardrobe", hasDropdown: true },
-  { label: "Krishna Vastra", href: "/krishna-vastra", hasDropdown: true },
-  { label: "Jewellery Sets", href: "/jewellery", hasDropdown: true },
+  { label: "Festive Offers", href: "/collections/festive-offers", hasDropdown: true },
+  { label: "Poshaks", href: "/collections/thakurjis-summer-collection", hasDropdown: true },
+  { label: "Jewellery", href: "/collections/divine-jewelry", hasDropdown: true },
 ];
 
 export default function Navbar() {
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { totalItems } = useCart();
+
+  useEffect(() => {
+    checkAuth().then(setIsAuthenticated);
+  }, []);
+
+  const handleLogout = async () => {
+    await removeAuthCookie();
+    setIsAuthenticated(false);
+    router.push("/");
+    router.refresh();
+  };
 
   const { scrollY } = useScroll();
   const navPadding = useTransform(scrollY, [0, 100], [14, 8]);
@@ -119,27 +134,46 @@ export default function Navbar() {
                 )}
               </a>
 
-              {/* Login */}
-              <a
-                href="/login"
-                className="hidden sm:flex items-center gap-1 px-4 py-2 text-[12px] uppercase tracking-wider font-semibold rounded-pill border transition-all duration-300"
-                style={{ color: "#5C1A1A", borderColor: "rgba(212, 168, 83, 0.3)" }}
-                onMouseEnter={(e) => { 
-                  e.currentTarget.style.borderColor = "#5C1A1A";
-                  e.currentTarget.style.background = "rgba(92, 26, 26, 0.03)";
-                }}
-                onMouseLeave={(e) => { 
-                  e.currentTarget.style.borderColor = "rgba(212, 168, 83, 0.3)";
-                  e.currentTarget.style.background = "transparent";
-                }}
-              >
-                <User size={13} />
-                Login
-              </a>
+              {/* Login / Logout */}
+              {isAuthenticated ? (
+                <button
+                  onClick={handleLogout}
+                  className="hidden sm:flex items-center gap-1 px-4 py-2 text-[12px] uppercase tracking-wider font-semibold rounded-pill border transition-all duration-300 cursor-pointer"
+                  style={{ color: "#5C1A1A", borderColor: "rgba(212, 168, 83, 0.3)" }}
+                  onMouseEnter={(e) => { 
+                    e.currentTarget.style.borderColor = "#5C1A1A";
+                    e.currentTarget.style.background = "rgba(92, 26, 26, 0.03)";
+                  }}
+                  onMouseLeave={(e) => { 
+                    e.currentTarget.style.borderColor = "rgba(212, 168, 83, 0.3)";
+                    e.currentTarget.style.background = "transparent";
+                  }}
+                >
+                  <LogOut size={13} />
+                  Logout
+                </button>
+              ) : (
+                <a
+                  href="/login"
+                  className="hidden sm:flex items-center gap-1 px-4 py-2 text-[12px] uppercase tracking-wider font-semibold rounded-pill border transition-all duration-300"
+                  style={{ color: "#5C1A1A", borderColor: "rgba(212, 168, 83, 0.3)" }}
+                  onMouseEnter={(e) => { 
+                    e.currentTarget.style.borderColor = "#5C1A1A";
+                    e.currentTarget.style.background = "rgba(92, 26, 26, 0.03)";
+                  }}
+                  onMouseLeave={(e) => { 
+                    e.currentTarget.style.borderColor = "rgba(212, 168, 83, 0.3)";
+                    e.currentTarget.style.background = "transparent";
+                  }}
+                >
+                  <User size={13} />
+                  Login
+                </a>
+              )}
 
               {/* WhatsApp — deep maroon pill with subtle gold hover glow */}
               <a
-                href="https://wa.me/919999999999"
+                href="https://wa.me/918869996210"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hidden md:flex items-center gap-1.5 px-5 py-2.5 text-[11px] uppercase tracking-widest font-bold text-white rounded-pill transition-all duration-300 shadow-sm hover:shadow-md whitespace-nowrap shrink-0"

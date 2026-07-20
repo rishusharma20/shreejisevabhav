@@ -58,6 +58,7 @@ const orderRouter = require('./src/modules/orders/order.routes');
 const checkoutRouter = require('./src/modules/checkout/checkout.routes');
 const adminRouter = require('./src/modules/admin/admin.routes');
 const reviewRouter = require('./src/modules/reviews/review.routes');
+const galleryRouter = require('./src/modules/gallery/gallery.routes');
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
@@ -72,6 +73,7 @@ app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/checkout", checkoutRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/gallery", galleryRouter);
 
 // Health Check API
 app.get("/api/v1/health", (req, res) => {

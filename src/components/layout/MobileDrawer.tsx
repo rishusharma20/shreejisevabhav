@@ -114,7 +114,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
                 <a
                   href="/cart"
-                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-charcoal hover:text-saffron-deep hover:bg-saffron/5 rounded-lg transition-all"
+                  className="flex items-center gap-4 p-4 rounded-xl border border-gold-start/20 bg-gold-start/5 text-charcoal hover:bg-gold-start/10 transition-colors"
                 >
                   <ShoppingBag size={18} />
                   Cart
@@ -132,7 +132,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
             {/* Bottom CTA */}
             <div className="px-6 pb-6 space-y-3">
               <a
-                href="https://wa.me/919999999999"
+                href="https://wa.me/918869996210"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full px-5 py-3 bg-[#25D366] text-white font-semibold rounded-pill hover:bg-[#1EB554] transition-colors"

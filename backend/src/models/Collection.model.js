@@ -81,12 +81,10 @@ collectionSchema.index({
     category: "text"
 });
 
-// Pre-save hook to generate slug if not provided or name modified
-collectionSchema.pre("save", function (next) {
+collectionSchema.pre("save", function () {
     if (this.isModified("name") && !this.slug) {
         this.slug = slugify(this.name, { lower: true, strict: true });
     }
-    next();
 });
 
 const Collection = mongoose.model("Collection", collectionSchema);

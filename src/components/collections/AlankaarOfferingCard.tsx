@@ -30,6 +30,7 @@ export default function AlankaarOfferingCard({
   slug
 }: AlankaarOfferingCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   return (
     <motion.div
@@ -54,23 +55,22 @@ export default function AlankaarOfferingCard({
         )}
       </div>
 
-
-
       {/* ── Image Container ── */}
       <div className="relative w-full aspect-[4/5] bg-cream/50 overflow-hidden">
         <div className="absolute inset-0 bg-lotus/5 blur-[20px] pointer-events-none z-0" />
         
-        {imageSrc ? (
-          <Image 
+        {imageSrc && !imgError ? (
+          <img 
             src={imageSrc} 
             alt={title} 
-            fill 
-            className={`object-cover object-center transition-transform duration-1000 ease-out z-10 ${isHovered ? 'scale-110' : 'scale-100'}`} 
+            onError={() => setImgError(true)}
+            className={`w-full h-full object-cover object-center transition-transform duration-1000 ease-out z-10 ${isHovered ? 'scale-110' : 'scale-100'}`} 
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center z-10 transition-transform duration-1000 ease-out group-hover:scale-110">
-            <div className="w-full h-full bg-gradient-to-b from-[#FFF5F7] to-[#FFE8E8]/50 flex items-center justify-center">
-              <span className="text-[10px] uppercase tracking-widest text-lotus font-bold opacity-80">Divine Alankaar</span>
+            <div className="w-full h-full bg-gradient-to-b from-[#FFF5F7] to-[#FFE8E8]/50 flex flex-col items-center justify-center p-4 text-center">
+              <span className="text-[10px] uppercase tracking-widest text-lotus font-bold opacity-80 mb-1">Divine Alankaar</span>
+              <span className="text-[9px] text-[#8B6F4E] font-medium italic">{title}</span>
             </div>
           </div>
         )}

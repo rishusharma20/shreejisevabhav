@@ -24,9 +24,12 @@ const fullFlow = [
   "DELIVERED"
 ];
 
-export default function TrackMySevaPage({ params }: { params: { id: string } }) {
+import { use } from 'react';
+
+export default function TrackMySevaPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const { id } = params;
+  const resolvedParams = use(params);
+  const id = resolvedParams.id;
 
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<any>(null);

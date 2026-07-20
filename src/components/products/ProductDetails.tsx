@@ -30,7 +30,7 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
       variantId: selectedVariant._id,
       name: product.name,
       price: selectedVariant.price,
-      image: `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${images[0]}`,
+      image: images[0],
       slug: product.slug,
       category: product.category,
       badge: product.isFeatured ? "bestseller" : undefined,
@@ -61,7 +61,7 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
                   activeImageIndex === idx ? 'border-gold-start' : 'border-transparent hover:border-gold-start/50'
                 }`}
               >
-                <Image src={img.startsWith('http') ? img : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${img}`} alt="Thumbnail" fill className="object-cover" />
+                <Image src={img} alt="Thumbnail" fill className="object-cover" />
               </div>
             ))}
           </div>
@@ -78,7 +78,7 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
                 className="absolute inset-0"
               >
                 <Image 
-                  src={images[activeImageIndex].startsWith('http') ? images[activeImageIndex] : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${images[activeImageIndex]}`} 
+                  src={images[activeImageIndex]} 
                   alt={product.name} 
                   fill 
                   className="object-cover hover:scale-105 transition-transform duration-700" 

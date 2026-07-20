@@ -107,14 +107,14 @@ export default function AuthForm() {
             <div className="relative z-10">
               {/* Header */}
               <div className="text-center mb-8 space-y-1">
-                {/* Jai Shri Radhe Greeting */}
+                {/* Radhe Radhe Greeting */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
                   className="text-[10px] uppercase tracking-[0.25em] font-extrabold text-saffron-deep mb-2"
                 >
-                  Jai Shri Radhe
+                  Radhe Radhe
                 </motion.div>
 
                 <motion.h2
@@ -294,7 +294,7 @@ export default function AuthForm() {
               className="relative z-10 space-y-3"
             >
               <h3 className="font-display text-2xl font-extrabold text-[#5C1A1A] tracking-widest uppercase">
-                Jai Shri Radhe
+                Radhe Radhe
               </h3>
               <p className="text-xs uppercase tracking-[0.2em] font-bold text-[#8B6F4E]">
                 Welcome To Shreeji Seva Bhav

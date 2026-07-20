@@ -26,8 +26,10 @@ export default function AdminProductsPage() {
     category: "Poshak",
     price: "",
     quantity: "",
-    size: "Standard",
+    size: "0",
     isActive: true,
+    isFeatured: false,
+    isTrending: false,
   });
   const [images, setImages] = useState<File[]>([]);
   const [actionLoading, setActionLoading] = useState(false);
@@ -75,7 +77,9 @@ export default function AdminProductsPage() {
         price: product.price || "",
         quantity: product.quantity || "",
         size: product.size || "Standard",
-        isActive: product.isActive,
+        isActive: product.isActive ?? true,
+        isFeatured: product.isFeatured ?? false,
+        isTrending: product.isTrending ?? false,
       });
       setImages([]);
     } else {
@@ -89,8 +93,10 @@ export default function AdminProductsPage() {
         category: "Poshak",
         price: "",
         quantity: "",
-        size: "Standard",
+        size: "0",
         isActive: true,
+        isFeatured: false,
+        isTrending: false,
       });
       setImages([]);
     }
@@ -199,7 +205,7 @@ export default function AdminProductsPage() {
                 <tr key={prod._id} className="hover:bg-gold-start/5 transition-colors">
                   <td className="px-6 py-4 flex items-center gap-3">
                     {prod.images && prod.images.length > 0 ? (
-                      <img src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${prod.images[0]}`} alt={prod.name} className="w-10 h-10 object-cover rounded-lg border border-gold-start/20" />
+                      <img src={prod.images[0]} alt={prod.name} className="w-10 h-10 object-cover rounded-lg border border-gold-start/20" />
                     ) : (
                       <div className="w-10 h-10 bg-gold-start/10 rounded-lg border border-gold-start/20 flex items-center justify-center">
                         <Package className="w-5 h-5 text-saffron/50" />
@@ -250,9 +256,9 @@ export default function AdminProductsPage() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4 overflow-y-auto">
-          <div className="bg-white/95 backdrop-blur-xl rounded-[2rem] w-full max-w-2xl shadow-[0_20px_60px_rgba(212,168,83,0.15)] border border-gold-start/30 overflow-hidden my-8 relative">
-            <div className="p-6 border-b border-gold-start/10 flex justify-between items-center bg-cream/50">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4">
+          <div className="bg-white/95 backdrop-blur-xl rounded-[2rem] w-full max-w-2xl shadow-[0_20px_60px_rgba(212,168,83,0.15)] border border-gold-start/30 overflow-hidden relative flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-gold-start/10 flex justify-between items-center bg-cream/50 shrink-0">
               <h2 className="font-display text-2xl font-extrabold text-[#5C1A1A] tracking-wider">
                 {editingProduct ? "Edit Product" : "Add Product"}
               </h2>
@@ -261,8 +267,9 @@ export default function AdminProductsPage() {
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="overflow-y-auto p-6">
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8B6F4E] mb-1.5">Name</label>
                   <input 
@@ -307,7 +314,10 @@ export default function AdminProductsPage() {
                   <select 
                     required
                     value={form.category}
-                    onChange={e => setForm({...form, category: e.target.value})}
+                    onChange={e => {
+                      const newCat = e.target.value;
+                      setForm({...form, category: newCat, size: newCat === 'Poshak' ? '0' : 'Standard'});
+                    }}
                     className="w-full border border-gold-start/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start/50 bg-white/50"
                   >
                     <option value="Poshak">Poshak</option>
@@ -318,14 +328,28 @@ export default function AdminProductsPage() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8B6F4E] mb-1.5">Size / Variant Name</label>
-                  <input 
-                    required
-                    type="text" 
-                    value={form.size}
-                    onChange={e => setForm({...form, size: e.target.value})}
-                    placeholder="e.g. 4 Inch, Standard"
-                    className="w-full border border-gold-start/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start/50 bg-white/50"
-                  />
+                  {form.category === 'Poshak' ? (
+                    <select
+                      required
+                      value={form.size}
+                      onChange={e => setForm({...form, size: e.target.value})}
+                      className="w-full border border-gold-start/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start/50 bg-white/50"
+                    >
+                      <option value="" disabled>Select Size</option>
+                      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(size => (
+                        <option key={size} value={size.toString()}>{size}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input 
+                      required
+                      type="text" 
+                      value={form.size}
+                      onChange={e => setForm({...form, size: e.target.value})}
+                      placeholder="e.g. 4 Inch, Standard"
+                      className="w-full border border-gold-start/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start/50 bg-white/50"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -390,34 +414,59 @@ export default function AdminProductsPage() {
                 />
               </div>
 
-              <div className="flex items-center gap-3 pt-2">
-                <input 
-                  type="checkbox" 
-                  id="isActive"
-                  checked={form.isActive}
-                  onChange={e => setForm({...form, isActive: e.target.checked})}
-                  className="w-5 h-5 rounded border-gold-start/30 text-saffron-deep focus:ring-saffron/40"
-                />
-                <label htmlFor="isActive" className="text-[11px] font-bold uppercase tracking-wider text-charcoal">Active</label>
+              <div className="flex items-center gap-6 pt-2">
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="checkbox" 
+                    id="isActive"
+                    checked={form.isActive}
+                    onChange={e => setForm({...form, isActive: e.target.checked})}
+                    className="w-5 h-5 rounded border-gold-start/30 text-saffron-deep focus:ring-saffron/40"
+                  />
+                  <label htmlFor="isActive" className="text-[11px] font-bold uppercase tracking-wider text-charcoal">Active</label>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="checkbox" 
+                    id="isFeatured"
+                    checked={form.isFeatured}
+                    onChange={e => setForm({...form, isFeatured: e.target.checked})}
+                    className="w-5 h-5 rounded border-gold-start/30 text-saffron-deep focus:ring-saffron/40"
+                  />
+                  <label htmlFor="isFeatured" className="text-[11px] font-bold uppercase tracking-wider text-charcoal">Featured</label>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="checkbox" 
+                    id="isTrending"
+                    checked={form.isTrending}
+                    onChange={e => setForm({...form, isTrending: e.target.checked})}
+                    className="w-5 h-5 rounded border-gold-start/30 text-saffron-deep focus:ring-saffron/40"
+                  />
+                  <label htmlFor="isTrending" className="text-[11px] font-bold uppercase tracking-wider text-charcoal">Trending / New</label>
+                </div>
               </div>
 
-              <div className="pt-6 border-t border-gold-start/10 flex justify-end gap-3">
-                <button 
-                  type="button" 
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-6 py-2.5 border border-gold-start/30 rounded-xl text-[11px] font-bold uppercase tracking-wider text-charcoal hover:bg-gold-start/5 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  disabled={actionLoading}
-                  className="px-6 py-2.5 bg-gradient-to-r from-[#D4A853] via-[#E8850A] to-[#D4A853] bg-[length:200%_auto] hover:bg-[position:right_center] transition-all text-white rounded-xl text-[11px] font-bold uppercase tracking-wider shadow-[0_4px_15px_rgba(212,168,83,0.2)] disabled:opacity-50"
-                >
-                  {actionLoading ? "Saving..." : "Save Product"}
-                </button>
-              </div>
-            </form>
+                <div className="pt-6 mt-4 border-t border-gold-start/10 flex justify-end gap-3 sticky bottom-0 bg-white/95 backdrop-blur-xl pb-2">
+                  <button 
+                    type="button" 
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-6 py-2.5 border border-gold-start/30 rounded-xl text-[11px] font-bold uppercase tracking-wider text-charcoal hover:bg-gold-start/5 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    disabled={actionLoading}
+                    className="px-6 py-2.5 bg-gradient-to-r from-[#D4A853] via-[#E8850A] to-[#D4A853] bg-[length:200%_auto] hover:bg-[position:right_center] transition-all text-white rounded-xl text-[11px] font-bold uppercase tracking-wider shadow-[0_4px_15px_rgba(212,168,83,0.2)] disabled:opacity-50"
+                  >
+                    {actionLoading ? "Saving..." : "Save Product"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}

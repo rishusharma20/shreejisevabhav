@@ -38,7 +38,7 @@ export default function SevaSakhi() {
         <div className="absolute top-0 right-0 w-32 h-32 bg-radial from-rose-400/10 to-transparent blur-[30px]" />
         
         <h4 className="font-display text-3xl font-bold text-[#5C1A1A] tracking-wider mb-6">
-          JAI SHRI RADHE.
+          RADHE RADHE.
         </h4>
         
         <p className="font-medium text-charcoal/80 text-lg italic leading-relaxed mb-8">

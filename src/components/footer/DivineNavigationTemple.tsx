@@ -9,7 +9,7 @@ const NAV_COLUMNS = [
     title: "THE DIVINE JOURNEY",
     links: [
       { label: "Home", href: "/" },
-      { label: "Divine Collections", href: "/divine-wardrobe" },
+      { label: "Divine Collections", href: "/collections/janmashtami-specials" },
       { label: "Festival Collections", href: "/festivals" },
       { label: "Experience Vrindavan", href: "/vrindavan" }
     ]

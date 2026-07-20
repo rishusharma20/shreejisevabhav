@@ -34,9 +34,9 @@ async function seedData() {
                 category: "Accessories"
             },
             {
-                name: "Janmashtami Specials",
-                slug: "janmashtami-specials",
-                description: "Exclusive heavily embroidered attire for the grand festival.",
+                name: "Festive Offers",
+                slug: "festive-offers",
+                description: "Exclusive heavily embroidered attire for grand festivals and various festive offers.",
                 bannerImage: "/images/collections/janmashtami-banner.jpg",
                 thumbnailImage: "/images/collections/janmashtami-thumb.jpg",
                 category: "Poshak",
@@ -75,6 +75,24 @@ async function seedData() {
                 collectionId: insertedCollections[1]._id,
                 category: "Accessories",
                 isFeatured: false
+            },
+            {
+                name: "Festive Special Zardozi Poshak",
+                slug: "festive-special-zardozi-poshak",
+                shortDescription: "Heavily embroidered poshak for grand festivals.",
+                description: "Premium silk with intricate zardozi work, perfect for Janmashtami and Radhashtami.",
+                collectionId: insertedCollections[2]._id,
+                category: "Poshak",
+                isFeatured: true
+            },
+            {
+                name: "Diamond Studded Mukut",
+                slug: "diamond-studded-mukut",
+                shortDescription: "Sparkling mukut for festive occasions.",
+                description: "Adorned with high-quality artificial diamonds and ruby stones.",
+                collectionId: insertedCollections[2]._id,
+                category: "Accessories",
+                isFeatured: true
             }
         ];
 
@@ -110,6 +128,20 @@ async function seedData() {
                 price: 3500,
                 quantity: 2,
                 images: ["/images/products/flute-1.jpg"]
+            },
+            {
+                productId: insertedProducts[3]._id,
+                size: "4 Inch",
+                price: 2500,
+                quantity: 15,
+                images: ["/images/products/golden-poshak-1.jpg", "/images/products/golden-poshak-2.jpg"]
+            },
+            {
+                productId: insertedProducts[4]._id,
+                size: "Standard",
+                price: 1200,
+                quantity: 10,
+                images: ["/images/products/mukut-1.jpg"]
             }
         ];
 

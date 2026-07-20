@@ -145,13 +145,124 @@ const forgotPassword = asyncHandler(async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
+    
+    // Fallback plain text
     const message = `You are receiving this email because you (or someone else) has requested the reset of a password. \n\n Please click on the following link, or paste this into your browser to complete the process:\n\n ${resetUrl}\n\nIf you did not request this, please ignore this email and your password will remain unchanged.\n`;
+    
+    // Beautiful HTML template matching the Shreeji Seva Bhav theme
+    const htmlMessage = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body {
+                font-family: 'Helvetica Neue', Arial, sans-serif;
+                background-color: #FFFBF4;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                max-width: 600px;
+                margin: 40px auto;
+                background-color: #ffffff;
+                border-radius: 16px;
+                border: 1px solid rgba(212, 168, 83, 0.3);
+                overflow: hidden;
+                box-shadow: 0 10px 30px rgba(212, 168, 83, 0.15);
+            }
+            .header {
+                background: linear-gradient(135deg, #FFF5E6, #FFEED4);
+                padding: 40px 20px;
+                text-align: center;
+                border-bottom: 2px solid #D4A853;
+            }
+            .header h1 {
+                color: #5C1A1A;
+                font-size: 28px;
+                margin: 0;
+                font-weight: 800;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+            }
+            .header p {
+                color: #8B6F4E;
+                font-size: 11px;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                margin-top: 10px;
+                font-weight: bold;
+            }
+            .content {
+                padding: 40px 30px;
+                color: #3D2E24;
+                line-height: 1.6;
+            }
+            .content p {
+                margin-bottom: 20px;
+                font-size: 15px;
+            }
+            .btn-container {
+                text-align: center;
+                margin: 35px 0;
+            }
+            .btn {
+                background: linear-gradient(135deg, #D4A853, #E8850A);
+                color: #ffffff !important;
+                text-decoration: none;
+                padding: 16px 32px;
+                border-radius: 8px;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                font-size: 12px;
+                display: inline-block;
+                box-shadow: 0 4px 15px rgba(212, 168, 83, 0.3);
+            }
+            .footer {
+                background-color: #FFFBF4;
+                padding: 20px;
+                text-align: center;
+                border-top: 1px solid rgba(212, 168, 83, 0.15);
+                color: #8B6F4E;
+                font-size: 12px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Shreeji Seva Bhav</h1>
+                <p>Divine Clothing & Jewellery</p>
+            </div>
+            <div class="content">
+                <p>Radhe Radhe,</p>
+                <p>We received a request to reset the password for your account. If you made this request, please click the button below to set a new password:</p>
+                
+                <div class="btn-container">
+                    <a href="${resetUrl}" class="btn">Reset My Password</a>
+                </div>
+                
+                <p style="font-size: 13px; color: #8B6F4E;">If the button doesn't work, copy and paste this link into your browser:<br>
+                <a href="${resetUrl}" style="color: #D4A853; word-break: break-all;">${resetUrl}</a></p>
+                
+                <p>If you didn't request this, you can safely ignore this email. Your password will remain unchanged.</p>
+            </div>
+            <div class="footer">
+                <p>May Thakurji bless you with joy and devotion.</p>
+                <p>&copy; ${new Date().getFullYear()} Shreeji Seva Bhav. All rights reserved.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
     
     try {
         await sendEmail({
             email: user.email,
             subject: "Shreeji Seva Bhav - Password Reset",
-            message
+            message: message,
+            html: htmlMessage
         });
 
         return res.status(200).json(new ApiResponse(200, "Password reset link sent to email"));

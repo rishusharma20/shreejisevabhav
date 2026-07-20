@@ -21,9 +21,13 @@ export default function AnnouncementBar() {
           style={{ background: "linear-gradient(90deg, #FFF8EE, #F7E9B8, #FFF8EE)" }}
         >
           <div className="relative flex items-center justify-center py-2 px-10">
-            {/* Single marquee — no overlap */}
-            <div className="overflow-hidden whitespace-nowrap w-full">
-              <div className="inline-flex animate-marquee">
+            {/* Marquee with Framer Motion */}
+            <div className="overflow-hidden whitespace-nowrap w-full relative pr-8">
+              <motion.div 
+                className="inline-flex"
+                animate={{ x: ["0%", "-50%"] }}
+                transition={{ ease: "linear", duration: 30, repeat: Infinity }}
+              >
                 {Array.from({ length: 4 }).map((_, i) => (
                   <span
                     key={i}
@@ -33,7 +37,7 @@ export default function AnnouncementBar() {
                     ॥ Hare Krishna Hare Krishna, Krishna Krishna Hare Hare ॥ Hare Rama Hare Rama, Rama Rama Hare Hare ॥
                   </span>
                 ))}
-              </div>
+              </motion.div>
             </div>
 
             {/* Dismiss */}

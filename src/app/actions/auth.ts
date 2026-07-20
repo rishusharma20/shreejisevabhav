@@ -17,3 +17,8 @@ export async function removeAuthCookie() {
   const cookieStore = await cookies();
   cookieStore.delete("accessToken");
 }
+
+export async function checkAuth() {
+  const cookieStore = await cookies();
+  return cookieStore.has("accessToken");
+}

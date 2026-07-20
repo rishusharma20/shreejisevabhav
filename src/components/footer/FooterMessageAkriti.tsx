@@ -16,7 +16,7 @@ export default function FooterMessageAkriti() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-radial from-[#5C1A1A]/5 to-transparent blur-[50px] pointer-events-none" />
         
         <h4 className="font-display text-2xl font-bold text-[#5C1A1A] tracking-wider mb-8 relative z-10">
-          JAI SHRI RADHE.
+          RADHE RADHE.
         </h4>
         
         <div className="w-12 h-[1px] bg-gold-start/50 mx-auto mb-8 relative z-10" />

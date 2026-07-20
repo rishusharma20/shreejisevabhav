@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle, Clock, XCircle, ChevronRight, RefreshCw } from "lucide-react";
 
-export default function PaymentStatusPage({ params }: { params: { id: string } }) {
+import { use } from 'react';
+
+export default function PaymentStatusPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const { id } = params; // orderId
+  const resolvedParams = use(params);
+  const id = resolvedParams.id; // orderId
   
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<string | null>(null);

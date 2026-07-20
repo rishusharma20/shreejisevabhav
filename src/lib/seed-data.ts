@@ -341,7 +341,7 @@ export const features = [
 // ── Navigation Links ────────────────────────────────────────────
 export const navLinks = [
   { label: "Home", href: "/" },
-  { label: "Radha Dresses", href: "/divine-wardrobe" },
-  { label: "Krishna Vastra", href: "/krishna-vastra" },
-  { label: "Jewellery Sets", href: "/jewellery" },
+  { label: "Festive Offers", href: "/collections/festive-offers" },
+  { label: "Poshaks", href: "/collections/thakurjis-summer-collection" },
+  { label: "Jewellery", href: "/collections/divine-jewelry" },
 ];

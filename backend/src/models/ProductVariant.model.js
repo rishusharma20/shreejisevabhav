@@ -53,12 +53,10 @@ const productVariantSchema = new mongoose.Schema(
     }
 );
 
-// Pre-save hook to automatically compute availability based on quantity
-productVariantSchema.pre("save", function (next) {
+productVariantSchema.pre("save", function () {
     if (this.isModified("quantity")) {
         this.isAvailable = this.quantity > 0;
     }
-    next();
 });
 
 const ProductVariant = mongoose.model("ProductVariant", productVariantSchema);

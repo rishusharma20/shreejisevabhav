@@ -18,7 +18,7 @@ export default function CreatorMessage() {
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-radial from-rose-500/5 to-transparent blur-[40px] pointer-events-none" />
 
         <h3 className="font-display text-2xl md:text-3xl font-extrabold text-[#5C1A1A] tracking-widest mb-10">
-          JAI SHRI RADHE.
+          RADHE RADHE.
         </h3>
 
         <div className="space-y-8 font-medium text-charcoal/80 text-lg md:text-xl leading-relaxed italic">

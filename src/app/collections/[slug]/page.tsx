@@ -6,6 +6,9 @@ import DivineFilters from "@/components/collections/DivineFilters";
 import OfferingCard from "@/components/collections/OfferingCard";
 import Link from "next/link";
 import { ArrowLeft, ChevronRight, Crown, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Loader2 } from "lucide-react";
+import { useParams } from "next/navigation";
 
 // Premium floating lotus petals
 const floatingPetals = [
@@ -16,21 +19,21 @@ const floatingPetals = [
   { id: 5, left: "20%", delay: 4, size: 22, duration: 13 },
 ];
 
-
-
-import { useState, useEffect } from "react";
-import { Loader2 } from "lucide-react";
-
-export default function DivineWardrobePage() {
+export default function DynamicCollectionPage() {
+  const params = useParams();
+  const slug = params?.slug as string;
+  const [collection, setCollection] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!slug) return;
     async function fetchData() {
       try {
-        const colRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/collections/divine-wardrobe`);
+        const colRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/collections/${slug}`);
         const colData = await colRes.json();
         if (colData.success && colData.data.collection) {
+          setCollection(colData.data.collection);
           const prodRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/products/collection/${colData.data.collection._id}`);
           const prodData = await prodRes.json();
           if (prodData.success) {
@@ -44,7 +47,21 @@ export default function DivineWardrobePage() {
       }
     }
     fetchData();
-  }, []);
+  }, [slug]);
+
+  if (!loading && !collection) {
+    return (
+      <main className="min-h-[70vh] flex flex-col items-center justify-center bg-[#FFFBF4] text-center p-8">
+        <h1 className="font-display text-4xl text-[#5C1A1A] mb-4">Divine Path Not Found</h1>
+        <p className="text-warm-gray mb-8">The collection you seek is currently unavailable.</p>
+        <Link href="/">
+          <button className="px-8 py-3 bg-[#5C1A1A] text-white rounded-full font-bold uppercase tracking-widest text-xs hover:bg-[#8B6F4E] transition-colors">
+            Return to Temple
+          </button>
+        </Link>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen w-full bg-[#FFFBF4] relative overflow-hidden pb-24">
@@ -96,11 +113,20 @@ export default function DivineWardrobePage() {
         <ChevronRight className="w-3 h-3 text-gold-start/50" />
         <Link href="/" className="text-[#8B6F4E] hover:text-[#5C1A1A] transition-colors">Collections</Link>
         <ChevronRight className="w-3 h-3 text-gold-start/50" />
-        <span className="text-saffron-deep">Radha Dresses</span>
+        <span className="text-saffron-deep">{loading ? "..." : collection?.name}</span>
       </motion.div>
 
       {/* ── HERO SECTION ── */}
-      <WardrobeHero />
+      <div className="relative pt-32 pb-16 px-6 text-center z-10 flex flex-col items-center justify-center">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+            <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-extrabold text-[#5C1A1A] tracking-wider mb-6 drop-shadow-sm">
+                {loading ? "..." : collection?.name}
+            </h1>
+            <p className="text-[#8B6F4E] max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
+                {loading ? "..." : collection?.description}
+            </p>
+        </motion.div>
+      </div>
 
       {/* ── DIVINE FILTERS ── */}
       <DivineFilters />
@@ -126,8 +152,14 @@ export default function DivineWardrobePage() {
                 <OfferingCard 
                   id={offering._id}
                   title={offering.name}
-                  price={`₹${offering.price || 0}`}
-                  imageSrc={offering.images?.[0] ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${offering.images[0]}` : undefined}
+                  price={`₹${(offering.price || 0).toLocaleString('en-IN')}`}
+                  imageSrc={
+                    offering.images?.[0]
+                      ? offering.images[0].startsWith("http")
+                        ? offering.images[0]
+                        : offering.images[0]
+                      : undefined
+                  }
                   category={offering.category || "Divine Offering"}
                   sizes={[]}
                   isPremium={offering.isFeatured}
@@ -140,38 +172,6 @@ export default function DivineWardrobePage() {
         )}
       </div>
 
-      {/* ── MOST LOVED BY DEVOTEES ── */}
-      <div className="w-full max-w-7xl mx-auto px-6 relative z-10 mb-24 pt-10 border-t border-gold-start/15">
-        <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
-          <div className="text-center md:text-left">
-            <h2 className="font-display text-3xl font-extrabold text-[#5C1A1A] tracking-wider mb-2">Most Loved By Devotees</h2>
-            <p className="text-xs uppercase tracking-widest font-bold text-[#8B6F4E]">Cherished selections from Radha Rani's Wardrobe</p>
-          </div>
-          <Link href="/divine-wardrobe">
-            <button className="px-6 py-2.5 bg-white/50 backdrop-blur-md border border-gold-start/30 rounded-full text-[10px] font-bold uppercase tracking-widest text-charcoal hover:bg-white hover:shadow-[0_10px_20px_rgba(212,168,83,0.15)] transition-all">
-              View All Offerings
-            </button>
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 md:gap-10">
-          {!loading && products.slice(0, 3).map((offering, idx) => (
-            <motion.div key={`loved-${offering._id}`} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: idx * 0.1 }}>
-              <OfferingCard 
-                id={offering._id}
-                title={offering.name}
-                price={`₹${offering.price || 0}`}
-                imageSrc={offering.images?.[0] ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${offering.images[0]}` : undefined}
-                category={offering.category || "Divine Offering"}
-                sizes={[]}
-                isPremium={offering.isFeatured}
-                festival={offering.festivalId}
-                slug={offering.slug}
-              />
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
       {/* ── CONTINUE YOUR DIVINE JOURNEY ── */}
       <div className="w-full max-w-7xl mx-auto px-6 relative z-10 pt-16 border-t border-gold-start/15">
         <div className="text-center mb-12">
@@ -181,32 +181,18 @@ export default function DivineWardrobePage() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
-          {/* Krishna Vastra */}
-          <Link href="/krishna-vastra">
+          <Link href="/">
             <motion.div whileHover={{ y: -5, boxShadow: "0 20px 40px rgba(212,168,83,0.15)" }} className="relative h-48 rounded-3xl overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-br from-[#1A1815] to-[#2D2A26] z-0" />
               <div className="absolute inset-0 bg-gold-start/10 blur-[20px] group-hover:bg-gold-start/20 transition-colors z-0" />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 p-6 border border-gold-start/20 rounded-3xl group-hover:border-gold-start/40 transition-colors">
                 <Crown className="w-8 h-8 text-gold-start mb-3" />
-                <h3 className="font-display text-xl font-bold text-white tracking-widest uppercase mb-1">Krishna Vastra</h3>
-                <p className="text-[10px] text-warm-gray uppercase tracking-widest">Divine Attire for Thakurji</p>
+                <h3 className="font-display text-xl font-bold text-white tracking-widest uppercase mb-1">Return to Temple</h3>
+                <p className="text-[10px] text-warm-gray uppercase tracking-widest">Browse all our collections</p>
               </div>
             </motion.div>
           </Link>
           
-          {/* Jewellery Recommendations */}
-          <Link href="/jewellery">
-            <motion.div whileHover={{ y: -5, boxShadow: "0 20px 40px rgba(255,183,178,0.15)" }} className="relative h-48 rounded-3xl overflow-hidden group">
-              <div className="absolute inset-0 bg-white/40 backdrop-blur-xl border border-gold-start/20 rounded-3xl z-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] group-hover:border-lotus/40 transition-colors" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 p-6">
-                <Sparkles className="w-8 h-8 text-lotus mb-3" />
-                <h3 className="font-display text-xl font-bold text-charcoal tracking-widest uppercase mb-1">Sacred Jewellery</h3>
-                <p className="text-[10px] text-warm-gray uppercase tracking-widest">Handcrafted Temple Ornaments</p>
-              </div>
-            </motion.div>
-          </Link>
-
-          {/* My Seva / Track Orders */}
           <Link href="/my-seva">
             <motion.div whileHover={{ y: -5, boxShadow: "0 20px 40px rgba(212,168,83,0.15)" }} className="relative h-48 rounded-3xl overflow-hidden group lg:col-span-1 md:col-span-2">
               <div className="absolute inset-0 bg-gradient-to-r from-[#D4A853] via-[#E8850A] to-[#D4A853] bg-[length:200%_auto] opacity-90 group-hover:bg-[position:right_center] transition-all duration-700 z-0" />

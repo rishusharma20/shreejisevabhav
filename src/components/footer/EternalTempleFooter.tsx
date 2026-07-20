@@ -89,7 +89,7 @@ export default function EternalTempleFooter() {
             Continue Your Divine Journey...
           </p>
           <p className="font-display text-xl text-[#5C1A1A] tracking-wider font-bold">
-            JAI SHRI RADHE
+            RADHE RADHE
           </p>
         </motion.div>
       </div>
