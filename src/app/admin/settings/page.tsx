@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Settings, Save, Loader2, Globe, Layout, MessageSquare } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 
 export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -38,9 +39,7 @@ export default function AdminSettingsPage() {
 
   const fetchSettings = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/admin/website-settings`, {
-        credentials: "include"
-      });
+      const res = await authFetch("/api/v1/admin/website-settings");
       if (res.ok) {
         const data = await res.json();
         const settings = data.data.settings;
@@ -89,10 +88,8 @@ export default function AdminSettingsPage() {
     setError("");
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/admin/website-settings`, {
+      const res = await authFetch("/api/v1/admin/website-settings", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(form)
       });
       if (res.ok) {

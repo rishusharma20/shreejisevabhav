@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Image as ImageIcon, Plus, Loader2, Edit2, Trash2, X } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 
 export default function AdminGalleryPage() {
   const router = useRouter();
@@ -27,9 +28,7 @@ export default function AdminGalleryPage() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/gallery`, {
-        credentials: "include"
-      });
+      const res = await authFetch("/api/v1/gallery");
       if (res.ok) {
         const data = await res.json();
         setGalleryItems(data.data.gallery || []);
@@ -73,8 +72,8 @@ export default function AdminGalleryPage() {
     setActionLoading(true);
 
     const url = editingItem 
-      ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/gallery/${editingItem._id}`
-      : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/gallery`;
+      ? `/api/v1/gallery/${editingItem._id}`
+      : `/api/v1/gallery`;
     
     const method = editingItem ? "PUT" : "POST";
 
@@ -95,10 +94,9 @@ export default function AdminGalleryPage() {
         formData.append("image", image);
       }
 
-      const res = await fetch(url, {
+      const res = await authFetch(url, {
         method,
         body: formData,
-        credentials: "include",
       });
       
       const data = await res.json();
@@ -119,9 +117,8 @@ export default function AdminGalleryPage() {
     if (!confirm("Are you sure you want to delete this image?")) return;
     
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/gallery/${id}`, {
+      const res = await authFetch(`/api/v1/gallery/${id}`, {
         method: "DELETE",
-        credentials: "include"
       });
       if (res.ok) {
         await fetchData();

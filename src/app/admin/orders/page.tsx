@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Package, Truck, Loader2, Save, MapPin } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 
 export default function AdminOrdersPage() {
   const router = useRouter();
@@ -29,9 +30,7 @@ export default function AdminOrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/orders/admin/all`, {
-        credentials: "include"
-      });
+      const res = await authFetch("/api/v1/orders/admin/all");
       if (res.status === 401 || res.status === 403) {
         router.push("/login");
         return;
@@ -63,10 +62,8 @@ export default function AdminOrdersPage() {
     
     setActionLoading(orderId);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/admin/orders/${orderId}`, {
+      const res = await authFetch(`/api/v1/admin/orders/${orderId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ status: newStatus })
       });
       

@@ -19,16 +19,19 @@ app.use(cors({
         
         const allowedOrigins = [
             process.env.CORS_ORIGIN,
+            process.env.FRONTEND_URL,
+            "https://shreejisevabhav.vercel.app",
             "http://localhost:3000",
             "http://localhost:3001",
             "http://127.0.0.1:3000",
             "http://127.0.0.1:3001"
         ];
         
-        if (allowedOrigins.indexOf(origin) === -1) {
-            return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'), false);
+        // Also allow Vercel preview deployments
+        if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith(".vercel.app")) {
+            return callback(null, true);
         }
-        return callback(null, true);
+        return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'), false);
     },
     credentials: true,
 }));

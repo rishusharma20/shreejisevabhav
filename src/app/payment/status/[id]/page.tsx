@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle, Clock, XCircle, ChevronRight, RefreshCw } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 
 import { use } from 'react';
 
@@ -17,9 +18,7 @@ export default function PaymentStatusPage({ params }: { params: Promise<{ id: st
 
   const fetchStatus = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/payments/status/${id}`, {
-        credentials: "include"
-      });
+      const res = await authFetch(`/api/v1/payments/status/${id}`);
       if (res.ok) {
         const data = await res.json();
         const currentStatus = data.data.paymentStatus;

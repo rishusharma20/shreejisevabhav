@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Check, X, ShieldCheck, Clock, ExternalLink, Loader2 } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 
 export default function AdminPaymentsPage() {
   const router = useRouter();
@@ -14,9 +15,7 @@ export default function AdminPaymentsPage() {
 
   const fetchPayments = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/admin/payments`, {
-        credentials: "include"
-      });
+      const res = await authFetch("/api/v1/admin/payments");
       if (res.status === 401 || res.status === 403) {
         router.push("/login");
         return;
@@ -41,10 +40,8 @@ export default function AdminPaymentsPage() {
   const handleAction = async (id: string, action: "approve" | "reject") => {
     setActionLoading(id);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/admin/payments/${action}/${id}`, {
+      const res = await authFetch(`/api/v1/admin/payments/${action}/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include"
       });
       
       if (res.ok) {

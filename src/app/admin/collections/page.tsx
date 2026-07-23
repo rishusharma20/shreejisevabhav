@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FolderTree, Plus, Loader2, Edit2, Trash2, X } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 
 export default function AdminCollectionsPage() {
   const router = useRouter();
@@ -29,9 +30,7 @@ export default function AdminCollectionsPage() {
 
   const fetchCollections = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/collections`, {
-        credentials: "include"
-      });
+      const res = await authFetch("/api/v1/collections");
       if (res.ok) {
         const data = await res.json();
         setCollections(data.data.collections || []);
@@ -90,16 +89,15 @@ export default function AdminCollectionsPage() {
     if (thumbnailImage) formData.append("thumbnailImage", thumbnailImage);
 
     const url = editingCollection 
-      ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/admin/collections/${editingCollection._id}`
-      : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/admin/collections`;
+      ? `/api/v1/admin/collections/${editingCollection._id}`
+      : `/api/v1/admin/collections`;
     
     const method = editingCollection ? "PUT" : "POST";
 
     try {
-      const res = await fetch(url, {
+      const res = await authFetch(url, {
         method,
         body: formData,
-        credentials: "include",
       });
       
       const data = await res.json();
@@ -120,9 +118,8 @@ export default function AdminCollectionsPage() {
     if (!confirm("Are you sure you want to delete this collection?")) return;
     
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/admin/collections/${id}`, {
+      const res = await authFetch(`/api/v1/admin/collections/${id}`, {
         method: "DELETE",
-        credentials: "include"
       });
       if (res.ok) {
         await fetchCollections();

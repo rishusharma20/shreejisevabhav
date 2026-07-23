@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Users, Package, IndianRupee, TrendingUp, AlertTriangle } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -13,9 +14,7 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/admin/dashboard`, {
-          credentials: "include",
-        });
+        const res = await authFetch("/api/v1/admin/dashboard");
         if (res.status === 401 || res.status === 403) {
           router.push("/login");
           return;

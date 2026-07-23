@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { User, PackageOpen, Heart, Crown, Sparkles, Star } from "lucide-react";
 import { useState, useEffect } from "react";
+import { authFetch } from "@/lib/authFetch";
 
 export default function ProfileHeader() {
   const [userName, setUserName] = useState("Devotee"); // Dynamic user name
@@ -11,7 +12,7 @@ export default function ProfileHeader() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/profile`, { credentials: "include" });
+        const res = await authFetch("/api/v1/auth/profile");
         const data = await res.json();
         if (data.success && data.data && data.data.name) {
           const firstName = data.data.name.split(" ")[0];

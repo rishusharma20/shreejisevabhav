@@ -58,7 +58,7 @@ export default function CheckoutPage() {
       setError("Please select a delivery address.");
       return;
     }
-    
+
     setSubmitting(true);
     setError("");
 
@@ -158,11 +158,10 @@ export default function CheckoutPage() {
                   <div
                     key={address._id}
                     onClick={() => setSelectedAddressId(address._id)}
-                    className={`relative p-5 rounded-2xl border-2 transition-all cursor-pointer bg-white/60 backdrop-blur-sm ${
-                      selectedAddressId === address._id
+                    className={`relative p-5 rounded-2xl border-2 transition-all cursor-pointer bg-white/60 backdrop-blur-sm ${selectedAddressId === address._id
                         ? "border-gold-start shadow-md bg-gold-start/5"
                         : "border-transparent hover:border-gold-start/40"
-                    }`}
+                      }`}
                   >
                     {selectedAddressId === address._id && (
                       <div className="absolute top-4 right-4 text-gold-start">
@@ -183,7 +182,7 @@ export default function CheckoutPage() {
               </div>
             )}
           </div>
-          
+
           {/* RIGHT: Order Summary */}
           <div className="lg:col-span-1">
             <div className="w-full bg-white/50 backdrop-blur-2xl border border-gold-start/30 rounded-[2rem] p-6 shadow-sm sticky top-32">
@@ -219,21 +218,20 @@ export default function CheckoutPage() {
                 <div className="font-display text-2xl font-bold text-[#5C1A1A]">₹{summary.totalAmount?.toLocaleString()}</div>
               </div>
 
-              <button 
+              <button
                 onClick={handleCheckout}
                 disabled={submitting || !selectedAddressId}
-                className={`w-full py-4 px-6 rounded-2xl flex items-center justify-center gap-3 shadow-md transition-all duration-300 ${
-                  submitting || !selectedAddressId 
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+                className={`w-full py-4 px-6 rounded-2xl flex items-center justify-center gap-3 shadow-md transition-all duration-300 ${submitting || !selectedAddressId
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                     : "bg-gradient-to-r from-[#D4A853] via-[#E8850A] to-[#D4A853] text-white hover:scale-[1.02]"
-                }`}
+                  }`}
               >
                 <Heart className="w-5 h-5 fill-current" />
                 <span className="text-[11px] uppercase tracking-[0.15em] font-bold">
                   {submitting ? "Processing..." : "Proceed to Payment"}
                 </span>
               </button>
-              
+
               <div className="mt-6 flex items-center justify-center gap-2 opacity-60">
                 <ShieldCheck className="w-4 h-4 text-charcoal" />
                 <span className="text-[8px] uppercase tracking-widest font-bold text-charcoal">Secure Checkout</span>

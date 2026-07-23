@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { QrCode, Upload, ShieldCheck, ChevronRight, Copy, Check } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 
 import { use } from 'react';
 
@@ -23,9 +24,7 @@ export default function PaymentPage({ params }: { params: Promise<{ orderId: str
   useEffect(() => {
     async function checkStatus() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/payments/status/${orderId}`, {
-          credentials: "include"
-        });
+        const res = await authFetch(`/api/v1/payments/status/${orderId}`);
         if (res.ok) {
           const data = await res.json();
           setStatus(data.data.paymentStatus);
@@ -58,10 +57,8 @@ export default function PaymentPage({ params }: { params: Promise<{ orderId: str
     setError("");
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/payments/submit-payment`, {
+      const res = await authFetch("/api/v1/payments/submit-payment", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           orderId,
           utrNumber: utr.trim(),

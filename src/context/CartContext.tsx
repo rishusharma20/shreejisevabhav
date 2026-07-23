@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { CartState, CartAction, CartItem, Product } from "@/lib/types";
+import { authFetch } from "@/lib/authFetch";
 
 const CART_STORAGE_KEY = "shreeji-seva-bhav-cart";
 
@@ -82,9 +83,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function loadBackendCart() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/cart`, {
-          credentials: "include"
-        });
+        const res = await authFetch("/api/v1/cart");
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.data.cart && data.data.cart.products) {
@@ -129,10 +128,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const addToCart = useCallback(
     async (product: Product) => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/cart/add`, {
+        const res = await authFetch("/api/v1/cart/add", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
           body: JSON.stringify({
             productId: product.id,
             variantId: product.variantId || product.id,
@@ -163,9 +160,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (!item) return;
 
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/cart/remove/${item.product.variantId || productId}`, {
-          method: "DELETE",
-          credentials: "include"
+        const res = await authFetch(`/api/v1/cart/remove/${item.product.variantId || productId}`, {
+          method: "DELETE"
         });
         if (res.ok) {
           dispatch({ type: "REMOVE_FROM_CART", productId });
@@ -183,10 +179,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (!item) return;
 
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/cart/update/${item.product.variantId || productId}`, {
+        const res = await authFetch(`/api/v1/cart/update/${item.product.variantId || productId}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
           body: JSON.stringify({ quantity })
         });
         if (res.ok) {
@@ -201,9 +195,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = useCallback(async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/cart/clear`, {
-        method: "DELETE",
-        credentials: "include"
+      const res = await authFetch("/api/v1/cart/clear", {
+        method: "DELETE"
       });
       if (res.ok) {
         dispatch({ type: "CLEAR_CART" });

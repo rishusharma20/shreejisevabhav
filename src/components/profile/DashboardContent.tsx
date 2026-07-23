@@ -5,6 +5,7 @@ import { TabType } from "./DashboardNav";
 import { MapPin, User, Mail, Phone, Loader2, Edit2, Plus, Trash2, KeyRound, ShieldAlert, Star, Check, Package } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { authFetch } from "@/lib/authFetch";
 
 interface DashboardContentProps {
   activeTab: TabType;
@@ -51,7 +52,7 @@ function PersonalDetails() {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/profile`, { credentials: "include" });
+      const res = await authFetch("/api/v1/auth/profile");
       if (res.ok) {
         const data = await res.json();
         setProfile(data.data.user);
@@ -73,10 +74,8 @@ function PersonalDetails() {
     setActionLoading(true);
     setMessage({ text: "", type: "" });
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/update-profile`, {
+      const res = await authFetch("/api/v1/auth/update-profile", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(editForm),
       });
       const data = await res.json();
@@ -99,10 +98,8 @@ function PersonalDetails() {
     setActionLoading(true);
     setMessage({ text: "", type: "" });
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/change-password`, {
+      const res = await authFetch("/api/v1/auth/change-password", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(pwdForm),
       });
       const data = await res.json();
@@ -124,9 +121,8 @@ function PersonalDetails() {
     if (!confirm("Are you sure you want to delete your account? This action cannot be undone.")) return;
     setActionLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/delete-account`, {
+      const res = await authFetch("/api/v1/auth/delete-account", {
         method: "DELETE",
-        credentials: "include",
       });
       if (res.ok) {
         router.push("/login");
@@ -317,7 +313,7 @@ function MyAddresses() {
 
   const fetchAddresses = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/address`, { credentials: "include" });
+      const res = await authFetch("/api/v1/address");
       if (res.ok) {
         const data = await res.json();
         setAddresses(data.data.addresses);
@@ -339,14 +335,12 @@ function MyAddresses() {
     setMessage({ text: "", type: "" });
     try {
       const url = form._id 
-        ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/address/update/${form._id}`
-        : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/address/add`;
+        ? `/api/v1/address/update/${form._id}`
+        : `/api/v1/address/add`;
       const method = form._id ? "PUT" : "POST";
       
-      const res = await fetch(url, {
+      const res = await authFetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(form)
       });
       
@@ -367,9 +361,8 @@ function MyAddresses() {
 
   const handleSetDefault = async (id: string) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/address/default/${id}`, {
+      const res = await authFetch(`/api/v1/address/default/${id}`, {
         method: "PUT",
-        credentials: "include"
       });
       if (res.ok) fetchAddresses();
     } catch (err) {
@@ -380,9 +373,8 @@ function MyAddresses() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this address?")) return;
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/address/delete/${id}`, {
+      const res = await authFetch(`/api/v1/address/delete/${id}`, {
         method: "DELETE",
-        credentials: "include"
       });
       if (res.ok) fetchAddresses();
     } catch (err) {
@@ -550,9 +542,7 @@ function MyOrders() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/orders`, {
-        credentials: "include"
-      });
+      const res = await authFetch("/api/v1/orders");
       if (res.ok) {
         const data = await res.json();
         setOrders(data.data.orders);

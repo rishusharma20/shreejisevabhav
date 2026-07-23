@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle, Package, Truck, Home, Clock, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { authFetch } from "@/lib/authFetch";
 
 const statusConfig: Record<string, { icon: any, label: string }> = {
   PAYMENT_APPROVED: { icon: CheckCircle, label: "Payment Approved" },
@@ -39,9 +40,7 @@ export default function TrackMySevaPage({ params }: { params: Promise<{ id: stri
   const fetchTrackingDetails = async () => {
     try {
       // Fetch Order Details
-      const orderRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/orders/${id}`, {
-        credentials: "include"
-      });
+      const orderRes = await authFetch(`/api/v1/orders/${id}`);
       
       if (!orderRes.ok) {
         setError("Order not found or not authorized.");
@@ -57,9 +56,7 @@ export default function TrackMySevaPage({ params }: { params: Promise<{ id: stri
           ? orderData.data.order.trackMySevaId._id 
           : orderData.data.order.trackMySevaId;
           
-        const trackRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/track-my-seva/${trackId}`, {
-          credentials: "include"
-        });
+        const trackRes = await authFetch(`/api/v1/track-my-seva/${trackId}`);
         if (trackRes.ok) {
           const trackData = await trackRes.json();
           setTrack(trackData.data.trackMySeva);

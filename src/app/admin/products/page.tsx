@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Package, Plus, Loader2, Edit2, Trash2, X } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 
 export default function AdminProductsPage() {
   const router = useRouter();
@@ -37,18 +38,14 @@ export default function AdminProductsPage() {
   const fetchData = async () => {
     try {
       // Fetch Products
-      const pRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/products`, {
-        credentials: "include"
-      });
+      const pRes = await authFetch("/api/v1/products");
       if (pRes.ok) {
         const pData = await pRes.json();
         setProducts(pData.data.products || []);
       }
 
       // Fetch Collections for Dropdown
-      const cRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/collections`, {
-        credentials: "include"
-      });
+      const cRes = await authFetch("/api/v1/collections");
       if (cRes.ok) {
         const cData = await cRes.json();
         setCollections(cData.data.collections || []);
@@ -108,8 +105,8 @@ export default function AdminProductsPage() {
     setActionLoading(true);
 
     const url = editingProduct 
-      ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/admin/products/${editingProduct._id}`
-      : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/admin/products`;
+      ? `/api/v1/admin/products/${editingProduct._id}`
+      : `/api/v1/admin/products`;
     
     const method = editingProduct ? "PUT" : "POST";
 
@@ -122,10 +119,9 @@ export default function AdminProductsPage() {
         formData.append("images", img);
       });
 
-      const res = await fetch(url, {
+      const res = await authFetch(url, {
         method,
         body: formData,
-        credentials: "include",
       });
       
       const data = await res.json();
@@ -146,9 +142,8 @@ export default function AdminProductsPage() {
     if (!confirm("Are you sure you want to delete this product?")) return;
     
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/admin/products/${id}`, {
+      const res = await authFetch(`/api/v1/admin/products/${id}`, {
         method: "DELETE",
-        credentials: "include"
       });
       if (res.ok) {
         await fetchData();

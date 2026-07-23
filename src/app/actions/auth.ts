@@ -22,3 +22,8 @@ export async function checkAuth() {
   const cookieStore = await cookies();
   return cookieStore.has("accessToken");
 }
+
+export async function getAuthToken(): Promise<string | null> {
+  const cookieStore = await cookies();
+  return cookieStore.get("accessToken")?.value ?? null;
+}

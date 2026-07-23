@@ -7,10 +7,11 @@ const ApiResponse = require("../../utils/ApiResponse");
 const sendEmail = require("../../utils/sendEmail");
 
 // Configuration for secure cookies
+const isProduction = process.env.NODE_ENV === "production";
 const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "strict", // "none" required for cross-origin (Vercel ↔ Render)
     maxAge: 24 * 60 * 60 * 1000 // 1 day
 };
 

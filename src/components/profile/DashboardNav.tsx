@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Package, Heart, Crown, Settings, MapPin, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { removeAuthCookie } from "@/app/actions/auth";
+import { authFetch } from "@/lib/authFetch";
 
 export type TabType = "personal-details" | "my-addresses" | "my-orders";
 
@@ -17,9 +18,8 @@ export default function DashboardNav({ activeTab, setActiveTab }: DashboardNavPr
 
   const handleLogout = async () => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/logout`, {
+      await authFetch("/api/v1/auth/logout", {
         method: "POST",
-        credentials: "include",
       });
     } catch (error) {
       console.error("Logout error", error);
