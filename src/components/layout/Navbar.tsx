@@ -37,26 +37,17 @@ export default function Navbar() {
     router.refresh();
   };
 
-  const { scrollY } = useScroll();
-  const navPadding = useTransform(scrollY, [0, 100], [14, 8]);
-  const navShadow = useTransform(
-    scrollY,
-    [0, 50],
-    ["0 0 0 rgba(0,0,0,0)", "0 2px 24px rgba(45,42,38,0.08)"]
-  );
-
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    const handleScroll = () => setIsScrolled(window.scrollY > 30);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <>
-      <motion.header
-        style={{ boxShadow: navShadow }}
-        className={`sticky top-0 z-40 transition-all duration-500 border-b border-gold-start/5 ${
-          isScrolled ? "bg-cream/95 backdrop-blur-md py-1" : "bg-cream py-2"
+      <header
+        className={`sticky top-0 z-40 transition-all duration-300 border-b border-gold-start/5 transform-gpu ${
+          isScrolled ? "bg-cream/95 backdrop-blur-md py-1 shadow-[0_2px_24px_rgba(45,42,38,0.08)]" : "bg-cream py-2 shadow-none"
         }`}
       >
         {/* Subtle gold line at bottom of header */}
@@ -207,7 +198,7 @@ export default function Navbar() {
           {/* Search bar */}
           <SearchBar isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </motion.nav>
-      </motion.header>
+      </header>
 
       <MobileDrawer isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
     </>

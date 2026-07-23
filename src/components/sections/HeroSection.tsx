@@ -24,7 +24,7 @@ function FloatingPetal({
 }) {
   return (
     <motion.div
-      className="absolute pointer-events-none"
+      className="absolute pointer-events-none transform-gpu will-change-transform"
       style={{ left: x, top: y }}
       animate={{
         y: [0, -22, 6, -15, 0],
@@ -320,16 +320,12 @@ export default function HeroSection() {
               </div>
 
               {/* Soft Ghibli/Disney-style animated clouds behind deity */}
-              <div className="absolute inset-0 pointer-events-none select-none opacity-70 z-0">
-                <motion.div
-                  className="absolute w-[80%] h-[60%] -top-[10%] -left-[5%] bg-radial from-[#FFF8EE] via-[#FDECD0]/70 to-transparent filter blur-3xl"
-                  animate={{ x: [-12, 12, -12], y: [-6, 6, -6] }}
-                  transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+              <div className="absolute inset-0 pointer-events-none select-none opacity-60 z-0">
+                <div
+                  className="absolute w-[80%] h-[60%] -top-[10%] -left-[5%] bg-radial from-[#FFF8EE] via-[#FDECD0]/70 to-transparent filter blur-xl transform-gpu will-change-transform animate-[gentle-float_12s_ease-in-out_infinite]"
                 />
-                <motion.div
-                  className="absolute w-[85%] h-[65%] -bottom-[10%] -right-[5%] bg-radial from-[#FDECD0] via-[#FFF3E0]/60 to-transparent filter blur-3xl"
-                  animate={{ x: [12, -12, 12], y: [6, -6, 6] }}
-                  transition={{ duration: 19, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+                <div
+                  className="absolute w-[85%] h-[65%] -bottom-[10%] -right-[5%] bg-radial from-[#FDECD0] via-[#FFF3E0]/60 to-transparent filter blur-xl transform-gpu will-change-transform animate-[gentle-float_15s_ease-in-out_infinite]"
                 />
               </div>
 
@@ -391,12 +387,12 @@ export default function HeroSection() {
             </motion.div>
           </div>
 
-          {/* Part 3: Premium Glassmorphic Information Card Banner (Inside 100vh viewport at the bottom) */}
+          {/* Part 3: Premium Information Card Banner (Inside 100vh viewport at the bottom) */}
           <motion.div 
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
-            className="bg-[#FFFBF4]/85 backdrop-blur-[25px] border border-[#D4A853]/35 rounded-[30px] py-4 px-6 sm:px-8 shadow-[0_12px_45px_rgba(212,168,83,0.08)] flex flex-wrap md:flex-nowrap items-center justify-between gap-4 md:gap-2 divide-y md:divide-y-0 md:divide-x divide-gold-start/15 w-full mt-2"
+            className="bg-[#FFFBF4]/90 backdrop-blur-md border border-[#D4A853]/35 rounded-[30px] py-4 px-6 sm:px-8 shadow-[0_12px_45px_rgba(212,168,83,0.08)] flex flex-wrap md:flex-nowrap items-center justify-between gap-4 md:gap-2 divide-y md:divide-y-0 md:divide-x divide-gold-start/15 w-full mt-2 transform-gpu"
           >
             {/* Segment 1: Handmade with Love */}
             <div className="flex-1 min-w-[140px] md:min-w-[180px] flex items-center gap-3.5 py-2 md:py-0 md:px-4 group hover:scale-[1.02] transition-transform duration-300">

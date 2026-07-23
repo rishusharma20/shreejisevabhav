@@ -21,12 +21,10 @@ export default function AnnouncementBar() {
           style={{ background: "linear-gradient(90deg, #FFF8EE, #F7E9B8, #FFF8EE)" }}
         >
           <div className="relative flex items-center justify-center py-2 px-10">
-            {/* Marquee with Framer Motion */}
+            {/* Marquee with CSS Hardware Acceleration */}
             <div className="overflow-hidden whitespace-nowrap w-full relative pr-8">
-              <motion.div 
-                className="inline-flex"
-                animate={{ x: ["0%", "-50%"] }}
-                transition={{ ease: "linear", duration: 30, repeat: Infinity }}
+              <div 
+                className="inline-flex animate-[marquee_35s_linear_infinite] transform-gpu will-change-transform"
               >
                 {Array.from({ length: 4 }).map((_, i) => (
                   <span
@@ -37,7 +35,7 @@ export default function AnnouncementBar() {
                     ॥ Hare Krishna Hare Krishna, Krishna Krishna Hare Hare ॥ Hare Rama Hare Rama, Rama Rama Hare Hare ॥
                   </span>
                 ))}
-              </motion.div>
+              </div>
             </div>
 
             {/* Dismiss */}

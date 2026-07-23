@@ -435,10 +435,10 @@ export default function DivineIntro({ onComplete }: DivineIntroProps) {
 
   // Disney/Ghibli/Toon Style Overlapping Clouds
   const cloudLayers = [
-    { id: "tl", className: "absolute w-[60%] h-[40%] top-[-10%] left-[-15%] bg-radial from-[#FFF3DF] via-[#FFEED4]/70 to-transparent filter blur-3xl opacity-80" },
-    { id: "tr", className: "absolute w-[65%] h-[45%] top-[-15%] right-[-15%] bg-radial from-[#FFF8EE] via-[#FFF3DF]/60 to-transparent filter blur-3xl opacity-85" },
-    { id: "bl", className: "absolute w-[70%] h-[50%] bottom-[-15%] left-[-20%] bg-radial from-[#FFE9CC] via-[#FFF2DF]/65 to-transparent filter blur-3xl opacity-75" },
-    { id: "br", className: "absolute w-[75%] h-[55%] bottom-[-20%] right-[-20%] bg-radial from-[#FFF5E6] via-[#FFF3DF]/70 to-transparent filter blur-3xl opacity-85" },
+    { id: "tl", className: "absolute w-[60%] h-[40%] top-[-10%] left-[-15%] bg-radial from-[#FFF3DF] via-[#FFEED4]/70 to-transparent filter blur-2xl opacity-75 transform-gpu" },
+    { id: "tr", className: "absolute w-[65%] h-[45%] top-[-15%] right-[-15%] bg-radial from-[#FFF8EE] via-[#FFF3DF]/60 to-transparent filter blur-2xl opacity-80 transform-gpu" },
+    { id: "bl", className: "absolute w-[70%] h-[50%] bottom-[-15%] left-[-20%] bg-radial from-[#FFE9CC] via-[#FFF2DF]/65 to-transparent filter blur-2xl opacity-70 transform-gpu" },
+    { id: "br", className: "absolute w-[75%] h-[55%] bottom-[-20%] right-[-20%] bg-radial from-[#FFF5E6] via-[#FFF3DF]/70 to-transparent filter blur-2xl opacity-80 transform-gpu" },
   ];
 
   // Floating Flower Petals (Lotus petals)
@@ -479,7 +479,7 @@ export default function DivineIntro({ onComplete }: DivineIntroProps) {
         {floatingPetals.map((petal) => (
           <motion.div
             key={petal.id}
-            className="absolute"
+            className="absolute transform-gpu"
             style={{ left: petal.left, top: "-10%" }}
             animate={{
               y: ["0vh", "110vh"],
@@ -502,10 +502,10 @@ export default function DivineIntro({ onComplete }: DivineIntroProps) {
 
       {/* 3. Golden particles drifting upward */}
       <div className="absolute inset-0 pointer-events-none select-none">
-        {Array.from({ length: 30 }).map((_, i) => (
+        {Array.from({ length: 15 }).map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 rounded-full bg-gold-start/45"
+            className="absolute w-1 h-1 rounded-full bg-gold-start/45 transform-gpu"
             style={{
               left: `${5 + Math.random() * 90}%`,
               top: `${20 + Math.random() * 70}%`,
