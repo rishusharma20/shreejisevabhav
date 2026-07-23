@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ArrowLeft, MapPin, Check, ShieldCheck, Heart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
+import { authFetch } from "@/lib/authFetch";
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { clearCart } = useCart();
@@ -21,8 +23,8 @@ export default function CheckoutPage() {
     async function fetchData() {
       try {
         const [addrRes, sumRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/address`, { credentials: "include" }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/checkout/summary`, { credentials: "include" })
+          authFetch("/api/v1/address"),
+          authFetch("/api/v1/checkout/summary")
         ]);
 
         if (addrRes.status === 401 || sumRes.status === 401) {
@@ -63,10 +65,8 @@ export default function CheckoutPage() {
     setError("");
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/checkout`, {
+      const res = await authFetch("/api/v1/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ addressId: selectedAddressId })
       });
 
