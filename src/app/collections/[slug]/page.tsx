@@ -9,6 +9,7 @@ import { ArrowLeft, ChevronRight, Crown, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
+import { resolveImageUrl } from "@/lib/imageUrl";
 
 // Premium floating lotus petals
 const floatingPetals = [
@@ -153,13 +154,7 @@ export default function DynamicCollectionPage() {
                   id={offering._id}
                   title={offering.name}
                   price={`₹${(offering.price || 0).toLocaleString('en-IN')}`}
-                  imageSrc={
-                    offering.images?.[0]
-                      ? offering.images[0].startsWith("http")
-                        ? offering.images[0]
-                        : offering.images[0]
-                      : undefined
-                  }
+                  imageSrc={resolveImageUrl(offering.images?.[0])}
                   category={offering.category || "Divine Offering"}
                   sizes={[]}
                   isPremium={offering.isFeatured}

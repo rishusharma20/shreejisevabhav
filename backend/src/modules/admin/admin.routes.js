@@ -56,7 +56,7 @@ router.put("/payments/reject/:id", rejectPayment);
 
 // Product Management APIs
 router.post("/products", uploadVariant.array("images", 5), createProductValidation, validate, createProduct);
-router.put("/products/:id", updateProductValidation, validate, updateProduct);
+router.put("/products/:id", uploadVariant.array("images", 5), updateProductValidation, validate, updateProduct);
 router.delete("/products/:id", deleteProduct);
 
 // Collection Management APIs

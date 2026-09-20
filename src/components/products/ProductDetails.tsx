@@ -8,6 +8,7 @@ import { useCart } from "@/context/CartContext";
 import RatingStars from "@/components/ui/RatingStars";
 import Badge from "@/components/ui/Badge";
 import type { Product } from "@/lib/types";
+import { resolveImageUrl, resolveImageUrls } from "@/lib/imageUrl";
 
 interface ProductDetailsProps {
   product: any;
@@ -20,9 +21,7 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isAdded, setIsAdded] = useState(false);
 
-  const images = selectedVariant.images && selectedVariant.images.length > 0
-    ? selectedVariant.images
-    : ["/images/products/placeholder.jpg"];
+  const images = resolveImageUrls(selectedVariant.images);
 
   const handleAddToCart = () => {
     const cartProduct: Product = {
@@ -30,7 +29,7 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
       variantId: selectedVariant._id,
       name: product.name,
       price: selectedVariant.price,
-      image: images[0],
+      image: resolveImageUrl(selectedVariant.images?.[0]),
       slug: product.slug,
       category: product.category,
       badge: product.isFeatured ? "bestseller" : undefined,

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500" viewBox="0 0 400 500">
+  <rect width="400" height="500" fill="#FFF5E6"/>
+  <rect x="120" y="160" width="160" height="120" rx="8" fill="#E8D5B0" opacity="0.6"/>
+  <circle cx="175" cy="210" r="18" fill="#D4A853" opacity="0.5"/>
+  <polygon points="200,185 230,235 170,235" fill="#D4A853" opacity="0.4"/>
+  <text x="200" y="320" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#8B6F4E" letter-spacing="2">DIVINE OFFERING</text>
+</svg>

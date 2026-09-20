@@ -73,7 +73,7 @@ const processCheckout = asyncHandler(async (req, res) => {
             quantity: item.quantity,
             priceAtPurchase: item.variantId.price,
             discountAtPurchase: item.variantId.discount || 0,
-            imageAtPurchase: item.variantId.images[0] || item.productId.images[0] || "/images/products/placeholder.jpg"
+            imageAtPurchase: item.variantId.images[0] || item.productId.images[0] || "/images/products/placeholder.svg"
         });
     }
 

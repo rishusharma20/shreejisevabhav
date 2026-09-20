@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
@@ -10,7 +11,9 @@ const ApiResponse = require("./src/utils/ApiResponse");
 const app = express();
 
 // Security Middlewares
-app.use(helmet());
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 app.use(compression());
 app.use(cors({
     origin: function (origin, callback) {
@@ -39,7 +42,8 @@ app.use(cors({
 // Body Parsing Middlewares
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
-app.use(express.static("public"));
+// Serve uploaded files from repo-root public/ (same location multer writes to)
+app.use(express.static(path.join(__dirname, "../public")));
 app.use(cookieParser());
 
 // Logging Middleware

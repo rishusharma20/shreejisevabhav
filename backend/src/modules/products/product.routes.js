@@ -27,14 +27,14 @@ router.get("/:identifier", getProduct); // slug or id
 // Protected Admin Routes
 router.use(verifyJWT, isAdmin);
 
-router.post("/create", createProductValidation, validate, createProduct);
+router.post("/create", uploadVariant.array("images", 5), createProductValidation, validate, createProduct);
 router.post("/:id/variants", uploadVariant.array("images", 5), (req, res, next) => {
     // Inject productId into req.body for validation
     req.body.productId = req.params.id;
     next();
 }, variantValidation, validate, createVariant);
 
-router.put("/update/:id", updateProductValidation, validate, updateProduct);
+router.put("/update/:id", uploadVariant.array("images", 5), updateProductValidation, validate, updateProduct);
 router.delete("/delete/:id", deleteProduct);
 
 module.exports = router;

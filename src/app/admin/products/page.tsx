@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Package, Plus, Loader2, Edit2, Trash2, X } from "lucide-react";
 import { authFetch } from "@/lib/authFetch";
+import { resolveImageUrl } from "@/lib/imageUrl";
 
 export default function AdminProductsPage() {
   const router = useRouter();
@@ -200,7 +201,7 @@ export default function AdminProductsPage() {
                 <tr key={prod._id} className="hover:bg-gold-start/5 transition-colors">
                   <td className="px-6 py-4 flex items-center gap-3">
                     {prod.images && prod.images.length > 0 ? (
-                      <img src={prod.images[0]} alt={prod.name} className="w-10 h-10 object-cover rounded-lg border border-gold-start/20" />
+                      <img src={resolveImageUrl(prod.images[0])} alt={prod.name} className="w-10 h-10 object-cover rounded-lg border border-gold-start/20" />
                     ) : (
                       <div className="w-10 h-10 bg-gold-start/10 rounded-lg border border-gold-start/20 flex items-center justify-center">
                         <Package className="w-5 h-5 text-saffron/50" />

@@ -7,6 +7,7 @@ import ProductCardSkeleton from "@/components/ui/ProductCardSkeleton";
 import { useCart } from "@/context/CartContext";
 
 import type { Product } from "@/lib/types";
+import { resolveImageUrl } from "@/lib/imageUrl";
 
 export default function FeaturedProducts() {
   const [isLoading, setIsLoading] = useState(true);
@@ -27,8 +28,8 @@ export default function FeaturedProducts() {
             category: p.category,
             price: p.price,
             originalPrice: p.originalPrice,
-            image: p.images[0],
-            hoverImage: p.images[1] || p.images[0],
+            image: resolveImageUrl(p.images?.[0]),
+            hoverImage: resolveImageUrl(p.images?.[1] || p.images?.[0]),
             isNew: p.isTrending || false, // Mapping trending to 'new' badge
             slug: p.slug
           }));

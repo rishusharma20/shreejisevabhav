@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { CartState, CartAction, CartItem, Product } from "@/lib/types";
+import { resolveImageUrl } from "@/lib/imageUrl";
 import { authFetch } from "@/lib/authFetch";
 
 const CART_STORAGE_KEY = "shreeji-seva-bhav-cart";
@@ -95,7 +96,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 name: item.productId.name,
                 category: item.productId.category,
                 price: item.variantId.price,
-                image: item.variantId.images[0] || "/images/products/placeholder.jpg",
+                image: resolveImageUrl(item.variantId.images?.[0]),
                 slug: item.productId.slug
               } as Product,
               quantity: item.quantity

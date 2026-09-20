@@ -44,7 +44,10 @@ const updateProductValidation = [
     body("shortDescription").optional().trim().notEmpty(),
     body("description").optional().trim().notEmpty(),
     body("collectionId").optional().trim().isMongoId(),
-    body("category").optional().trim().notEmpty()
+    body("category").optional().trim().notEmpty(),
+    body("price").optional().isFloat({ min: 0 }),
+    body("quantity").optional().isInt({ min: 0 }),
+    body("size").optional().trim().notEmpty()
 ];
 
 const variantValidation = [

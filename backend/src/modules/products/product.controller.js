@@ -105,7 +105,7 @@ const attachVariantsToProducts = async (products) => {
             variantId: defaultVariant._id,
             price: defaultVariant.price || 0,
             originalPrice: (defaultVariant.price || 0) + (defaultVariant.discount || 0),
-            images: (defaultVariant.images && defaultVariant.images.length > 0) ? defaultVariant.images : ["/images/products/placeholder.jpg"]
+            images: (defaultVariant.images && defaultVariant.images.length > 0) ? defaultVariant.images : ["/images/products/placeholder.svg"]
         };
     });
 };
@@ -153,7 +153,9 @@ const getProduct = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const updateProduct = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    let updateData = { ...req.body, updatedBy: req.user._id };
+    const { price, quantity, size, ...productFields } = req.body;
+
+    const updateData = { ...productFields, updatedBy: req.user._id };
 
     if (req.body.collectionId) {
         const collection = await Collection.findById(req.body.collectionId);
@@ -170,7 +172,25 @@ const updateProduct = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Product not found");
     }
 
-    return res.status(200).json(new ApiResponse(200, "Product updated", { product: updatedProduct }));
+    const variantUpdate = {};
+    if (price !== undefined && price !== "") variantUpdate.price = Number(price);
+    if (quantity !== undefined && quantity !== "") variantUpdate.quantity = Number(quantity);
+    if (size !== undefined && size !== "") variantUpdate.size = size;
+
+    if (req.files && req.files.length > 0) {
+        variantUpdate.images = req.files.map((file) => `/uploads/variants/${file.filename}`);
+    }
+
+    let variant = null;
+    if (Object.keys(variantUpdate).length > 0) {
+        variant = await ProductVariant.findOne({ productId: id });
+        if (variant) {
+            Object.assign(variant, variantUpdate);
+            await variant.save();
+        }
+    }
+
+    return res.status(200).json(new ApiResponse(200, "Product updated", { product: updatedProduct, variant }));
 });
 
 // @desc    Delete a product
