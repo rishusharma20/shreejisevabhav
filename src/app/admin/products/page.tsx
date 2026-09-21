@@ -376,18 +376,56 @@ export default function AdminProductsPage() {
 
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8B6F4E] mb-1.5">Product Images</label>
+                
+                {/* Current saved images when editing */}
+                {editingProduct?.images && editingProduct.images.length > 0 && (
+                  <div className="mb-3">
+                    <p className="text-[10px] text-charcoal/60 uppercase tracking-wider mb-1.5 font-semibold">Current Saved Images</p>
+                    <div className="flex flex-wrap gap-2">
+                      {editingProduct.images.map((img: string, idx: number) => (
+                        <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-gold-start/30">
+                          <img src={resolveImageUrl(img)} alt={`Current ${idx + 1}`} className="w-full h-full object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <input 
                   type="file" 
                   multiple
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp"
                   onChange={e => {
                     if (e.target.files) {
-                      setImages(Array.from(e.target.files));
+                      setImages(prev => [...prev, ...Array.from(e.target.files!)]);
                     }
                   }}
                   className="w-full border border-gold-start/30 rounded-xl px-4 py-2 text-sm bg-white/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-wider file:bg-gold-start/10 file:text-saffron-deep hover:file:bg-gold-start/20 transition-all cursor-pointer"
                 />
-                <p className="text-[10px] text-charcoal/50 mt-1 uppercase tracking-wider">You can select multiple images</p>
+
+                {/* Previews of newly selected files before uploading */}
+                {images.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-[10px] text-charcoal/60 uppercase tracking-wider mb-1.5 font-semibold">Images to Upload ({images.length})</p>
+                    <div className="flex flex-wrap gap-2">
+                      {images.map((file, idx) => (
+                        <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-gold-start/40 bg-sand-light/50 group">
+                          <img src={URL.createObjectURL(file)} alt={file.name} className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => setImages(images.filter((_, i) => i !== idx))}
+                            className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-charcoal/80 text-white flex items-center justify-center hover:bg-rose-600 transition-colors"
+                            title="Remove image"
+                          >
+                            <X className="w-2.5 h-2.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <p className="text-[10px] text-charcoal/50 mt-1 uppercase tracking-wider">Supports JPG, PNG, WEBP (Max 5MB each)</p>
               </div>
 
               <div>

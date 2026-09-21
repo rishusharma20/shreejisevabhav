@@ -1,4 +1,5 @@
 const Collection = require("../../models/Collection.model");
+const gridfsService = require("../../services/gridfs.service");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
@@ -25,12 +26,34 @@ const createCollection = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Collection Creation Failed", { name: "Collection with this name already exists" });
     }
 
-    const bannerImage = `/uploads/collections/${files.bannerImage[0].filename}`;
-    const thumbnailImage = `/uploads/collections/${files.thumbnailImage[0].filename}`;
-    let featuredImage = null;
+    const bannerFile = files.bannerImage[0];
+    const bannerId = await gridfsService.uploadFromBuffer(
+        bannerFile.buffer,
+        bannerFile.originalname,
+        bannerFile.mimetype,
+        { type: "bannerImage" }
+    );
+    const bannerImage = `/api/v1/images/${bannerId}`;
 
-    if (files.featuredImage) {
-        featuredImage = `/uploads/collections/${files.featuredImage[0].filename}`;
+    const thumbFile = files.thumbnailImage[0];
+    const thumbId = await gridfsService.uploadFromBuffer(
+        thumbFile.buffer,
+        thumbFile.originalname,
+        thumbFile.mimetype,
+        { type: "thumbnailImage" }
+    );
+    const thumbnailImage = `/api/v1/images/${thumbId}`;
+
+    let featuredImage = null;
+    if (files.featuredImage && files.featuredImage[0]) {
+        const featFile = files.featuredImage[0];
+        const featId = await gridfsService.uploadFromBuffer(
+            featFile.buffer,
+            featFile.originalname,
+            featFile.mimetype,
+            { type: "featuredImage" }
+        );
+        featuredImage = `/api/v1/images/${featId}`;
     }
 
     const collection = await Collection.create({
@@ -96,14 +119,20 @@ const updateCollection = asyncHandler(async (req, res) => {
 
     // Handle new images if uploaded
     if (req.files) {
-        if (req.files.bannerImage) {
-            updateData.bannerImage = `/uploads/collections/${req.files.bannerImage[0].filename}`;
+        if (req.files.bannerImage && req.files.bannerImage[0]) {
+            const file = req.files.bannerImage[0];
+            const fileId = await gridfsService.uploadFromBuffer(file.buffer, file.originalname, file.mimetype, { collectionId: id, type: "bannerImage" });
+            updateData.bannerImage = `/api/v1/images/${fileId}`;
         }
-        if (req.files.thumbnailImage) {
-            updateData.thumbnailImage = `/uploads/collections/${req.files.thumbnailImage[0].filename}`;
+        if (req.files.thumbnailImage && req.files.thumbnailImage[0]) {
+            const file = req.files.thumbnailImage[0];
+            const fileId = await gridfsService.uploadFromBuffer(file.buffer, file.originalname, file.mimetype, { collectionId: id, type: "thumbnailImage" });
+            updateData.thumbnailImage = `/api/v1/images/${fileId}`;
         }
-        if (req.files.featuredImage) {
-            updateData.featuredImage = `/uploads/collections/${req.files.featuredImage[0].filename}`;
+        if (req.files.featuredImage && req.files.featuredImage[0]) {
+            const file = req.files.featuredImage[0];
+            const fileId = await gridfsService.uploadFromBuffer(file.buffer, file.originalname, file.mimetype, { collectionId: id, type: "featuredImage" });
+            updateData.featuredImage = `/api/v1/images/${fileId}`;
         }
     }
 
@@ -126,11 +155,20 @@ const updateCollection = asyncHandler(async (req, res) => {
 const deleteCollection = asyncHandler(async (req, res) => {
     const { id } = req.params;
     
-    const collection = await Collection.findByIdAndDelete(id);
-    
+    const collection = await Collection.findById(id);
     if (!collection) {
         throw new ApiError(404, "Collection not found");
     }
+
+    // Clean up associated GridFS images
+    const imageFields = [collection.bannerImage, collection.thumbnailImage, collection.featuredImage];
+    for (const imgPath of imageFields) {
+        if (imgPath && (imgPath.includes("/api/v1/images/") || imgPath.includes("/api/images/"))) {
+            await gridfsService.deleteFile(imgPath);
+        }
+    }
+
+    await Collection.findByIdAndDelete(id);
 
     return res.status(200).json(new ApiResponse(200, "Collection deleted successfully", {}));
 });

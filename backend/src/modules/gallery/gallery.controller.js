@@ -1,4 +1,5 @@
 const Gallery = require("../../models/Gallery.model");
+const gridfsService = require("../../services/gridfs.service");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
@@ -21,7 +22,13 @@ const addGalleryImage = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Image is required");
     }
 
-    const url = `/uploads/gallery/${req.file.filename}`;
+    const fileId = await gridfsService.uploadFromBuffer(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype,
+        { module: "gallery" }
+    );
+    const url = `/api/v1/images/${fileId}`;
 
     const galleryImage = await Gallery.create({
         url,
@@ -48,7 +55,13 @@ const updateGalleryImage = asyncHandler(async (req, res) => {
 
     let updateData = { altText, span, order, isActive };
     if (req.file) {
-        updateData.url = `/uploads/gallery/${req.file.filename}`;
+        const fileId = await gridfsService.uploadFromBuffer(
+            req.file.buffer,
+            req.file.originalname,
+            req.file.mimetype,
+            { module: "gallery" }
+        );
+        updateData.url = `/api/v1/images/${fileId}`;
     }
 
     const updatedGalleryImage = await Gallery.findByIdAndUpdate(
@@ -66,12 +79,17 @@ const updateGalleryImage = asyncHandler(async (req, res) => {
 const deleteGalleryImage = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    const galleryItem = await Gallery.findByIdAndDelete(id);
+    const galleryItem = await Gallery.findById(id);
     if (!galleryItem) {
         throw new ApiError(404, "Gallery item not found");
     }
 
-    // Ideally, also delete the physical file using fs.unlinkSync but keeping it simple for now
+    if (galleryItem.url && (galleryItem.url.includes("/api/v1/images/") || galleryItem.url.includes("/api/images/"))) {
+        await gridfsService.deleteFile(galleryItem.url);
+    }
+
+    await Gallery.findByIdAndDelete(id);
+
     return res.status(200).json(new ApiResponse(200, "Gallery image deleted successfully", {}));
 });
 

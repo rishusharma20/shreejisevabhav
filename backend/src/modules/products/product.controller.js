@@ -1,6 +1,7 @@
 const Product = require("../../models/Product.model");
 const Collection = require("../../models/Collection.model");
 const ProductVariant = require("../../models/ProductVariant.model");
+const gridfsService = require("../../services/gridfs.service");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
@@ -44,18 +45,35 @@ const createProduct = asyncHandler(async (req, res) => {
 
     let images = [];
     if (req.files && req.files.length > 0) {
-        images = req.files.map((file) => `/uploads/variants/${file.filename}`);
+        for (const file of req.files) {
+            const fileId = await gridfsService.uploadFromBuffer(
+                file.buffer,
+                file.originalname,
+                file.mimetype,
+                { productId: product._id }
+            );
+            images.push(`/api/v1/images/${fileId}`);
+        }
     }
 
-    const variant = await ProductVariant.create({
-        productId: product._id,
-        size,
-        price,
-        quantity,
-        images
-    });
+    try {
+        const variant = await ProductVariant.create({
+            productId: product._id,
+            size,
+            price,
+            quantity,
+            images
+        });
 
-    return res.status(201).json(new ApiResponse(201, "Product created successfully", { product, variant }));
+        return res.status(201).json(new ApiResponse(201, "Product created successfully", { product, variant }));
+    } catch (error) {
+        // Rollback uploaded files and product if variant creation fails
+        for (const imgUrl of images) {
+            await gridfsService.deleteFile(imgUrl);
+        }
+        await Product.findByIdAndDelete(product._id);
+        throw error;
+    }
 });
 
 // @desc    Create a product variant
@@ -72,7 +90,15 @@ const createVariant = asyncHandler(async (req, res) => {
 
     let images = [];
     if (req.files && req.files.length > 0) {
-        images = req.files.map((file) => `/uploads/variants/${file.filename}`);
+        for (const file of req.files) {
+            const fileId = await gridfsService.uploadFromBuffer(
+                file.buffer,
+                file.originalname,
+                file.mimetype,
+                { productId: product._id }
+            );
+            images.push(`/api/v1/images/${fileId}`);
+        }
     }
 
     const variant = await ProductVariant.create({
@@ -178,7 +204,17 @@ const updateProduct = asyncHandler(async (req, res) => {
     if (size !== undefined && size !== "") variantUpdate.size = size;
 
     if (req.files && req.files.length > 0) {
-        variantUpdate.images = req.files.map((file) => `/uploads/variants/${file.filename}`);
+        const newImages = [];
+        for (const file of req.files) {
+            const fileId = await gridfsService.uploadFromBuffer(
+                file.buffer,
+                file.originalname,
+                file.mimetype,
+                { productId: id }
+            );
+            newImages.push(`/api/v1/images/${fileId}`);
+        }
+        variantUpdate.images = newImages;
     }
 
     let variant = null;
@@ -202,7 +238,18 @@ const deleteProduct = asyncHandler(async (req, res) => {
     const product = await Product.findByIdAndDelete(id);
     if (!product) throw new ApiError(404, "Product not found");
 
-    // CASCADE DELETE: Delete all variants associated with this product
+    // CASCADE DELETE: Clean up GridFS images associated with this product's variants
+    const variants = await ProductVariant.find({ productId: id });
+    for (const v of variants) {
+        if (v.images && Array.isArray(v.images)) {
+            for (const imgPath of v.images) {
+                if (imgPath && (imgPath.includes("/api/v1/images/") || imgPath.includes("/api/images/"))) {
+                    await gridfsService.deleteFile(imgPath);
+                }
+            }
+        }
+    }
+
     await ProductVariant.deleteMany({ productId: id });
 
     return res.status(200).json(new ApiResponse(200, "Product and its variants deleted successfully", {}));

@@ -1,4 +1,5 @@
 const User = require("../../models/User.model");
+const gridfsService = require("../../services/gridfs.service");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
@@ -11,7 +12,13 @@ const uploadProfileImage = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Upload Failed", { file: "Please upload an image" });
     }
 
-    const imagePath = `/uploads/profiles/${req.file.filename}`;
+    const fileId = await gridfsService.uploadFromBuffer(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype,
+        { userId: req.user._id, type: "profileImage" }
+    );
+    const imagePath = `/api/v1/images/${fileId}`;
 
     const user = await User.findByIdAndUpdate(
         req.user._id,

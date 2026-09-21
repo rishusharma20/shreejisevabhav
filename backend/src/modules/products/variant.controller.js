@@ -1,5 +1,6 @@
 const ProductVariant = require("../../models/ProductVariant.model");
 const Product = require("../../models/Product.model");
+const gridfsService = require("../../services/gridfs.service");
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
@@ -20,7 +21,16 @@ const createVariant = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Images Missing", { images: "At least 1 image is required for a variant" });
     }
 
-    const imagePaths = req.files.map(file => `/uploads/variants/${file.filename}`);
+    const imagePaths = [];
+    for (const file of req.files) {
+        const fileId = await gridfsService.uploadFromBuffer(
+            file.buffer,
+            file.originalname,
+            file.mimetype,
+            { productId }
+        );
+        imagePaths.push(`/api/v1/images/${fileId}`);
+    }
 
     const variant = await ProductVariant.create({
         productId,
@@ -49,9 +59,19 @@ const updateVariant = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Variant not found");
     }
 
-    // If new images are uploaded, we replace or append. For this phase, we replace.
+    // If new images are uploaded, replace them
     if (req.files && req.files.length > 0) {
-        updateData.images = req.files.map(file => `/uploads/variants/${file.filename}`);
+        const newImages = [];
+        for (const file of req.files) {
+            const fileId = await gridfsService.uploadFromBuffer(
+                file.buffer,
+                file.originalname,
+                file.mimetype,
+                { productId: variant.productId }
+            );
+            newImages.push(`/api/v1/images/${fileId}`);
+        }
+        updateData.images = newImages;
     }
 
     // Update using Document save to trigger pre-save hooks (e.g. isAvailable computation based on quantity)
@@ -67,8 +87,18 @@ const updateVariant = asyncHandler(async (req, res) => {
 const deleteVariant = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    const variant = await ProductVariant.findByIdAndDelete(id);
+    const variant = await ProductVariant.findById(id);
     if (!variant) throw new ApiError(404, "Variant not found");
+
+    if (variant.images && Array.isArray(variant.images)) {
+        for (const imgPath of variant.images) {
+            if (imgPath && (imgPath.includes("/api/v1/images/") || imgPath.includes("/api/images/"))) {
+                await gridfsService.deleteFile(imgPath);
+            }
+        }
+    }
+
+    await ProductVariant.findByIdAndDelete(id);
 
     return res.status(200).json(new ApiResponse(200, "Variant deleted successfully", {}));
 });
