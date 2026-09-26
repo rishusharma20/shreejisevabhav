@@ -17,7 +17,7 @@ const {
 const { createProduct, updateProduct, deleteProduct } = require("../products/product.controller");
 const { createProductValidation, updateProductValidation } = require("../products/product.validation");
 
-const { createCollection, updateCollection, deleteCollection } = require("../collections/collection.controller");
+const { createCollection, updateCollection, deleteCollection, getAdminCollections } = require("../collections/collection.controller");
 const { createCollectionValidation, updateCollectionValidation } = require("../collections/collection.validation");
 const { uploadCollection, uploadVariant } = require("../../middleware/multer.middleware");
 
@@ -60,6 +60,7 @@ router.put("/products/:id", uploadVariant.array("images", 5), updateProductValid
 router.delete("/products/:id", deleteProduct);
 
 // Collection Management APIs
+router.get("/collections", getAdminCollections);
 router.post("/collections", uploadCollection.fields([
     { name: "bannerImage", maxCount: 1 },
     { name: "thumbnailImage", maxCount: 1 },

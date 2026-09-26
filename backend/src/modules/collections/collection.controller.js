@@ -110,26 +110,60 @@ const getCollection = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, "Collection retrieved", { collection }));
 });
 
+// @desc    Get all collections for Admin (including inactive)
+// @route   GET /api/v1/admin/collections
+// @access  Private/Admin
+const getAdminCollections = asyncHandler(async (req, res) => {
+    const collections = await Collection.find({}).sort({ displayOrder: 1, createdAt: -1 });
+    return res.status(200).json(new ApiResponse(200, "Collections retrieved successfully", { collections }));
+});
+
 // @desc    Update a collection
 // @route   PUT /api/v1/collections/update/:id
 // @access  Private/Admin
 const updateCollection = asyncHandler(async (req, res) => {
     const { id } = req.params;
+    
+    const existingCollection = await Collection.findById(id);
+    if (!existingCollection) {
+        throw new ApiError(404, "Collection not found");
+    }
+
     let updateData = { ...req.body, updatedBy: req.user._id };
 
-    // Handle new images if uploaded
+    if (updateData.name && updateData.name !== existingCollection.name) {
+        const nameConflict = await Collection.findOne({ name: updateData.name, _id: { $ne: id } });
+        if (nameConflict) {
+            throw new ApiError(400, "Collection Update Failed", { name: "Collection with this name already exists" });
+        }
+    }
+
+    if (updateData.isActive !== undefined) {
+        updateData.isActive = updateData.isActive === true || updateData.isActive === "true";
+    }
+
+    // Handle new images if uploaded and clean up old ones
     if (req.files) {
         if (req.files.bannerImage && req.files.bannerImage[0]) {
+            if (existingCollection.bannerImage && (existingCollection.bannerImage.includes("/api/v1/images/") || existingCollection.bannerImage.includes("/api/images/"))) {
+                await gridfsService.deleteFile(existingCollection.bannerImage);
+            }
             const file = req.files.bannerImage[0];
             const fileId = await gridfsService.uploadFromBuffer(file.buffer, file.originalname, file.mimetype, { collectionId: id, type: "bannerImage" });
             updateData.bannerImage = `/api/v1/images/${fileId}`;
         }
         if (req.files.thumbnailImage && req.files.thumbnailImage[0]) {
+            if (existingCollection.thumbnailImage && (existingCollection.thumbnailImage.includes("/api/v1/images/") || existingCollection.thumbnailImage.includes("/api/images/"))) {
+                await gridfsService.deleteFile(existingCollection.thumbnailImage);
+            }
             const file = req.files.thumbnailImage[0];
             const fileId = await gridfsService.uploadFromBuffer(file.buffer, file.originalname, file.mimetype, { collectionId: id, type: "thumbnailImage" });
             updateData.thumbnailImage = `/api/v1/images/${fileId}`;
         }
         if (req.files.featuredImage && req.files.featuredImage[0]) {
+            if (existingCollection.featuredImage && (existingCollection.featuredImage.includes("/api/v1/images/") || existingCollection.featuredImage.includes("/api/images/"))) {
+                await gridfsService.deleteFile(existingCollection.featuredImage);
+            }
             const file = req.files.featuredImage[0];
             const fileId = await gridfsService.uploadFromBuffer(file.buffer, file.originalname, file.mimetype, { collectionId: id, type: "featuredImage" });
             updateData.featuredImage = `/api/v1/images/${fileId}`;
@@ -141,10 +175,6 @@ const updateCollection = asyncHandler(async (req, res) => {
         { $set: updateData },
         { new: true, runValidators: true }
     );
-
-    if (!updatedCollection) {
-        throw new ApiError(404, "Collection not found");
-    }
 
     return res.status(200).json(new ApiResponse(200, "Collection updated", { collection: updatedCollection }));
 });
@@ -241,6 +271,7 @@ const getCollectionAnalytics = asyncHandler(async (req, res) => {
 module.exports = {
     createCollection,
     getAllCollections,
+    getAdminCollections,
     getCollection,
     updateCollection,
     deleteCollection,

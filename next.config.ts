@@ -36,6 +36,19 @@ const nextConfig: NextConfig = {
       }
     ],
   },
+  async rewrites() {
+    const backendUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/+$/, "");
+    return [
+      {
+        source: "/api/v1/images/:path*",
+        destination: `${backendUrl}/api/v1/images/:path*`,
+      },
+      {
+        source: "/api/images/:path*",
+        destination: `${backendUrl}/api/images/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

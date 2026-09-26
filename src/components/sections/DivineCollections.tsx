@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Loader2 } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { resolveImageUrl } from "@/lib/imageUrl";
 
 interface Collection {
   _id: string;
@@ -61,7 +62,7 @@ export default function DivineCollections() {
             <div className="absolute inset-0 bg-gradient-to-br from-charcoal via-[#3D2415] to-charcoal">
               <div 
                 className="absolute inset-0 opacity-40 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
-                style={{ backgroundImage: `url(${category.thumbnailImage})` }}
+                style={{ backgroundImage: `url(${resolveImageUrl(category.thumbnailImage)})` }}
               />
             </div>
 
