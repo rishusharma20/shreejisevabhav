@@ -48,8 +48,8 @@ export default function AdminProductsPage() {
     isTrending: false,
   });
 
-  // Size variants state: size -> { selected: boolean, quantity: string }
-  const [sizeVariants, setSizeVariants] = useState<Record<string, { selected: boolean; quantity: string }>>({});
+  // Size variants state: size -> { selected: boolean, quantity: string, customPrice?: string }
+  const [sizeVariants, setSizeVariants] = useState<Record<string, { selected: boolean; quantity: string; customPrice?: string }>>({});
   
   // Custom size addition state
   const [customSizeInput, setCustomSizeInput] = useState("");
@@ -119,18 +119,33 @@ export default function AdminProductsPage() {
         console.error("Could not fetch product variants", e);
       }
 
-      const initialMap: Record<string, { selected: boolean; quantity: string }> = {};
+      const initialMap: Record<string, { selected: boolean; quantity: string; customPrice?: string }> = {};
       if (loadedVariants && loadedVariants.length > 0) {
         loadedVariants.forEach(v => {
+          let cpStr = "";
+          if (v.customPrice !== undefined && v.customPrice !== null) {
+            cpStr = String(v.customPrice);
+          } else if (
+            v.price !== undefined &&
+            v.price !== null &&
+            product.price !== undefined &&
+            product.price !== "" &&
+            Number(v.price) !== Number(product.price)
+          ) {
+            cpStr = String(v.price);
+          }
+
           initialMap[v.size] = {
             selected: true,
-            quantity: String(v.quantity !== undefined ? v.quantity : (v.stock ?? 0))
+            quantity: String(v.quantity !== undefined ? v.quantity : (v.stock ?? 0)),
+            customPrice: cpStr
           };
         });
       } else if (product.size) {
         initialMap[product.size] = {
           selected: true,
-          quantity: String(product.quantity ?? 0)
+          quantity: String(product.quantity ?? 0),
+          customPrice: ""
         };
       }
 
@@ -178,7 +193,9 @@ export default function AdminProductsPage() {
           [size]: {
             selected: true,
             // Preserve existing quantity if previously set, else sensible default "1"
-            quantity: existing?.quantity !== undefined && existing?.quantity !== "" ? existing.quantity : "1"
+            quantity: existing?.quantity !== undefined && existing?.quantity !== "" ? existing.quantity : "1",
+            // Preserve existing customPrice if previously set
+            customPrice: existing?.customPrice !== undefined ? existing.customPrice : ""
           }
         };
       } else {
@@ -186,8 +203,9 @@ export default function AdminProductsPage() {
           ...prev,
           [size]: {
             selected: false,
-            // Keep the quantity in memory so re-checking restores it
-            quantity: existing ? existing.quantity : "1"
+            // Keep the quantity and customPrice in memory so re-checking restores it
+            quantity: existing ? existing.quantity : "1",
+            customPrice: existing?.customPrice !== undefined ? existing.customPrice : ""
           }
         };
       }
@@ -199,7 +217,19 @@ export default function AdminProductsPage() {
       ...prev,
       [size]: {
         selected: true,
-        quantity: val
+        quantity: val,
+        customPrice: prev[size]?.customPrice !== undefined ? prev[size].customPrice : ""
+      }
+    }));
+  };
+
+  const handleCustomPriceChange = (size: string, val: string) => {
+    setSizeVariants(prev => ({
+      ...prev,
+      [size]: {
+        selected: true,
+        quantity: prev[size]?.quantity !== undefined && prev[size]?.quantity !== "" ? prev[size].quantity : "1",
+        customPrice: val
       }
     }));
   };
@@ -215,7 +245,14 @@ export default function AdminProductsPage() {
     e.preventDefault();
     setModalError("");
 
-    // 1. Validate variants
+    // 1. Validate default price
+    const defaultPriceNum = Number(form.price);
+    if (form.price === "" || isNaN(defaultPriceNum) || defaultPriceNum < 0) {
+      setModalError("Please enter a valid non-negative Price (₹).");
+      return;
+    }
+
+    // 2. Validate variants
     const activeSizes = Object.entries(sizeVariants).filter(([_, data]) => data.selected);
     if (activeSizes.length === 0) {
       setModalError("Please select at least one available size.");
@@ -238,10 +275,25 @@ export default function AdminProductsPage() {
         return;
       }
 
+      let customPriceVal: number | null = null;
+      let effectivePrice = defaultPriceNum;
+
+      if (data.customPrice !== undefined && data.customPrice.trim() !== "") {
+        const cp = Number(data.customPrice.trim());
+        if (isNaN(cp) || cp < 0) {
+          setModalError(`Invalid custom price for ${formatSizeLabel(trimmedSize, form.category)}. Must be a non-negative number.`);
+          return;
+        }
+        customPriceVal = cp;
+        effectivePrice = cp;
+      }
+
       formattedVariants.push({
         size: trimmedSize,
         stock: num,
-        quantity: num
+        quantity: num,
+        price: effectivePrice,
+        customPrice: customPriceVal
       });
     }
 
@@ -367,7 +419,8 @@ export default function AdminProductsPage() {
                     )}
                     <div>
                       <div className="font-bold text-[#5C1A1A]">{prod.name}</div>
-                      <div className="text-[11px] uppercase tracking-wider text-[#8B6F4E] mt-1">{prod.slug}</div>
+                      <div className="text-[11px] uppercase tracking-wider text-[#8B6F4E] mt-0.5">{prod.slug}</div>
+                      <div className="text-[11px] font-bold text-saffron-deep mt-0.5">Base: ₹{prod.price ?? 0}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -386,12 +439,15 @@ export default function AdminProductsPage() {
                             }`}
                           >
                             {formatSizeLabel(v.size, prod.category)}: <span className="font-bold">{v.quantity}</span>
+                            <span className="text-saffron-deep font-bold ml-1">
+                              • ₹{v.price !== undefined ? v.price : (prod.price ?? 0)}
+                            </span>
                           </span>
                         ))}
                       </div>
                     ) : (
                       <span className="text-xs text-warm-gray">
-                        {prod.size ? `${prod.size}: ${prod.quantity || 0}` : "None"}
+                        {prod.size ? `${prod.size}: ${prod.quantity || 0} (₹${prod.price || 0})` : "None"}
                       </span>
                     )}
                   </td>
@@ -540,7 +596,7 @@ export default function AdminProductsPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {displaySizes.map(size => {
-                      const variantData = sizeVariants[size] || { selected: false, quantity: "1" };
+                      const variantData = sizeVariants[size] || { selected: false, quantity: "1", customPrice: "" };
                       const isSelected = Boolean(variantData.selected);
 
                       return (
@@ -566,10 +622,32 @@ export default function AdminProductsPage() {
                             </label>
 
                             {isSelected && (
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-[10px] uppercase font-bold text-[#8B6F4E] whitespace-nowrap">
-                                  Qty:
-                                </span>
+                              <span className="text-[9px] font-bold uppercase tracking-wider text-saffron-deep bg-amber-50 px-1.5 py-0.5 rounded border border-gold-start/30">
+                                Selected
+                              </span>
+                            )}
+                          </div>
+
+                          {isSelected && (
+                            <div className="mt-2.5 pt-2.5 border-t border-gold-start/15 grid grid-cols-2 gap-2">
+                              <div>
+                                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8B6F4E] mb-1">
+                                  Custom Price (₹)
+                                </label>
+                                <input 
+                                  type="number"
+                                  min="0"
+                                  step="any"
+                                  value={variantData.customPrice ?? ""}
+                                  onChange={e => handleCustomPriceChange(size, e.target.value)}
+                                  placeholder={form.price !== "" ? `Default: ₹${form.price}` : "Optional"}
+                                  className="w-full px-2.5 py-1.5 text-xs font-bold text-charcoal bg-white border border-gold-start/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8B6F4E] mb-1">
+                                  Quantity in Stock
+                                </label>
                                 <input 
                                   type="number"
                                   min="0"
@@ -578,11 +656,11 @@ export default function AdminProductsPage() {
                                   value={variantData.quantity}
                                   onChange={e => handleQuantityChange(size, e.target.value)}
                                   placeholder="0"
-                                  className="w-20 px-2 py-1 text-xs font-bold text-charcoal bg-white border border-gold-start/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start text-right"
+                                  className="w-full px-2.5 py-1.5 text-xs font-bold text-charcoal bg-white border border-gold-start/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-saffron/40 focus:border-gold-start"
                                 />
                               </div>
-                            )}
-                          </div>
+                            </div>
+                          )}
                         </div>
                       );
                     })}

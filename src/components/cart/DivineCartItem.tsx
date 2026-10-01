@@ -11,13 +11,14 @@ interface DivineCartItemProps {
   id: string;
   title: string;
   price: string;
+  unitPrice?: string;
   quantity: number;
   size?: string;
   category: string;
   imageSrc?: string;
 }
 
-export default function DivineCartItem({ id, title, price, quantity: initialQty, size, category, imageSrc }: DivineCartItemProps) {
+export default function DivineCartItem({ id, title, price, unitPrice, quantity: initialQty, size, category, imageSrc }: DivineCartItemProps) {
   const { updateQuantity, removeFromCart } = useCart();
   const [quantity, setQuantity] = useState(initialQty);
 
@@ -106,6 +107,9 @@ export default function DivineCartItem({ id, title, price, quantity: initialQty,
           <div className="text-right">
             <div className="text-[8px] uppercase tracking-widest font-bold text-warm-gray mb-0.5">Seva Amount</div>
             <div className="font-display text-xl md:text-2xl font-bold text-gold-start">{price}</div>
+            {unitPrice && quantity > 1 && (
+              <div className="text-[10px] text-warm-gray font-medium mt-0.5">{unitPrice} each</div>
+            )}
           </div>
         </div>
       </div>

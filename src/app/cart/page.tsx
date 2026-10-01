@@ -82,7 +82,8 @@ export default function DivineCartPage() {
                       key={itemKey} 
                       id={itemKey}
                       title={item.product.name}
-                      price={`₹${item.product.price.toLocaleString()}`}
+                      price={`₹${(item.product.price * item.quantity).toLocaleString()}`}
+                      unitPrice={`₹${item.product.price.toLocaleString()}`}
                       quantity={item.quantity}
                       size={item.product.size}
                       category={item.product.category || "Divine Offering"}

@@ -27,6 +27,8 @@ const createProduct = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Product Creation Failed", { name: "Product with this name already exists" });
     }
 
+    const defaultProductPrice = price !== undefined && price !== "" ? Number(price) : 0;
+
     const product = await Product.create({
         name,
         slug,
@@ -40,6 +42,7 @@ const createProduct = asyncHandler(async (req, res) => {
         isActive,
         displayOrder,
         tags,
+        price: defaultProductPrice,
         createdBy: req.user._id
     });
 
@@ -73,7 +76,7 @@ const createProduct = asyncHandler(async (req, res) => {
         parsedVariants.push({
             size: size || "Standard",
             quantity: quantity !== undefined ? Number(quantity) : 0,
-            price: Number(price) || 0
+            price: defaultProductPrice
         });
     }
 
@@ -82,11 +85,17 @@ const createProduct = asyncHandler(async (req, res) => {
         for (const v of parsedVariants) {
             const vSize = String(v.size).trim();
             const vQty = Number(v.quantity !== undefined ? v.quantity : v.stock) || 0;
-            const vPrice = Number(v.price !== undefined ? v.price : price) || 0;
+            const hasCustom = v.customPrice !== undefined && v.customPrice !== null && v.customPrice !== "";
+            const vCustomPrice = hasCustom ? Number(v.customPrice) : null;
+            const vPrice = vCustomPrice !== null 
+                ? vCustomPrice 
+                : (v.price !== undefined && v.price !== null && v.price !== "" ? Number(v.price) : defaultProductPrice);
+
             const newVariant = await ProductVariant.create({
                 productId: product._id,
                 size: vSize,
                 price: vPrice,
+                customPrice: vCustomPrice,
                 quantity: vQty,
                 isAvailable: vQty > 0,
                 images
@@ -160,11 +169,13 @@ const attachVariantsToProducts = async (products) => {
         const productVariants = variants.filter(v => v.productId.toString() === product._id.toString());
         const defaultVariant = productVariants[0] || {};
         const totalQuantity = productVariants.reduce((sum, v) => sum + (v.quantity || 0), 0);
+        const effectiveBasePrice = (product.price !== undefined && product.price > 0) ? product.price : (defaultVariant.price || 0);
+
         return {
             ...product,
             variantId: defaultVariant._id,
-            price: defaultVariant.price || 0,
-            originalPrice: (defaultVariant.price || 0) + (defaultVariant.discount || 0),
+            price: effectiveBasePrice,
+            originalPrice: (defaultVariant.price || effectiveBasePrice) + (defaultVariant.discount || 0),
             images: (defaultVariant.images && defaultVariant.images.length > 0) ? defaultVariant.images : ["/images/products/placeholder.svg"],
             size: defaultVariant.size || "Standard",
             quantity: totalQuantity,
@@ -220,6 +231,9 @@ const updateProduct = asyncHandler(async (req, res) => {
     const { price, quantity, size, variants, ...productFields } = req.body;
 
     const updateData = { ...productFields, updatedBy: req.user._id };
+    if (price !== undefined && price !== "") {
+        updateData.price = Number(price);
+    }
 
     if (req.body.collectionId) {
         const collection = await Collection.findById(req.body.collectionId);
@@ -275,18 +289,34 @@ const updateProduct = asyncHandler(async (req, res) => {
     if (Array.isArray(parsedVariants)) {
         // Multi-variant update
         const keepVariantIds = [];
-        const basePrice = price !== undefined && price !== "" ? Number(price) : (existingVariants[0]?.price || 0);
+        const defaultProductPrice = price !== undefined && price !== "" 
+            ? Number(price) 
+            : (updatedProduct.price !== undefined ? updatedProduct.price : (existingVariants[0]?.price || 0));
 
         for (const v of parsedVariants) {
             const vSize = String(v.size || "Standard").trim();
             const vQty = Number(v.quantity !== undefined ? v.quantity : (v.stock !== undefined ? v.stock : 0)) || 0;
-            const vPrice = Number(v.price !== undefined ? v.price : basePrice) || 0;
+            const existing = existingVariants.find(ev => ev.size === vSize);
+
+            // Determine custom price:
+            let vCustomPrice = null;
+            if (v.customPrice !== undefined && v.customPrice !== null && String(v.customPrice).trim() !== "") {
+                vCustomPrice = Number(v.customPrice);
+            } else if (v.customPrice === null || (typeof v.customPrice === "string" && v.customPrice.trim() === "")) {
+                vCustomPrice = null;
+            } else if (existing && existing.customPrice !== undefined && existing.customPrice !== null) {
+                vCustomPrice = existing.customPrice;
+            } else if (v.price !== undefined && v.price !== null && v.price !== "" && Number(v.price) !== defaultProductPrice) {
+                vCustomPrice = Number(v.price);
+            }
+
+            const effectivePrice = vCustomPrice !== null ? vCustomPrice : defaultProductPrice;
             const isAvailable = vQty > 0;
 
-            const existing = existingVariants.find(ev => ev.size === vSize);
             if (existing) {
                 existing.quantity = vQty;
-                existing.price = vPrice;
+                existing.price = effectivePrice;
+                existing.customPrice = vCustomPrice;
                 existing.isAvailable = isAvailable;
                 if (finalImages.length > 0) {
                     existing.images = finalImages;
@@ -299,7 +329,8 @@ const updateProduct = asyncHandler(async (req, res) => {
                     productId: id,
                     size: vSize,
                     quantity: vQty,
-                    price: vPrice,
+                    price: effectivePrice,
+                    customPrice: vCustomPrice,
                     isAvailable,
                     images: finalImages
                 });

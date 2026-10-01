@@ -21,7 +21,11 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isAdded, setIsAdded] = useState(false);
 
-  const images = resolveImageUrls(selectedVariant.images);
+  const effectivePrice = selectedVariant.price !== undefined && selectedVariant.price !== null
+    ? selectedVariant.price
+    : (product.price || 0);
+
+  const images = resolveImageUrls(selectedVariant.images?.length ? selectedVariant.images : product.images);
 
   const handleAddToCart = () => {
     const isVariantInStock = selectedVariant.isAvailable !== false && (selectedVariant.quantity === undefined || selectedVariant.quantity > 0);
@@ -31,8 +35,8 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
       id: product._id,
       variantId: selectedVariant._id,
       name: product.name,
-      price: selectedVariant.price,
-      image: resolveImageUrl(selectedVariant.images?.[0]),
+      price: effectivePrice,
+      image: resolveImageUrl(selectedVariant.images?.[0] || product.images?.[0]),
       slug: product.slug,
       category: product.category,
       badge: product.isFeatured ? "bestseller" : undefined,
@@ -40,7 +44,7 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
       reviewCount: 0,
       description: product.description,
       inStock: isVariantInStock,
-      size: selectedVariant.size,
+      size: selectedVariant.size || product.size || "Standard",
       quantity: selectedVariant.quantity
     };
     
@@ -111,10 +115,10 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
               <span className="text-xs font-medium text-charcoal/50 uppercase tracking-widest">Divine Reviews</span>
             </div>
             <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-[#5C1A1A]">₹{selectedVariant.price?.toLocaleString()}</span>
+              <span className="text-3xl font-bold text-[#5C1A1A]">₹{effectivePrice.toLocaleString()}</span>
               {selectedVariant.discount > 0 && (
                 <span className="text-lg text-charcoal/40 line-through">
-                  ₹{(selectedVariant.price + selectedVariant.discount).toLocaleString()}
+                  ₹{(effectivePrice + selectedVariant.discount).toLocaleString()}
                 </span>
               )}
             </div>

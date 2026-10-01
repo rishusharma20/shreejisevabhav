@@ -17,6 +17,10 @@ const productVariantSchema = new mongoose.Schema(
             required: [true, "Variant price is required"],
             min: [0, "Price cannot be negative"]
         },
+        customPrice: {
+            type: Number,
+            default: null
+        },
         discount: {
             type: Number,
             default: 0,

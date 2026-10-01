@@ -191,17 +191,22 @@ export default function CheckoutPage() {
               </h2>
 
               <div className="space-y-4 mb-6">
-                {summary.products.map((item: any, idx: number) => (
-                  <div key={idx} className="flex justify-between items-start gap-4 text-sm">
-                    <div className="flex-1">
-                      <p className="font-bold text-charcoal line-clamp-1">{item.productId?.name}</p>
-                      <p className="text-xs text-warm-gray">
-                        {item.variantId?.size ? `Size: ${item.variantId.size} • ` : ""}Qty: {item.quantity}
-                      </p>
+                {summary.products.map((item: any, idx: number) => {
+                  const unitPrice = item.variantId?.price !== undefined 
+                    ? item.variantId.price 
+                    : (item.price !== undefined ? item.price : (item.productId?.price || 0));
+                  return (
+                    <div key={idx} className="flex justify-between items-start gap-4 text-sm">
+                      <div className="flex-1">
+                        <p className="font-bold text-charcoal line-clamp-1">{item.productId?.name}</p>
+                        <p className="text-xs text-warm-gray">
+                          {item.variantId?.size ? `Size: ${item.variantId.size} • ` : ""}₹{unitPrice.toLocaleString()} × {item.quantity}
+                        </p>
+                      </div>
+                      <span className="font-bold text-charcoal">₹{(unitPrice * item.quantity).toLocaleString()}</span>
                     </div>
-                    <span className="font-bold text-charcoal">₹{((item.variantId?.price || 0) * item.quantity).toLocaleString()}</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="space-y-2 mb-6 pt-4 border-t border-gold-start/15 text-sm">

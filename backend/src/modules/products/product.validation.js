@@ -38,6 +38,14 @@ const validateVariantsArray = (val) => {
         ) {
             throw new Error(`Stock quantity for size "${size}" must be a non-negative whole number`);
         }
+
+        const customPrice = v.customPrice !== undefined ? v.customPrice : v.price;
+        if (customPrice !== undefined && customPrice !== null && customPrice !== "") {
+            const p = Number(customPrice);
+            if (isNaN(p) || p < 0) {
+                throw new Error(`Price for size "${size}" must be a non-negative number`);
+            }
+        }
     }
     return true;
 };
