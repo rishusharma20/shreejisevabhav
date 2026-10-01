@@ -14,7 +14,7 @@ const createProduct = asyncHandler(async (req, res) => {
         name, slug, shortDescription, description, collectionId,
         festivalId, category, isFeatured, isTrending, isActive,
         displayOrder, tags,
-        price, quantity, size
+        price, quantity, size, variants
     } = req.body;
 
     const collection = await Collection.findById(collectionId);
@@ -56,16 +56,49 @@ const createProduct = asyncHandler(async (req, res) => {
         }
     }
 
-    try {
-        const variant = await ProductVariant.create({
-            productId: product._id,
-            size,
-            price,
-            quantity,
-            images
-        });
+    let parsedVariants = [];
+    if (variants) {
+        if (typeof variants === "string") {
+            try {
+                parsedVariants = JSON.parse(variants);
+            } catch {
+                parsedVariants = [];
+            }
+        } else if (Array.isArray(variants)) {
+            parsedVariants = variants;
+        }
+    }
 
-        return res.status(201).json(new ApiResponse(201, "Product created successfully", { product, variant }));
+    if (parsedVariants.length === 0 && (size !== undefined || quantity !== undefined)) {
+        parsedVariants.push({
+            size: size || "Standard",
+            quantity: quantity !== undefined ? Number(quantity) : 0,
+            price: Number(price) || 0
+        });
+    }
+
+    try {
+        const createdVariants = [];
+        for (const v of parsedVariants) {
+            const vSize = String(v.size).trim();
+            const vQty = Number(v.quantity !== undefined ? v.quantity : v.stock) || 0;
+            const vPrice = Number(v.price !== undefined ? v.price : price) || 0;
+            const newVariant = await ProductVariant.create({
+                productId: product._id,
+                size: vSize,
+                price: vPrice,
+                quantity: vQty,
+                isAvailable: vQty > 0,
+                images
+            });
+            createdVariants.push(newVariant);
+        }
+
+        return res.status(201).json(new ApiResponse(201, "Product created successfully", { 
+            product, 
+            variants: createdVariants, 
+            variant: createdVariants[0] 
+        }));
     } catch (error) {
         // Rollback uploaded files and product if variant creation fails
         for (const imgUrl of images) {
@@ -115,7 +148,7 @@ const createVariant = asyncHandler(async (req, res) => {
     return res.status(201).json(new ApiResponse(201, "Variant created successfully", { variant }));
 });
 
-// Helper to attach default variant info (price, images, variantId) to products
+// Helper to attach default variant info (price, images, variantId, variants) to products
 const attachVariantsToProducts = async (products) => {
     if (!products || products.length === 0) return [];
     
@@ -126,12 +159,17 @@ const attachVariantsToProducts = async (products) => {
     return plainProducts.map(product => {
         const productVariants = variants.filter(v => v.productId.toString() === product._id.toString());
         const defaultVariant = productVariants[0] || {};
+        const totalQuantity = productVariants.reduce((sum, v) => sum + (v.quantity || 0), 0);
         return {
             ...product,
             variantId: defaultVariant._id,
             price: defaultVariant.price || 0,
             originalPrice: (defaultVariant.price || 0) + (defaultVariant.discount || 0),
-            images: (defaultVariant.images && defaultVariant.images.length > 0) ? defaultVariant.images : ["/images/products/placeholder.svg"]
+            images: (defaultVariant.images && defaultVariant.images.length > 0) ? defaultVariant.images : ["/images/products/placeholder.svg"],
+            size: defaultVariant.size || "Standard",
+            quantity: totalQuantity,
+            inStock: totalQuantity > 0,
+            variants: productVariants
         };
     });
 };
@@ -168,8 +206,8 @@ const getProduct = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Product not found");
     }
 
-    // Fetch variants as well so the product page has full details
-    const variants = await ProductVariant.find({ productId: product._id, isAvailable: true }).sort({ price: 1 });
+    // Fetch all variants so the product page can show size options and out-of-stock states
+    const variants = await ProductVariant.find({ productId: product._id }).sort({ price: 1, size: 1 });
 
     return res.status(200).json(new ApiResponse(200, "Product retrieved", { product, variants }));
 });
@@ -179,7 +217,7 @@ const getProduct = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const updateProduct = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { price, quantity, size, ...productFields } = req.body;
+    const { price, quantity, size, variants, ...productFields } = req.body;
 
     const updateData = { ...productFields, updatedBy: req.user._id };
 
@@ -198,11 +236,13 @@ const updateProduct = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Product not found");
     }
 
-    const variantUpdate = {};
-    if (price !== undefined && price !== "") variantUpdate.price = Number(price);
-    if (quantity !== undefined && quantity !== "") variantUpdate.quantity = Number(quantity);
-    if (size !== undefined && size !== "") variantUpdate.size = size;
+    const existingVariants = await ProductVariant.find({ productId: id });
+    let existingImages = [];
+    if (existingVariants.length > 0 && existingVariants[0].images && existingVariants[0].images.length > 0) {
+        existingImages = existingVariants[0].images;
+    }
 
+    let finalImages = existingImages;
     if (req.files && req.files.length > 0) {
         const newImages = [];
         for (const file of req.files) {
@@ -214,19 +254,102 @@ const updateProduct = asyncHandler(async (req, res) => {
             );
             newImages.push(`/api/v1/images/${fileId}`);
         }
-        variantUpdate.images = newImages;
+        finalImages = newImages;
     }
 
-    let variant = null;
-    if (Object.keys(variantUpdate).length > 0) {
-        variant = await ProductVariant.findOne({ productId: id });
-        if (variant) {
-            Object.assign(variant, variantUpdate);
-            await variant.save();
+    let parsedVariants = null;
+    if (variants !== undefined) {
+        if (typeof variants === "string") {
+            try {
+                parsedVariants = JSON.parse(variants);
+            } catch {
+                parsedVariants = null;
+            }
+        } else if (Array.isArray(variants)) {
+            parsedVariants = variants;
         }
     }
 
-    return res.status(200).json(new ApiResponse(200, "Product updated", { product: updatedProduct, variant }));
+    let resultVariants = [];
+
+    if (Array.isArray(parsedVariants)) {
+        // Multi-variant update
+        const keepVariantIds = [];
+        const basePrice = price !== undefined && price !== "" ? Number(price) : (existingVariants[0]?.price || 0);
+
+        for (const v of parsedVariants) {
+            const vSize = String(v.size || "Standard").trim();
+            const vQty = Number(v.quantity !== undefined ? v.quantity : (v.stock !== undefined ? v.stock : 0)) || 0;
+            const vPrice = Number(v.price !== undefined ? v.price : basePrice) || 0;
+            const isAvailable = vQty > 0;
+
+            const existing = existingVariants.find(ev => ev.size === vSize);
+            if (existing) {
+                existing.quantity = vQty;
+                existing.price = vPrice;
+                existing.isAvailable = isAvailable;
+                if (finalImages.length > 0) {
+                    existing.images = finalImages;
+                }
+                await existing.save();
+                keepVariantIds.push(existing._id);
+                resultVariants.push(existing);
+            } else {
+                const created = await ProductVariant.create({
+                    productId: id,
+                    size: vSize,
+                    quantity: vQty,
+                    price: vPrice,
+                    isAvailable,
+                    images: finalImages
+                });
+                keepVariantIds.push(created._id);
+                resultVariants.push(created);
+            }
+        }
+
+        // Delete variants that were removed
+        await ProductVariant.deleteMany({
+            productId: id,
+            _id: { $nin: keepVariantIds }
+        });
+    } else {
+        // Legacy single variant update
+        const variantUpdate = {};
+        if (price !== undefined && price !== "") variantUpdate.price = Number(price);
+        if (quantity !== undefined && quantity !== "") {
+            const q = Number(quantity);
+            variantUpdate.quantity = q;
+            variantUpdate.isAvailable = q > 0;
+        }
+        if (size !== undefined && size !== "") variantUpdate.size = size;
+        if (finalImages.length > 0 && req.files && req.files.length > 0) {
+            variantUpdate.images = finalImages;
+        }
+
+        if (existingVariants.length > 0) {
+            const primaryVariant = existingVariants[0];
+            Object.assign(primaryVariant, variantUpdate);
+            await primaryVariant.save();
+            resultVariants = [primaryVariant];
+        } else if (Object.keys(variantUpdate).length > 0) {
+            const newVar = await ProductVariant.create({
+                productId: id,
+                size: variantUpdate.size || "Standard",
+                price: variantUpdate.price || 0,
+                quantity: variantUpdate.quantity || 0,
+                isAvailable: (variantUpdate.quantity || 0) > 0,
+                images: finalImages
+            });
+            resultVariants = [newVar];
+        }
+    }
+
+    return res.status(200).json(new ApiResponse(200, "Product updated", { 
+        product: updatedProduct, 
+        variants: resultVariants,
+        variant: resultVariants[0] || null 
+    }));
 });
 
 // @desc    Delete a product

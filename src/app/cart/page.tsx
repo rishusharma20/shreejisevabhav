@@ -75,17 +75,21 @@ export default function DivineCartPage() {
           <div className="lg:col-span-2 flex flex-col gap-6">
             <AnimatePresence>
               {items.length > 0 ? (
-                items.map((item) => (
-                  <DivineCartItem 
-                    key={item.product.id} 
-                    id={item.product.id}
-                    title={item.product.name}
-                    price={`₹${item.product.price.toLocaleString()}`}
-                    quantity={item.quantity}
-                    category={item.product.category || "Divine Offering"}
-                    imageSrc={item.product.image}
-                  />
-                ))
+                items.map((item) => {
+                  const itemKey = item.product.variantId || `${item.product.id}-${item.product.size || 'std'}`;
+                  return (
+                    <DivineCartItem 
+                      key={itemKey} 
+                      id={itemKey}
+                      title={item.product.name}
+                      price={`₹${item.product.price.toLocaleString()}`}
+                      quantity={item.quantity}
+                      size={item.product.size}
+                      category={item.product.category || "Divine Offering"}
+                      imageSrc={item.product.image}
+                    />
+                  );
+                })
               ) : (
                 <div className="text-center py-12 bg-white/40 backdrop-blur-xl border border-gold-start/20 rounded-3xl">
                   <p className="text-warm-gray mb-4">Your divine cart is empty.</p>

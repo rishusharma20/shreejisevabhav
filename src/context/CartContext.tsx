@@ -15,15 +15,20 @@ function calculateTotals(items: CartItem[]): { totalAmount: number; totalItems: 
   };
 }
 
+export function getItemKey(item: { product: Product }): string {
+  return item.product.variantId || `${item.product.id}-${item.product.size || 'default'}`;
+}
+
 function cartReducer(state: CartState, action: CartAction): CartState {
   let newItems: CartItem[];
 
   switch (action.type) {
     case "ADD_TO_CART": {
-      const existing = state.items.find((item) => item.product.id === action.product.id);
+      const targetKey = getItemKey({ product: action.product });
+      const existing = state.items.find((item) => getItemKey(item) === targetKey);
       if (existing) {
         newItems = state.items.map((item) =>
-          item.product.id === action.product.id
+          getItemKey(item) === targetKey
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -34,20 +39,30 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     }
 
     case "REMOVE_FROM_CART":
-      newItems = state.items.filter((item) => item.product.id !== action.productId);
+      newItems = state.items.filter((item) => 
+        getItemKey(item) !== action.productId && 
+        item.product.variantId !== action.productId &&
+        item.product.id !== action.productId
+      );
       return { ...state, items: newItems, ...calculateTotals(newItems) };
 
-    case "UPDATE_QUANTITY":
+    case "UPDATE_QUANTITY": {
+      const isMatch = (item: CartItem) => 
+        getItemKey(item) === action.productId || 
+        item.product.variantId === action.productId ||
+        item.product.id === action.productId;
+
       if (action.quantity <= 0) {
-        newItems = state.items.filter((item) => item.product.id !== action.productId);
+        newItems = state.items.filter((item) => !isMatch(item));
       } else {
         newItems = state.items.map((item) =>
-          item.product.id === action.productId
+          isMatch(item)
             ? { ...item, quantity: action.quantity }
             : item
         );
       }
       return { ...state, items: newItems, ...calculateTotals(newItems) };
+    }
 
     case "CLEAR_CART":
       return { items: [], totalAmount: 0, totalItems: 0 };
@@ -91,20 +106,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             // Map backend cart structure to frontend CartItem[]
             const backendItems = data.data.cart.products.map((item: any) => ({
               product: {
-                id: item.productId._id,
-                variantId: item.variantId._id,
-                name: item.productId.name,
-                category: item.productId.category,
-                price: item.variantId.price,
-                image: resolveImageUrl(item.variantId.images?.[0]),
-                slug: item.productId.slug
+                id: item.productId?._id || item.productId,
+                variantId: item.variantId?._id || item.variantId,
+                name: item.productId?.name || "Divine Offering",
+                category: item.productId?.category || "Poshak",
+                price: item.variantId?.price || 0,
+                image: resolveImageUrl(item.variantId?.images?.[0] || item.productId?.images?.[0]),
+                slug: item.productId?.slug || "",
+                size: item.variantId?.size || "Standard",
+                inStock: item.variantId?.isAvailable !== false && (item.variantId?.quantity === undefined || item.variantId?.quantity > 0),
+                quantity: item.variantId?.quantity
               } as Product,
               quantity: item.quantity
             }));
             dispatch({ type: "LOAD_CART", items: backendItems });
           }
         } else if (res.status === 401) {
-          // If unauthenticated, we can fallback to localStorage or just leave empty
+          // If unauthenticated, fallback to localStorage
           const stored = localStorage.getItem(CART_STORAGE_KEY);
           if (stored) {
             dispatch({ type: "LOAD_CART", items: JSON.parse(stored) });
@@ -155,13 +173,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const removeFromCart = useCallback(
     async (productId: string) => {
-      // We need variantId to remove from backend. Frontend currently passes productId.
-      // For V1, we'll try to find the variantId in the current state.
-      const item = state.items.find(i => i.product.id === productId);
+      const item = state.items.find(
+        i => getItemKey(i) === productId || i.product.variantId === productId || i.product.id === productId
+      );
       if (!item) return;
 
       try {
-        const res = await authFetch(`/api/v1/cart/remove/${item.product.variantId || productId}`, {
+        const res = await authFetch(`/api/v1/cart/remove/${item.product.variantId || item.product.id}`, {
           method: "DELETE"
         });
         if (res.ok) {
@@ -176,11 +194,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const updateQuantity = useCallback(
     async (productId: string, quantity: number) => {
-      const item = state.items.find(i => i.product.id === productId);
+      const item = state.items.find(
+        i => getItemKey(i) === productId || i.product.variantId === productId || i.product.id === productId
+      );
       if (!item) return;
 
       try {
-        const res = await authFetch(`/api/v1/cart/update/${item.product.variantId || productId}`, {
+        const res = await authFetch(`/api/v1/cart/update/${item.product.variantId || item.product.id}`, {
           method: "PUT",
           body: JSON.stringify({ quantity })
         });

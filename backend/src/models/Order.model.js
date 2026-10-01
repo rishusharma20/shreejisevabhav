@@ -87,6 +87,10 @@ const orderSchema = new mongoose.Schema(
         isDelivered: {
             type: Boolean,
             default: false
+        },
+        inventoryDeducted: {
+            type: Boolean,
+            default: false
         }
     },
     {

@@ -1,5 +1,47 @@
 const { body } = require("express-validator");
 
+const validateVariantsArray = (val) => {
+    let list = val;
+    if (typeof val === "string") {
+        try {
+            list = JSON.parse(val);
+        } catch {
+            throw new Error("Variants must be a valid JSON array");
+        }
+    }
+    if (!Array.isArray(list) || list.length === 0) {
+        throw new Error("At least one size variant is required");
+    }
+    const seenSizes = new Set();
+    for (const v of list) {
+        if (!v || typeof v !== "object") {
+            throw new Error("Invalid variant entry");
+        }
+        const size = v.size !== undefined ? String(v.size).trim() : "";
+        if (!size) {
+            throw new Error("Size is required for each variant");
+        }
+        const lowerSize = size.toLowerCase();
+        if (seenSizes.has(lowerSize)) {
+            throw new Error(`Duplicate size detected: ${size}`);
+        }
+        seenSizes.add(lowerSize);
+
+        const qty = v.quantity !== undefined ? v.quantity : v.stock;
+        if (
+            qty === undefined ||
+            qty === null ||
+            qty === "" ||
+            isNaN(Number(qty)) ||
+            !Number.isInteger(Number(qty)) ||
+            Number(qty) < 0
+        ) {
+            throw new Error(`Stock quantity for size "${size}" must be a non-negative whole number`);
+        }
+    }
+    return true;
+};
+
 const createProductValidation = [
     body("name")
         .trim()
@@ -28,15 +70,22 @@ const createProductValidation = [
         .withMessage("Price is required")
         .isFloat({ min: 0 })
         .withMessage("Price cannot be negative"),
+    body("variants")
+        .optional()
+        .custom(validateVariantsArray),
     body("quantity")
-        .notEmpty()
-        .withMessage("Quantity is required")
+        .optional()
         .isInt({ min: 0 })
         .withMessage("Quantity cannot be negative"),
     body("size")
-        .trim()
-        .notEmpty()
-        .withMessage("Size is required")
+        .optional()
+        .trim(),
+    body().custom((value, { req }) => {
+        if (!req.body.variants && (!req.body.size || req.body.quantity === undefined || req.body.quantity === "")) {
+            throw new Error("Either variants array or size and quantity must be provided");
+        }
+        return true;
+    })
 ];
 
 const updateProductValidation = [
@@ -46,6 +95,7 @@ const updateProductValidation = [
     body("collectionId").optional().trim().isMongoId(),
     body("category").optional().trim().notEmpty(),
     body("price").optional().isFloat({ min: 0 }),
+    body("variants").optional().custom(validateVariantsArray),
     body("quantity").optional().isInt({ min: 0 }),
     body("size").optional().trim().notEmpty()
 ];
@@ -85,6 +135,7 @@ const updateVariantValidation = [
 ];
 
 module.exports = {
+    validateVariantsArray,
     createProductValidation,
     updateProductValidation,
     variantValidation,

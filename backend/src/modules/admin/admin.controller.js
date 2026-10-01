@@ -9,6 +9,7 @@ const Payment = require("../../models/Payment.model");
 const Order = require("../../models/Order.model");
 const TrackMySeva = require("../../models/TrackMySeva.model");
 const WebsiteSettings = require("../../models/WebsiteSettings.model");
+const { reduceInventory } = require("../orders/order.service");
 
 // @desc    Get Master Dashboard Overview
 // @route   GET /api/v1/admin/dashboard
@@ -129,6 +130,9 @@ const approvePayment = asyncHandler(async (req, res) => {
         
         order.trackMySevaId = track._id;
         await order.save();
+
+        // Atomically deduct inventory for confirmed order
+        await reduceInventory(order._id);
     }
 
     return res.status(200).json(

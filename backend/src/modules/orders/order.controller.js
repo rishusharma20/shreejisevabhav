@@ -10,6 +10,7 @@ const { getOrderStatusEmail } = require("../../utils/emailTemplates");
 
 const Payment = require("../../models/Payment.model");
 const Cart = require("../../models/Cart.model");
+const { reduceInventory } = require("./order.service");
 
 // ============================================
 // USER ENDPOINTS
@@ -156,6 +157,10 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
         order.isDelivered = true;
     }
     await order.save();
+
+    if (status === "ORDER_CONFIRMED") {
+        await reduceInventory(order._id);
+    }
 
     // Add a TrackMySeva timeline entry
     if (order.trackMySevaId) {

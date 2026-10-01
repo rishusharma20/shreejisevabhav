@@ -18,6 +18,9 @@ export interface Product {
   festival?: string;
   description: string;
   inStock: boolean;
+  size?: string;
+  quantity?: number;
+  variants?: any[];
 }
 
 export interface Category {

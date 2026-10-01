@@ -75,7 +75,7 @@ const getCart = asyncHandler(async (req, res) => {
     const userId = req.user._id;
     let cart = await Cart.findOne({ userId })
         .populate("products.productId", "name slug category")
-        .populate("products.variantId", "size images price discount sku");
+        .populate("products.variantId", "size images price discount sku quantity isAvailable");
 
     if (!cart) {
         cart = await Cart.create({ userId, products: [] });

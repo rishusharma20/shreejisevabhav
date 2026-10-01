@@ -24,6 +24,9 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
   const images = resolveImageUrls(selectedVariant.images);
 
   const handleAddToCart = () => {
+    const isVariantInStock = selectedVariant.isAvailable !== false && (selectedVariant.quantity === undefined || selectedVariant.quantity > 0);
+    if (!isVariantInStock) return;
+
     const cartProduct: Product = {
       id: product._id,
       variantId: selectedVariant._id,
@@ -36,7 +39,9 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
       rating: 5,
       reviewCount: 0,
       description: product.description,
-      inStock: true
+      inStock: isVariantInStock,
+      size: selectedVariant.size,
+      quantity: selectedVariant.quantity
     };
     
     addToCart(cartProduct);
@@ -129,28 +134,33 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
                 <span className="text-[10px] uppercase tracking-widest font-bold text-gold-start underline cursor-pointer hover:text-gold-end">Size Guide</span>
               </div>
               <div className="flex flex-wrap gap-3">
-                {variants.map((v) => (
-                  <button
-                    key={v._id}
-                    onClick={() => {
-                      setSelectedVariant(v);
-                      setActiveImageIndex(0);
-                    }}
-                    disabled={!v.isAvailable}
-                    className={`px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
-                      selectedVariant._id === v._id 
-                        ? 'bg-[#5C1A1A] text-white shadow-md' 
-                        : v.isAvailable 
-                          ? 'bg-white border border-charcoal/20 text-charcoal hover:border-gold-start hover:text-gold-start'
-                          : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'
-                    }`}
-                  >
-                    {v.size}
-                  </button>
-                ))}
+                {variants.map((v) => {
+                  const isAvailable = v.isAvailable !== false && (v.quantity === undefined || v.quantity > 0);
+                  const isSelected = selectedVariant._id === v._id;
+                  return (
+                    <button
+                      key={v._id}
+                      onClick={() => {
+                        setSelectedVariant(v);
+                        setActiveImageIndex(0);
+                      }}
+                      className={`px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
+                        isSelected 
+                          ? 'bg-[#5C1A1A] text-white shadow-md' 
+                          : isAvailable 
+                            ? 'bg-white border border-charcoal/20 text-charcoal hover:border-gold-start hover:text-gold-start'
+                            : 'bg-gray-100 border border-gray-200 text-gray-400 opacity-60'
+                      }`}
+                    >
+                      {v.size} {!isAvailable && '(Out of stock)'}
+                    </button>
+                  );
+                })}
               </div>
-              {selectedVariant.isAvailable ? (
-                <p className="text-xs text-emerald-600 mt-2 font-medium">In Stock: {selectedVariant.quantity} available</p>
+              {selectedVariant.isAvailable !== false && (selectedVariant.quantity === undefined || selectedVariant.quantity > 0) ? (
+                <p className="text-xs text-emerald-600 mt-2 font-medium">
+                  In Stock: {selectedVariant.quantity !== undefined ? `${selectedVariant.quantity} available` : 'Available'}
+                </p>
               ) : (
                 <p className="text-xs text-rose-500 mt-2 font-medium">This size is currently out of stock.</p>
               )}
@@ -159,23 +169,30 @@ export default function ProductDetails({ product, variants }: ProductDetailsProp
 
           {/* Actions */}
           <div className="flex gap-4 mb-10">
-            <button
-              onClick={handleAddToCart}
-              disabled={!selectedVariant.isAvailable}
-              className={`flex-1 h-14 rounded-full flex items-center justify-center gap-2 text-xs uppercase tracking-[0.2em] font-bold transition-all ${
-                !selectedVariant.isAvailable 
-                  ? 'bg-charcoal/10 text-charcoal/40 cursor-not-allowed'
-                  : isAdded
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20'
-                    : 'bg-gradient-to-r from-gold-start to-gold-end text-white hover:shadow-xl hover:shadow-gold-start/20 hover:scale-[1.02]'
-              }`}
-            >
-              {isAdded ? (
-                <><Check size={18} /> Added to Cart</>
-              ) : (
-                <><ShoppingCart size={18} /> Add to Cart</>
-              )}
-            </button>
+            {(() => {
+              const isPurchasable = selectedVariant.isAvailable !== false && (selectedVariant.quantity === undefined || selectedVariant.quantity > 0);
+              return (
+                <button
+                  onClick={handleAddToCart}
+                  disabled={!isPurchasable}
+                  className={`flex-1 h-14 rounded-full flex items-center justify-center gap-2 text-xs uppercase tracking-[0.2em] font-bold transition-all ${
+                    !isPurchasable 
+                      ? 'bg-charcoal/10 text-charcoal/40 cursor-not-allowed'
+                      : isAdded
+                        ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20'
+                        : 'bg-gradient-to-r from-gold-start to-gold-end text-white hover:shadow-xl hover:shadow-gold-start/20 hover:scale-[1.02]'
+                  }`}
+                >
+                  {isAdded ? (
+                    <><Check size={18} /> Added to Cart</>
+                  ) : !isPurchasable ? (
+                    <>Out of Stock</>
+                  ) : (
+                    <><ShoppingCart size={18} /> Add to Cart</>
+                  )}
+                </button>
+              );
+            })()}
             <button className="w-14 h-14 rounded-full bg-white border border-charcoal/10 flex items-center justify-center text-charcoal hover:bg-rose-50 hover:text-rose-500 hover:border-rose-200 transition-colors shadow-sm">
               <Heart size={20} />
             </button>

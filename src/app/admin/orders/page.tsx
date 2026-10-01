@@ -140,6 +140,18 @@ export default function AdminOrdersPage() {
                   <div className="text-sm font-bold text-[#5C1A1A]">
                     ₹{order.totalAmount?.toLocaleString()} <span className="text-[#8B6F4E] font-medium text-xs ml-1">({order.products?.length || 0} items)</span>
                   </div>
+
+                  {order.products && order.products.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {order.products.map((p: any, pIdx: number) => (
+                        <span key={pIdx} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FFFDF9] border border-gold-start/20 text-xs text-charcoal">
+                          <span className="font-semibold">{p.productName || p.productId?.name || "Offering"}</span>
+                          {p.variantSize && <span className="text-warm-gray font-medium">(Size: {p.variantSize})</span>}
+                          <span className="text-saffron-deep font-bold">×{p.quantity}</span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-4 w-full md:w-auto">

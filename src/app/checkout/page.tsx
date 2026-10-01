@@ -194,10 +194,12 @@ export default function CheckoutPage() {
                 {summary.products.map((item: any, idx: number) => (
                   <div key={idx} className="flex justify-between items-start gap-4 text-sm">
                     <div className="flex-1">
-                      <p className="font-bold text-charcoal line-clamp-1">{item.productId.name}</p>
-                      <p className="text-xs text-warm-gray">Qty: {item.quantity}</p>
+                      <p className="font-bold text-charcoal line-clamp-1">{item.productId?.name}</p>
+                      <p className="text-xs text-warm-gray">
+                        {item.variantId?.size ? `Size: ${item.variantId.size} • ` : ""}Qty: {item.quantity}
+                      </p>
                     </div>
-                    <span className="font-bold text-charcoal">₹{(item.variantId.price * item.quantity).toLocaleString()}</span>
+                    <span className="font-bold text-charcoal">₹{((item.variantId?.price || 0) * item.quantity).toLocaleString()}</span>
                   </div>
                 ))}
               </div>
